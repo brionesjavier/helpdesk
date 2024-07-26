@@ -13,9 +13,9 @@ class CategoryController extends Controller
     public function index(): View
     {
 
-        $categorie = Category::get();
+        $categories = Category::get();
 
-        return view('categories.index',compact('categorie'));
+        return view('categories.index',compact('categories'));
         //
     }
 
@@ -33,6 +33,19 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'name' => 'required|string|max:30',
+            'description' => 'required|string|max:300'
+        ]);
+
+        //Category::create($request->all());
+        Category::create([
+            'name' => $request->name,
+            'description' => $request->description
+            ]);
+
+        return redirect()->route('categories.index')->with('message','Categoría creada exitosamente.');
+
         //
     }
 
