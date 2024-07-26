@@ -18,6 +18,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::resource('categories', CategoryController::class);
-
+//Route::resource('categories', CategoryController::class);
+Route::get('categories',[CategoryController::class,'index'])->name('categories.index');
+Route::get('categories/create',[CategoryController::class,'create'])->name('categories.create');
+Route::post('categories/create',[CategoryController::class,'store'])->name('categories.store');
 require __DIR__.'/auth.php';

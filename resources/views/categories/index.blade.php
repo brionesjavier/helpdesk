@@ -24,17 +24,19 @@
                 <table class="table-auto">
                     <thead>
                         <tr>
-                          <th>Categoría</th>
-                          <th>Descripción</th>
-                          <th>Año</th>
+                          <th class="border border-gray-400 px-4 py-2 text-gray-200">Categoría</th>
+                          <th class="border border-gray-400 px-4 py-2 text-gray-200">Descripción</th>
+                          <th class="border border-gray-400 px-4 py-2 text-gray-200">Año</th>
+                          <th class="border border-gray-400 px-4 py-2 text-gray-200">Opcion</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse ( $categories as $category )
                                 <tr>
-                                    <td>{{ $category->name }}</td>
-                                    <td>{{ $category->description }}</td>
-                                    <td>{{ $category->created_at->format('Y-m-d') }}</td>
+                                    <td class="border border-gray-400 px-4 py-2">{{ $category->name }}</td>
+                                    <td class="border border-gray-400 px-4 py-2">{{ $category->description }}</td>
+                                    <td class="border border-gray-400 px-4 py-2">{{ $category->created_at->format('Y-m-d') }}</td>
+                                    <td class="border border-gray-400 px-4 py-2"><a href="#editar">editar </a><a href="#eliminar">eliminar</a></td>
                                 </tr>
                             
                         @empty
