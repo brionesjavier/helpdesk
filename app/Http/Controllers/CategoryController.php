@@ -2,25 +2,27 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Categorie;
+use App\Models\Category;
+use Illuminate\Contracts\View\View;
 
-class CategorieController extends Controller
+class CategoryController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): View
     {
-        $categories = Categorie::get();
 
-        return view('categories.index');
+        $categorie = Category::get();
+
+        return view('categories.index',compact('categorie'));
         //
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): View
     {
         return view('categories.create');
         //
