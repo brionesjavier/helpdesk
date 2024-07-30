@@ -16,7 +16,7 @@ class CategoryController extends Controller
 
         $categories = Category::get();
 
-        return view('categories.index',compact('categories'));
+        return view('categories.index', compact('categories'));
         //
     }
 
@@ -43,11 +43,11 @@ class CategoryController extends Controller
         Category::create([
             'name' => $request->name,
             'description' => $request->description
-            ]);
+        ]);
 
-        return redirect()->route('categories.index')->with('message','Categoría creada exitosamente.');
+        return redirect()->route('categories.index')->with('message', 'Categoría creada exitosamente.');
 
-        //
+    
     }
 
     /**
@@ -55,7 +55,7 @@ class CategoryController extends Controller
      */
     public function show(Category $category)
     {
-        return view('categories.show')->with('category',$category);
+        return view('categories.show')->with('category', $category);
     }
 
     /**
@@ -63,22 +63,35 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
-        return view('categories.edit')->with('category',$category);
+        return view('categories.edit')->with('category', $category);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Category $category)
+ /*    public function update(Request $request, Category $category)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:30',
             'description' => 'required|string|max:300',
         ]);
-        
+
         $category->update($validated);
-        
-        return redirect()->route('categories.index').with('message',' Categoria actualizada correctamente!');
+
+        return redirect()->route('categories.index') ;
+    } */
+    public function update(Request $request, Category $category): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:30',
+            'description' => 'required|string|max:300',
+        ]);
+    
+        if (!$category->update($validated)) {
+            return redirect()->back()->withErrors(['message' => 'No se pudo actualizar la categoría']);
+        }
+    
+        return redirect()->route('categories.index')->with('message', 'Categoría actualizada exitosamente');
     }
 
     /**
@@ -86,8 +99,12 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
+
         $category->delete();
-        return redirect()->route('categories.index').with('message',' Categoria eliminada correctamente!');
-        
+        return redirect()->route('categories.index') ->with('message', ' Categoria eliminada correctamente!');
+
     }
+
 }
+
+

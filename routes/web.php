@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ElementController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -22,6 +23,13 @@ Route::middleware('auth')->group(function () {
 Route::get('categories',[CategoryController::class,'index'])->name('categories.index');
 Route::get('categories/create',[CategoryController::class,'create'])->name('categories.create');
 Route::post('categories/create',[CategoryController::class,'store'])->name('categories.store');
-Route::get('categories/edit/{category}',[CategoryController::class,'edit'])->name('categories.edit');
-Route::post('categories/update',[CategoryController::class,'update'])->name('categories.update');
+Route::get('categories/{category}/edit/',[CategoryController::class,'edit'])->name('categories.edit');
+Route::put('categories/{category}/update',[CategoryController::class,'update'])->name('categories.update');
+Route::get('categories/{category}',[CategoryController::class,'show'])->name('categories.show');
+Route::delete('categories/{category}',[CategoryController::class,'destroy'])->name('categories.destroy');
+
+route::get('elements', [ElementController::class,'index'] )->name('elements.index');
+route::get('elements/create', [ElementController::class,'create'] )->name('elements.create');
+route::post('elements/create', [ElementController::class,'store'] )->name('elements.store');
+
 require __DIR__.'/auth.php';

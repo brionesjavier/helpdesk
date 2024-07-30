@@ -1,11 +1,11 @@
 <x-app-layout>
     <x-slot name="header">
                   {{-- mensaje de evento --}}
-                  @if(session()->has('message'))
+                @if(session()->has('message'))
                   <div class="text-center bg-gray-100 rounded-md p-2">
                       <span class="text-indigo-600 text-xl font-semibold">{{ session('message') }}</span>
                   </div>
-              @endif
+                @endif
   
   
               <div class="overflow-hidden shadow-sm sm:rounded-lg mb-4">
@@ -36,7 +36,15 @@
                                     <td class="border border-gray-400 px-4 py-2">{{ $category->name }}</td>
                                     <td class="border border-gray-400 px-4 py-2">{{ $category->description }}</td>
                                     <td class="border border-gray-400 px-4 py-2">{{ $category->created_at->format('Y-m-d') }}</td>
-                                    <td class="border border-gray-400 px-4 py-2"><a href="#editar">editar </a><a href="#eliminar">eliminar</a></td>
+                                    <td class="border border-gray-400 px-4 py-2">
+                                        <a href="{{ route('categories.show', $category) }}">ver</a>
+                                        <a href="{{ route('categories.edit', $category) }}">editar</a>
+                                        <form action="{{ route('categories.destroy', $category) }}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit">eliminar</button>
+                                        </form>
+                                    </td>
                                 </tr>
                             
                         @empty
