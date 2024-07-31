@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class State extends Model
 {
+    protected $table="ticket_states";
+    protected $fillable =['name'];
+
     use HasFactory;
 
     public function ticket(){
