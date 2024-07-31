@@ -20,7 +20,7 @@ class StateController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate(['name' => 'required|string|max:10',]);
+        $request->validate(['name' => 'required|string|max:20',]);
 
         State::create(['name' => $request->name]);
 
@@ -41,7 +41,7 @@ class StateController extends Controller
 
     public function update(Request $request, State $state)
     {
-        $request->validate(['name' => 'required|string|max:10',]);
+        $request->validate(['name' => 'required|string|max:20',]);
         $state->update(['name' => $request->name]);
 
         return redirect()->route('states.index')
