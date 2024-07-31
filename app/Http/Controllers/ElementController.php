@@ -40,4 +40,27 @@ class ElementController extends Controller
         return redirect()->route('elements.index')->with('message', 'Categoría creada exitosamente.');
 
     }
+    public function show(Element $element){
+
+        return view('elements.show',['element'=>$element]);
+    }
+    public function edit(Element $element){
+        $categories = Category::where('is_active',true)->get();
+        return view('elements.edit',['element'=>$element,'categories'=>$categories]);
+        }
+    
+    public function update(Request $request, Element $element){
+            $validate = $request->validate([
+                                'name' => 'required|string|max:30',
+                                'description' => 'required|string|max:300',
+                                'category_id'=>'required|integer'
+                                ]);
+            $element->update($validate);
+            return redirect()->route('elements.index')->with('message', 'Elemento actualizado exitosamente.');
+    }
+    public function destroy(Element $element){
+        $element->delete();
+        return redirect()->route('elements.index')->with('message', 'Elemento eliminado exitosamente.');
+        }
+
 }

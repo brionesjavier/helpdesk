@@ -20,18 +20,19 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                
-                
-                @forelse ( $elements as $element )
-                <p>nombre :{{ $element->name }}</p>
-                <p>descripcion :{{ $element->description }}</p>
-                <p>categoria id {{ $element->category_id }}</p>
-                <p>creado: {{ $element->created_at }}</p>
-                   <br>
-                @empty
-                <p>No hay elementos</p>
-                    
-                @endforelse
-
+                <div class="p-6 text-gray-900 dark:text-gray-100">
+                    @forelse ( $elements as $element )
+                    <p>nombre :{{ $element->name }}</p>
+                    <p>descripcion :{{ $element->description }}</p>
+                    <p>categoria id {{ $element->category_id }}</p>
+                    <p>creado: {{ $element->created_at }}</p>
+                    <p>Estado: {{ $element->is_active ? 'On' :'Off' }}</p>
+                    <a href="{{ route('elements.show',$element) }}">link</a>
+                    <br>
+                    @empty
+                    <p>No hay elementos</p>
+                        
+                    @endforelse
                 </div>
             </div>
         </div>

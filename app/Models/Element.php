@@ -10,4 +10,9 @@ class Element extends Model
     protected $table = 'elements'; // Nombre de la tabla en la base de datos
     protected $fillable = ['name', 'description','category_id']; // Campos que se pueden llenar
     use HasFactory;
+
+    public function category(){
+        return $this->belongsTo(Category::class);
+
+    }
 }

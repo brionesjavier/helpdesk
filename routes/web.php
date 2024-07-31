@@ -31,5 +31,8 @@ Route::delete('categories/{category}',[CategoryController::class,'destroy'])->na
 route::get('elements', [ElementController::class,'index'] )->name('elements.index');
 route::get('elements/create', [ElementController::class,'create'] )->name('elements.create');
 route::post('elements/create', [ElementController::class,'store'] )->name('elements.store');
-
+route::get('elements/{element}', [ElementController::class,'show'] )->name('elements.show');
+route::get('elements/{element}/edit', [ElementController::class,'edit'] )->name('elements.edit');
+route::put('elements/{element}', [ElementController::class,'update'] )->name('elements.update');
+route::delete('elements/{element}', [ElementController::class,'destroy'] )->name('elements.destroy');
 require __DIR__.'/auth.php';

@@ -11,4 +11,8 @@ class Category extends Model
     protected $fillable = ['name', 'description']; // Campos que se pueden llenar
     
     use HasFactory;
+
+    public function element(){
+        return $this->hasMany(Element::class);
+    }
 }
