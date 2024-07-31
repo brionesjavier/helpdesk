@@ -3,6 +3,7 @@
 use App\Http\Controllers\ElementController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StateController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -35,4 +36,9 @@ route::get('elements/{element}', [ElementController::class,'show'] )->name('elem
 route::get('elements/{element}/edit', [ElementController::class,'edit'] )->name('elements.edit');
 route::put('elements/{element}', [ElementController::class,'update'] )->name('elements.update');
 route::delete('elements/{element}', [ElementController::class,'destroy'] )->name('elements.destroy');
+
+route::get('states', [StateController::class,'index'] )->name('states.index');
+route::get('states/create', [StateController::class,'create'] )->name('states.create');
+route::post('states/create', [StateController::class,'store'] )->name('states.store');
+route::get('states/{state}', [StateController::class,'show'] )->name('states.show');
 require __DIR__.'/auth.php';
