@@ -15,4 +15,7 @@ class Element extends Model
         return $this->belongsTo(Category::class);
 
     }
+    public function ticket(){
+        return $this->hasMany(Ticket::class);
+    }
 }
