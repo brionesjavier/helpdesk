@@ -41,4 +41,7 @@ route::get('states', [StateController::class,'index'] )->name('states.index');
 route::get('states/create', [StateController::class,'create'] )->name('states.create');
 route::post('states/create', [StateController::class,'store'] )->name('states.store');
 route::get('states/{state}', [StateController::class,'show'] )->name('states.show');
+route::get('states/{state}/edit', [StateController::class,'edit'] )->name('states.edit');
+route::put('states/{state}', [StateController::class,'update'] )->name('states.update');
+route::delete('states/{state}', [StateController::class,'destroy'] )->name('states.destroy');
 require __DIR__.'/auth.php';

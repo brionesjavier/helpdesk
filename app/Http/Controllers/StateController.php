@@ -30,13 +30,13 @@ class StateController extends Controller
 
     public function show(State $state)
     {
-        return view('states.show', compact($state));
+        return view('states.show', compact('state'));
     }
 
     public function edit(State $state)
     {
 
-        return view('states.edit', compact($state));
+        return view('states.edit', compact('state'));
     }
 
     public function update(Request $request, State $state)
