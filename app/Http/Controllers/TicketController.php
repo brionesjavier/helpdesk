@@ -11,20 +11,20 @@ class TicketController extends Controller
     public function index()
     {
         $tickets = Ticket::get();
-        return view('ticket.index',compact($tickets) );
+        return view('tickets.index',compact('tickets') );
     }
 
     //mostrar datos
     public function show(Ticket $ticket)
     {
         $ticket = Ticket::get();
-        return view('ticket.show', compact($ticket));
+        return view('tickets.show', compact('ticket'));
     }
 
     //crear una vista de formulario
     public function create()
     {
-        return view('ticket.create');
+        return view('tickets.create');
     }
 
     //guardar datos
@@ -44,13 +44,14 @@ class TicketController extends Controller
             'state' => $request->state,
             ]);
 
-        return redirect()->route('ticket.index')->with('success', 'Ticket creado con exito');
+        return redirect()->route('tickets.index')
+                        ->with('message', 'Ticket creado con exito');
     }
     //editar datos
     public function edit(Ticket $ticket)
     {
     
-        return view('ticket.edit', compact($ticket));
+        return view('tickets.edit', compact('ticket'));
     }
     //actualizar datos
     public function update(Request $request, Ticket $ticket)
@@ -63,7 +64,8 @@ class TicketController extends Controller
                                         ]);
         
        $ticket->update($validated);
-        return redirect()->route('ticket.index')->with('success', 'Ticket actualizado con exito');
+        return redirect()->route('tickets.index')
+                        ->with('message', 'Ticket actualizado con exito');
     }
 
     //eliminar datos
@@ -71,8 +73,8 @@ class TicketController extends Controller
     {
 
         $ticket->delete();
-        return redirect()->route('ticket.index')->with('success', 'Ticket eliminado con exito
-                            ');
+        return redirect()->route('tickets.index')
+                        ->with('message', 'Ticket eliminado con exito');
     }
 
 }
