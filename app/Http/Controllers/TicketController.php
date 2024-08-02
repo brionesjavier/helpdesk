@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
 
@@ -23,8 +24,9 @@ class TicketController extends Controller
 
     //crear una vista de formulario
     public function create()
-    {
-        return view('tickets.create');
+    {   
+        $categories= Category::get();
+        return view('tickets.create',['categories'=>$categories]);
     }
 
     //guardar datos
