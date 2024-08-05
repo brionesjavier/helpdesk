@@ -27,31 +27,35 @@ Route::get('categories/create',[CategoryController::class,'create'])->name('cate
 Route::post('categories/create',[CategoryController::class,'store'])->name('categories.store');
 Route::get('categories/{category}/edit/',[CategoryController::class,'edit'])->name('categories.edit');
 Route::put('categories/{category}/update',[CategoryController::class,'update'])->name('categories.update');
+Route::get('categories/{category}/elements',[CategoryController::class,'getElements'])->name('getElements');
 Route::get('categories/{category}',[CategoryController::class,'show'])->name('categories.show');
 Route::delete('categories/{category}',[CategoryController::class,'destroy'])->name('categories.destroy');
 
-route::get('elements', [ElementController::class,'index'] )->name('elements.index');
-route::get('elements/create', [ElementController::class,'create'] )->name('elements.create');
-route::post('elements/create', [ElementController::class,'store'] )->name('elements.store');
-route::get('elements/{element}', [ElementController::class,'show'] )->name('elements.show');
-route::get('elements/{element}/edit', [ElementController::class,'edit'] )->name('elements.edit');
-route::put('elements/{element}', [ElementController::class,'update'] )->name('elements.update');
-route::delete('elements/{element}', [ElementController::class,'destroy'] )->name('elements.destroy');
+Route::get('elements', [ElementController::class,'index'] )->name('elements.index');
+Route::get('elements/create', [ElementController::class,'create'] )->name('elements.create');
+Route::post('elements/create', [ElementController::class,'store'] )->name('elements.store');
+Route::get('elements/{element}', [ElementController::class,'show'] )->name('elements.show');
+Route::get('elements/{element}/edit', [ElementController::class,'edit'] )->name('elements.edit');
+Route::put('elements/{element}', [ElementController::class,'update'] )->name('elements.update');
+Route::delete('elements/{element}', [ElementController::class,'destroy'] )->name('elements.destroy');
 
-route::get('states', [StateController::class,'index'] )->name('states.index');
-route::get('states/create', [StateController::class,'create'] )->name('states.create');
-route::post('states/create', [StateController::class,'store'] )->name('states.store');
-route::get('states/{state}', [StateController::class,'show'] )->name('states.show');
-route::get('states/{state}/edit', [StateController::class,'edit'] )->name('states.edit');
-route::put('states/{state}', [StateController::class,'update'] )->name('states.update');
-route::delete('states/{state}', [StateController::class,'destroy'] )->name('states.destroy');
+Route::get('states', [StateController::class,'index'] )->name('states.index');
+Route::get('states/create', [StateController::class,'create'] )->name('states.create');
+Route::post('states/create', [StateController::class,'store'] )->name('states.store');
+Route::get('states/{state}', [StateController::class,'show'] )->name('states.show');
+Route::get('states/{state}/edit', [StateController::class,'edit'] )->name('states.edit');
+Route::put('states/{state}', [StateController::class,'update'] )->name('states.update');
+Route::delete('states/{state}', [StateController::class,'destroy'] )->name('states.destroy');
 
-route::get('tickets',[TicketController::class, 'index'])->name('tickets.index');
-route::get('tickets/create',[TicketController::class, 'create'])->name('tickets.create');
-route::post('tickets/create',[TicketController::class, 'store'])->name('tickets.store');
-route::get('tickets/{ticket}',[TicketController::class, 'show'])->name('tickets.show');
-route::get('tickets/{ticket}/edit', [TicketController::class, 'edit'])->name('tickets.edit');
-route::put('tickets/{ticket}', [TicketController::class, 'update'])->name('tickets.update');
-route::delete('tickets/{ticket}', [TicketController::class, 'destroy'])->name('tickets.destroy');
+Route::get('tickets',[TicketController::class, 'index'])->name('tickets.index');
+Route::get('tickets/create',[TicketController::class, 'create'])->name('tickets.create');
+Route::post('tickets/create',[TicketController::class, 'store'])->name('tickets.store');
+Route::get('tickets/{ticket}',[TicketController::class, 'show'])->name('tickets.show');
+Route::get('tickets/{ticket}/edit', [TicketController::class, 'edit'])->name('tickets.edit');
+Route::put('tickets/{ticket}', [TicketController::class, 'update'])->name('tickets.update');
+Route::delete('tickets/{ticket}', [TicketController::class, 'destroy'])->name('tickets.destroy');
+
+
+
 
 require __DIR__.'/auth.php';

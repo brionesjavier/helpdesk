@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Category;
+use App\Models\Element;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 
@@ -105,6 +106,21 @@ class CategoryController extends Controller
 
     }
 
+/*     public function getElements( Category $category)
+    {
+        
+        $elements = Element::where('category_id', $category->id)->get();
+        return response()->json($elements);
+    } */
+
+    //chatgpt
+    public function getElements($categoryId)
+    {
+        $elements = Element::where('category_id', $categoryId)
+        ->where('is_active',true)
+        ->get();
+        return response()->json($elements);
+    }
 }
 
 
