@@ -26,7 +26,6 @@ class TicketController extends Controller
     //mostrar datos
     public function show(Ticket $ticket)
     {
-        $ticket = Ticket::get();
         return view('tickets.show', compact('ticket'));
     }
 
@@ -65,8 +64,9 @@ class TicketController extends Controller
     //editar datos
     public function edit(Ticket $ticket)
     {
+        $categories= Category::get();
     
-        return view('tickets.edit', compact('ticket'));
+        return view('tickets.edit', compact('ticket','categories'));
     }
     //actualizar datos
     public function update(Request $request, Ticket $ticket)

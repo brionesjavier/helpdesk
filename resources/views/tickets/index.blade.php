@@ -29,6 +29,7 @@
                                 <th class="border border-gray-400 px-4 py-2 text-gray-200">estado</th>
                                 <th class="border border-gray-400 px-4 py-2 text-gray-200">usuario</th>
                                 <th class="border border-gray-400 px-4 py-2 text-gray-200">creado</th>
+                                <th class="border border-gray-400 px-4 py-2 text-gray-200">link</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -40,7 +41,7 @@
                                 <td class="border border-gray-400 px-4 py-2">{{ $ticket->state->name}}</td>
                                 <td class="border border-gray-400 px-4 py-2">{{ $ticket->user->name}}</td>
                                 <td class="border border-gray-400 px-4 py-2">{{ $ticket->created_at->format('Y-m-d') }}</td>
-
+                                <td class="border border-gray-400 px-4 py-2"><a href="{{route('tickets.edit',$ticket)}}">editar</a><a href="{{route('tickets.show',$ticket)}}">ver</a></td>
                             </tr>
 
                             @empty
