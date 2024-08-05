@@ -74,8 +74,8 @@ class TicketController extends Controller
         $validated=$request->validate([
                                             'title' => 'required',
                                             'description' => 'required',
-                                            'element' => 'required',
-                                            'state' => 'required',
+                                            'element_id' => 'required',
+                                            
                                         ]);
         
        $ticket->update($validated);
