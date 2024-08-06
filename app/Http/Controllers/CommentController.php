@@ -10,19 +10,19 @@ use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
-    public function store(Request $request, $ticketId)
+    public function store(Request $request, Ticket $ticket)
     {
         $request->validate([
             'content' => 'required',
         ]);
 
         Comment::create([
-            'ticket_id' => $ticketId,
+            'ticket_id' => $ticket->id,
             'user_id' => auth::id(),
             'content' => $request->input('content'),
         ]);
 
-        HistoryController::logAction($ticketId, auth::id(), 'Added a comment');
+        HistoryController::logAction($ticket->id, auth::id(), "Added a comment: $request->content");
         return redirect()->back()->with('success', 'Comentario añadido con éxito.');
     }
 
