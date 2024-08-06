@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\ElementController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StateController;
 use App\Http\Controllers\TicketController;
@@ -54,6 +56,12 @@ Route::get('tickets/{ticket}',[TicketController::class, 'show'])->name('tickets.
 Route::get('tickets/{ticket}/edit', [TicketController::class, 'edit'])->name('tickets.edit');
 Route::put('tickets/{ticket}', [TicketController::class, 'update'])->name('tickets.update');
 Route::delete('tickets/{ticket}', [TicketController::class, 'destroy'])->name('tickets.destroy');
+
+
+Route::post('/tickets/{ticket}/comments', [CommentController::class, 'store'])->name('comments.store');
+Route::get('/tickets/{ticket}/comments', [CommentController::class, 'index'])->name('comments.index');
+Route::get('/tickets/{ticket}/history', [HistoryController::class, 'index']);
+
 
 
 

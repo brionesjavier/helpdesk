@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Comment;
 use App\Models\Ticket;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
@@ -26,7 +27,9 @@ class TicketController extends Controller
     //mostrar datos
     public function show(Ticket $ticket)
     {
-        return view('tickets.show', compact('ticket'));
+
+        $comments = Comment::where('ticket_id', $ticket->id)->get();
+        return view('tickets.show', compact('comments','ticket'));
     }
 
     //crear una vista de formulario
