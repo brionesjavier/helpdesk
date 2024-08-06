@@ -22,6 +22,7 @@ class CommentController extends Controller
             'content' => $request->input('content'),
         ]);
 
+        HistoryController::logAction($ticketId, auth::id(), 'Added a comment');
         return redirect()->back()->with('success', 'Comentario añadido con éxito.');
     }
 
@@ -31,6 +32,7 @@ class CommentController extends Controller
         $ticket = Ticket::findOrFail($ticketId);
 
         $comments = Comment::where('ticket_id', $ticketId)->get();
+        
         return view('comments.index', compact('ticket','comments'));
     }
 }
