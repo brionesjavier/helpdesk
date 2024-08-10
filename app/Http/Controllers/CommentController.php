@@ -7,6 +7,7 @@ use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+use function Laravel\Prompts\alert;
 
 class CommentController extends Controller
 {
@@ -15,12 +16,15 @@ class CommentController extends Controller
         $request->validate([
             'content' => 'required',
         ]);
-
         Comment::create([
             'ticket_id' => $ticket->id,
             'user_id' => auth::id(),
             'content' => $request->input('content'),
         ]);
+        
+        if($ticket->state_id == 2 &&  $ticket->assignedUsers()->where('user_id', auth()->id())->exists()){
+            $ticket->update(['state_id'=>3]);
+        }
 
         HistoryController::logAction($ticket->id, auth::id(), "Added a comment: $request->content");
         return redirect()->back()->with('success', 'Comentario añadido con éxito.');
