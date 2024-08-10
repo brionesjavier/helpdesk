@@ -32,6 +32,15 @@ class TicketController extends Controller
         return view('tickets.show', compact('comments','ticket'));
     }
 
+   /*  public function show($id)
+    {
+        // Recupera el ticket y sus comentarios
+        $ticket = Ticket::with('comments')->findOrFail($id);
+
+        // Pasa el ticket a la vista
+        return view('tickets.show', compact('ticket'));
+    } */
+
     //crear una vista de formulario
     public function create()
     {   

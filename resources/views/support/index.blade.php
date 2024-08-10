@@ -29,7 +29,8 @@
                                 <th class="border border-gray-400 px-4 py-2 text-gray-200">estado</th>
                                 <th class="border border-gray-400 px-4 py-2 text-gray-200">usuario</th>
                                 <th class="border border-gray-400 px-4 py-2 text-gray-200">creado</th>
-                                <th class="border border-gray-400 px-4 py-2 text-gray-200">link</th>
+                                <th class="border border-gray-400 px-4 py-2 text-gray-200">estado</th>
+                                <th class="border border-gray-400 px-4 py-2 text-gray-200">asignar</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -42,20 +43,26 @@
                                 <td class="border border-gray-400 px-4 py-2">{{ $ticket->user->name}}</td>
                                 <td class="border border-gray-400 px-4 py-2">{{ $ticket->created_at->format('Y-m-d') }}</td>
                                 <td class="border border-gray-400 px-4 py-2">
-                                    <a href="{{route('tickets.edit',$ticket)}}">editar</a> 
-                                    <a href="{{route('tickets.show',$ticket)}}">ver</a>
-                                    <form action="{{route('tickets.destroy',$ticket)}}" method="post">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white">delete</button>
+                                    
+                                    @forelse ( $ticket->assignedUsers as $assignment )
+                                            @if($assignment->pivot->is_active)
+                                                <span class="text-green-500">Activo</span>  
+                                            @endif
+                                    @empty
+                                        <span class="text-red-500">Inactivo</span>
+                                    @endforelse
+                                       
+                                </td>
 
-                                    </form>
-                            
+
+                                
+                                <td class="border border-gray-400 px-4 py-2">
+                                    <a href="{{route('support.show',$ticket)}}">ver</a>
                                 </td>
                             </tr>
 
                             @empty
-                            <h2 class="text-xl text-white p-4">¡No existen tickets almacenados!</h2>
+                            <h2 class="text-xl text-white p-4">¡No existen ticket almacenados!</h2>
                             @endforelse
                         </tbody>
                     </table>

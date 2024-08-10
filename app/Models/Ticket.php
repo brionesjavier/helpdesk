@@ -26,4 +26,11 @@ class Ticket extends Model
         return $this->hasMany(Comment::class);
     }
 
+    public function assignedUsers()
+    {
+        return $this->belongsToMany(User::class, 'ticket_assigns')
+                                                                ->withPivot('details', 'is_active')
+                                                                ->withTimestamps();
+    }
+
 }
