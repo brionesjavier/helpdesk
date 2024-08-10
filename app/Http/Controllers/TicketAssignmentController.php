@@ -10,6 +10,7 @@ use App\Http\Requests\AssignTicketRequest;
 use App\Models\Ticket;
 use App\Models\TicketAssignment;
 use App\Models\User;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 
 class TicketAssignmentController extends Controller
@@ -17,6 +18,12 @@ class TicketAssignmentController extends Controller
     public function index(){
         $tickets = Ticket::all();
         return view('support.index', compact('tickets'));
+    }
+
+    public function assigned():View
+    {
+        return $tickets = TicketAssignment:: where('user_id', auth()->id())->get();
+        return view('support.assigned', compact('tickets'));
     }
 
 

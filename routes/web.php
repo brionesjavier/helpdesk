@@ -67,6 +67,10 @@ Route::get('/support', [TicketAssignmentController::class, 'index'])->name('supp
 Route::get('/support/{ticket}', [TicketAssignmentController::class, 'show'])->name('support.show');
 Route::post('/support/{ticket}', [TicketAssignmentController::class, 'store'])->name('support.store');
 
+Route::get('/tickets-assigned', [TicketAssignmentController::class, 'assigned'])->name('support.assigned');
+
+Route::get('/my-tickets', [TicketController::class, 'myTickets'])->name('tickets.my');
+Route::get('/my-tickets/{tickets}', [TicketController::class, 'show'])->name('tickets.show');
 
 
 

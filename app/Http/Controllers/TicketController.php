@@ -18,10 +18,13 @@ class TicketController extends Controller
         return view('tickets.index',compact('tickets') );
     }
 
-    public function lista():View
+    public function myTickets():View
     {
-        dd($tickets = Ticket::all());
-        return view('tickets.list',compact('tickets') );
+        $userId=auth()->id();
+        $tickets = Ticket::where('created_by',$userId)
+                        ->where('is_active',true)
+                        ->get();
+        return view('tickets.my',compact('tickets') );
     }
 
     //mostrar datos
@@ -98,9 +101,9 @@ class TicketController extends Controller
     //eliminar datos
     public function destroy(Ticket $ticket)
     {
-
-        $ticket->delete();
-        return redirect()->route('tickets.index')
+        $ticket->update(['is_active'=>false]);
+        //$ticket->delete();
+        return redirect()->route('tickets.my')
                         ->with('message', 'Ticket eliminado con exito');
     }
 
