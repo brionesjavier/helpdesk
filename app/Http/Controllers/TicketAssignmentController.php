@@ -20,9 +20,15 @@ class TicketAssignmentController extends Controller
         return view('support.index', compact('tickets'));
     }
 
-    public function assigned():View
+    public function assigned(): View
     {
-        return $tickets = TicketAssignment:: where('user_id', auth()->id())->get();
+        // Obtener el usuario autenticado
+        $user = auth()->user();
+
+        // Obtener los tickets asignados al usuario
+        $tickets = $user->assignedTickets()->wherePivot('is_active', true)->get();
+
+        // Retornar la vista con los tickets asignados
         return view('support.assigned', compact('tickets'));
     }
 

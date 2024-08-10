@@ -70,7 +70,7 @@ Route::post('/support/{ticket}', [TicketAssignmentController::class, 'store'])->
 Route::get('/tickets-assigned', [TicketAssignmentController::class, 'assigned'])->name('support.assigned');
 
 Route::get('/my-tickets', [TicketController::class, 'myTickets'])->name('tickets.my');
-Route::get('/my-tickets/{tickets}', [TicketController::class, 'show'])->name('tickets.show');
+//Route::get('/my-tickets/{tickets}', [TicketController::class, 'show'])->name('tickets.show');
 
 
 
