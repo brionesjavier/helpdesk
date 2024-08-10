@@ -22,7 +22,7 @@ class CommentController extends Controller
             'content' => $request->input('content'),
         ]);
         
-        if($ticket->state_id == 2 &&  $ticket->assignedUsers()->where('user_id', auth()->id())->exists()){
+        if($ticket->state_id == 2 &&  $ticket->assignedUsers()->where('user_id', auth::id())->exists()){
             $ticket->update(['state_id'=>3]);
         }
 
