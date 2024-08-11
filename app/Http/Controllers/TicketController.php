@@ -20,7 +20,7 @@ class TicketController extends Controller
 
     public function myTickets():View
     {
-        $userId=auth()->id();
+        $userId=auth::id();
         $tickets = Ticket::where('created_by',$userId)
                         ->where('is_active',true)
                         ->get();
@@ -72,7 +72,7 @@ class TicketController extends Controller
             'created_by'=>$user_id
             ]);
 
-        return redirect()->route('tickets.index')
+        return redirect()->route('tickets.my')
                         ->with('message', 'Ticket creado con exito');
     }
 
