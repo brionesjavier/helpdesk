@@ -5,6 +5,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\StateController;
 use App\Http\Controllers\TicketAssignmentController;
 use App\Http\Controllers\TicketController;
@@ -22,6 +23,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/roles', [RolePermissionController::class, 'index'])->name('roles.index');
+    Route::get('/roles/create', [RolePermissionController::class, 'create'])->name('roles.create');
+    Route::post('/roles', [RolePermissionController::class, 'store'])->name('roles.store');
+    Route::get('/roles/{role}/edit', [RolePermissionController::class, 'edit'])->name('roles.edit');
+    Route::put('/roles/{role}', [RolePermissionController::class, 'update'])->name('roles.update');
+    Route::delete('/roles/{role}', [RolePermissionController::class, 'destroy'])->name('roles.destroy');
 });
 
 //Route::resource('categories', CategoryController::class);

@@ -26,6 +26,7 @@
                     <p><a href="{{ route('support.assigned') }}">bandeja ticket asignados</a></p>
                     <p><a href="{{ route('support.index') }}">bandeja asignar</a></p>
                     <p><a href="{{ route('tickets.index') }}">bandeja ticket </a></p>
+                    <p><a href="{{ route('roles.index') }}">roles</a></p>
 
 
                     <div class="list-disc">

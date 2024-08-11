@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Ticket extends Model
 {
@@ -26,7 +27,7 @@ class Ticket extends Model
         return $this->hasMany(Comment::class);
     }
 
-    public function assignedUsers()
+    public function assignedUsers():BelongsToMany
     {
         return $this->belongsToMany(User::class, 'ticket_assigns')
                                                                 ->withPivot('details', 'is_active')

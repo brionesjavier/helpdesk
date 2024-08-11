@@ -2,17 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
-namespace App\Http\Controllers;
-
 use App\Http\Requests\AssignTicketRequest;
 use App\Models\Ticket;
 use App\Models\TicketAssignment;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
-use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Auth;
 class TicketAssignmentController extends Controller
 {
     public function index(){
@@ -23,7 +18,7 @@ class TicketAssignmentController extends Controller
     public function assigned(): View
     {
         // Obtener el usuario autenticado
-        $user = auth()->user();
+        $user = auth::user();
 
         // Obtener los tickets asignados al usuario
         $tickets = $user->assignedTickets()->wherePivot('is_active', true)->get();
