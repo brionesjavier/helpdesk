@@ -30,6 +30,7 @@
                                 <th class="border border-gray-400 px-4 py-2 text-gray-200">usuario</th>
                                 <th class="border border-gray-400 px-4 py-2 text-gray-200">creado</th>
                                 <th class="border border-gray-400 px-4 py-2 text-gray-200">link</th>
+                                <th class="border border-gray-400 px-4 py-2 text-gray-200">historial</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -52,6 +53,7 @@
                                     </form>
                             
                                 </td>
+                                <td class="border border-gray-400 px-4 py-2"><a href="{{ route('history.index',$ticket) }}">historial</a>
                             </tr>
 
                             @empty

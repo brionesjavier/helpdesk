@@ -9,6 +9,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+
 class TicketController extends Controller
 {
     // mostrar tickets
@@ -35,14 +36,6 @@ class TicketController extends Controller
         return view('tickets.show', compact('comments','ticket'));
     }
 
-   /*  public function show($id)
-    {
-        // Recupera el ticket y sus comentarios
-        $ticket = Ticket::with('comments')->findOrFail($id);
-
-        // Pasa el ticket a la vista
-        return view('tickets.show', compact('ticket'));
-    } */
 
     //crear una vista de formulario
     public function create()
@@ -64,13 +57,26 @@ class TicketController extends Controller
         $estado = 1;//estado 1 -> creado
         $user_id = Auth::id();
         //return dd($request);
-        Ticket::create([
+        $ticket=Ticket::create([
             'title' => $request->title,
             'description' => $request->description,
             'element_id' => $request->element_id,
             'state_id' => $estado,
             'created_by'=>$user_id
             ]);
+
+        //registro historial
+        $title = $ticket->title;
+        $stateName = $ticket->state->name;
+        $description = $ticket->description;
+        $category =$ticket->element->category->name;
+        $element =$ticket->element->name;
+        $message = "Ticket creado: 
+                                título: $title , 
+                                Estado: $stateName , 
+                                Categoria: $category/$element, 
+                                descripción: $description";
+        HistoryController::logAction($ticket->id, auth::id(), $message);
 
         return redirect()->route('tickets.my')
                         ->with('message', 'Ticket creado con exito');
@@ -94,7 +100,22 @@ class TicketController extends Controller
                                         ]);
         
        $ticket->update($validated);
-        return redirect()->route('tickets.index')
+
+                                        
+       //registro historial
+       $title = $ticket->title;
+       $stateName = $ticket->state->name;
+       $description = $ticket->description;
+       $category =$ticket->element->category->name;
+       $element =$ticket->element->name;
+       $message = "Ticket actualizado: 
+                               título: $title , 
+                               Estado: $stateName , 
+                               Categoria: $category/$element, 
+                               descripción: $description";
+       HistoryController::logAction($ticket->id, auth::id(), $message);
+
+        return redirect()->route('tickets.my')
                         ->with('message', 'Ticket actualizado con exito');
     }
 
@@ -102,6 +123,13 @@ class TicketController extends Controller
     public function destroy(Ticket $ticket)
     {
         $ticket->update(['is_active'=>false]);
+
+        //registro historial
+        $user =Auth::user()->name;
+        $stateName = $ticket->state->name;
+        $message = "Ticket Eliminado: por  $user, Estado: $stateName ";
+        HistoryController::logAction($ticket->id, auth::id(), $message);
+
         //$ticket->delete();
         return redirect()->route('tickets.my')
                         ->with('message', 'Ticket eliminado con exito');

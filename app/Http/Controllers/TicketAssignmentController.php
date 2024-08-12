@@ -66,6 +66,15 @@ class TicketAssignmentController extends Controller
             'is_active' => true,
         ]);
 
+         //registro historial
+         
+        $stateName = $ticket->state->name;
+        $user = User::find($userId)->name;
+        $message = "Ticket Asignado: 
+                                 A: $user
+                                 Estado: $stateName";
+         HistoryController::logAction($ticket->id, auth::id(), $message);
+
         return redirect()->route('support.show', $ticket)->with('success', 'Ticket asignado/reasignado correctamente.');
     }
 

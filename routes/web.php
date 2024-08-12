@@ -71,7 +71,7 @@ Route::delete('tickets/{ticket}', [TicketController::class, 'destroy'])->name('t
 
 Route::post('/tickets/{ticket}/comments', [CommentController::class, 'store'])->name('comments.store');
 Route::get('/tickets/{ticket}/comments', [CommentController::class, 'index'])->name('comments.index');
-Route::get('/tickets/{ticket}/history', [HistoryController::class, 'index']);
+Route::get('/tickets/{ticket}/history', [HistoryController::class, 'index'])->name('history.index');
 
 Route::get('/support', [TicketAssignmentController::class, 'index'])->name('support.index');
 Route::get('/support/{ticket}', [TicketAssignmentController::class, 'show'])->name('support.show');
