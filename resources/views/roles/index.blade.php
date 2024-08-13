@@ -48,7 +48,10 @@
                                         <form action="{{ route('roles.destroy', $role->id) }}" method="POST" style="display:inline-block;">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+
+                                            <x-danger-button>
+                                            Delete
+                                            </x-danger-button>
                                         </form>
                                     </td>
                                 </tr>

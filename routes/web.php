@@ -5,10 +5,12 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\StateController;
 use App\Http\Controllers\TicketAssignmentController;
 use App\Http\Controllers\TicketController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -33,6 +35,12 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/roles/{role}', [RolePermissionController::class, 'update'])->name('roles.update');
     Route::delete('/roles/{role}', [RolePermissionController::class, 'destroy'])->name('roles.destroy');
 });
+   
+Route::get('/users', [UserController::class, 'index'])->name('users.index');
+Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
+
+Route::get('/users/{user}/manage', [UserController::class, 'manageRoles'])->name('users.manageRoles');
+Route::post('/users/{user}/manage', [UserController::class, 'updateRoles'])->name('users.updateRoles');
 
 //Route::resource('categories', CategoryController::class);
 Route::get('categories',[CategoryController::class,'index'])->name('categories.index');
@@ -78,6 +86,7 @@ Route::get('my-histories',[HistoryController::class, 'myHistories'])->name('hist
 
 Route::get('/tickets/{ticket}/solve', [TicketController::class, 'showSolveForm'])->name('tickets.solve');//solucionar ticket con comentario #4
 Route::post('/tickets/{ticket}/solve', [TicketController::class, 'solve'])->name('tickets.solve.submit');
+
 Route::get('/tickets/{ticket}/derive', [TicketController::class, 'showDeriveForm'])->name('tickets.derive');//derivar ticket con su comentario #6
 Route::post('/tickets/{ticket}/derive', [TicketController::class, 'solve'])->name('tickets.derive.submit');
 Route::get('/tickets/{ticket}/close', [TicketController::class, 'showCloseForm'])->name('tickets.close');//cerrar ticket con comentario #8

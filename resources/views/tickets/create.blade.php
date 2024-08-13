@@ -38,7 +38,7 @@
 
                         <div class="mt-4 space-x-8">
                             <x-primary-button>Guardar</x-primary-button>
-                            <a href="{{route('tickets.index')}}" class="dark:text-gray-100">Cancelar</a>
+                            <a href="{{route('tickets.my')}}" class="dark:text-gray-100">Cancelar</a>
                         </div>
                     </form>
 

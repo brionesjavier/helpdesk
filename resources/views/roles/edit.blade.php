@@ -30,7 +30,7 @@
                                         <input class="form-check-input" type="checkbox" name="permissions[]" value="{{ $permission->id }}" id="permission-{{ $permission->id }}"
                                             @if($role->permissions->contains($permission)) checked @endif>
                                         <label class="form-check-label" for="permission-{{ $permission->id }}">
-                                            {{ $permission->name }}
+                                            {{ $permission->name }} -¬- {{ $permission->description }}-
                                         </label>
                                     </div>
                                 @endforeach
