@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Ticket extends Model
 {
     protected $table ='tickets';
-    protected $fillable = ['title', 'description', 'element_id', 'state_id','created_by','is_active']; // Campos que se pueden llenar
+    protected $fillable = ['title', 'description', 'element_id', 'state_id','created_by','is_active','solved_at']; // Campos que se pueden llenar
     use HasFactory;
 
     public function state(){

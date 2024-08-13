@@ -73,13 +73,34 @@ Route::post('/tickets/{ticket}/comments', [CommentController::class, 'store'])->
 Route::get('/tickets/{ticket}/comments', [CommentController::class, 'index'])->name('comments.index');
 Route::get('/tickets/{ticket}/history', [HistoryController::class, 'index'])->name('history.index');
 
+Route::get('/my-tickets', [TicketController::class, 'myTickets'])->name('tickets.my');
+Route::get('my-histories',[HistoryController::class, 'myHistories'])->name('histories.my');
+
+Route::get('/tickets/{ticket}/solve', [TicketController::class, 'showSolveForm'])->name('tickets.solve');//solucionar ticket con comentario #4
+Route::post('/tickets/{ticket}/solve', [TicketController::class, 'solve'])->name('tickets.solve.submit');
+Route::get('/tickets/{ticket}/derive', [TicketController::class, 'showDeriveForm'])->name('tickets.derive');//derivar ticket con su comentario #6
+Route::post('/tickets/{ticket}/derive', [TicketController::class, 'solve'])->name('tickets.derive.submit');
+Route::get('/tickets/{ticket}/close', [TicketController::class, 'showCloseForm'])->name('tickets.close');//cerrar ticket con comentario #8
+Route::post('/tickets/{ticket}/close', [TicketController::class, 'close'])->name('tickets.close.submit');
+Route::get('/tickets/{ticket}/reopen', [TicketController::class, 'showReopenForm'])->name('tickets.reopen');//reabrir ticket con comentario #5
+Route::post('/tickets/{ticket}/reopen', [TicketController::class, 'reopen'])->name('tickets.reopen.submit');
+Route::get('/tickets/{ticket}/program', [TicketController::class, 'showProgramForm'])->name('tickets.program');//programar ticket con comentario #7
+Route::post('/tickets/{ticket}/program', [TicketController::class, 'program'])->name('tickets.program.submit');
+Route::get('/tickets/{ticket}/cancel', [TicketController::class, 'showCancelForm'])->name('tickets.cancel');//cancelar ticket con comentario #9
+Route::post('/tickets/{ticket}/cancel', [TicketController::class, 'cancel'])->name('tickets.cancel.submit');
+
+
+
+
+
+
 Route::get('/support', [TicketAssignmentController::class, 'index'])->name('support.index');
 Route::get('/support/{ticket}', [TicketAssignmentController::class, 'show'])->name('support.show');
 Route::post('/support/{ticket}', [TicketAssignmentController::class, 'store'])->name('support.store');
 
 Route::get('/tickets-assigned', [TicketAssignmentController::class, 'assigned'])->name('support.assigned');
 
-Route::get('/my-tickets', [TicketController::class, 'myTickets'])->name('tickets.my');
+
 //Route::get('/my-tickets/{tickets}', [TicketController::class, 'show'])->name('tickets.show');
 
 

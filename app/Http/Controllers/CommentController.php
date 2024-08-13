@@ -7,7 +7,7 @@ use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-use function Laravel\Prompts\alert;
+
 
 class CommentController extends Controller
 {
@@ -31,7 +31,8 @@ class CommentController extends Controller
         }
 
         HistoryController::logAction($ticket->id, auth::id(), "Agregado un comentario: $request->content");
-        return redirect()->back()->with('success', 'Comentario añadido con éxito.');
+        //return redirect()->back()->with('success', 'Comentario añadido con éxito.');
+        return redirect()->route('tickets.show',$ticket)->with('message', 'Comentario añadido con éxito.');
     }
 
     public function index($ticketId)

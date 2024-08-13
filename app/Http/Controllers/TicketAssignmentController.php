@@ -7,18 +7,25 @@ use App\Models\Ticket;
 use App\Models\TicketAssignment;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 class TicketAssignmentController extends Controller
 {
-    public function index(){
+    public function index(Request $request){
+        // Guardar la URL actual en la sesión
+        $request->session()->put('last_view', url()->current());
+        //$tickets = Ticket::where('state_id', 1)->orwhere('state_id',5)->get();
         $tickets = Ticket::all();
         return view('support.index', compact('tickets'));
     }
 
+    //TODO: bandeja soporte
     public function assigned(): View
     {
         // Obtener el usuario autenticado
         $user = auth::user();
+
+     
 
         // Obtener los tickets asignados al usuario
         $tickets = $user->assignedTickets()->wherePivot('is_active', true)->get();
@@ -66,16 +73,13 @@ class TicketAssignmentController extends Controller
             'is_active' => true,
         ]);
 
-         //registro historial
-         
-        $stateName = $ticket->state->name;
-        $user = User::find($userId)->name;
-        $message = "Ticket Asignado: 
-                                 A: $user
-                                 Estado: $stateName";
-         HistoryController::logAction($ticket->id, auth::id(), $message);
+         // Obtener la URL de la última vista desde la sesión
+         $lastView = $request->session()->get('last_view', route('tickets.index'));
 
-        return redirect()->route('support.show', $ticket)->with('success', 'Ticket asignado/reasignado correctamente.');
+         // Redirigir a la última vista
+        return redirect($lastView)->with('message', 'Ticket asignado/reasignado correctamente.');  
+
+       // return redirect()->route('support.show', $ticket)->with('success', 'Ticket asignado/reasignado correctamente.');
     }
 
 }

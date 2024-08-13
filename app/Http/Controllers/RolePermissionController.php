@@ -35,7 +35,7 @@ class RolePermissionController extends Controller
             $role->permissions()->sync($validatedData['permissions']);
         }
     
-        return redirect()->route('roles.index')->with('success', 'Role created successfully.');
+        return redirect()->route('roles.index')->with('message', 'Role created successfully.');
     }
 
     public function edit(Role $role) {
@@ -66,7 +66,7 @@ class RolePermissionController extends Controller
             $role->permissions()->sync([]);
         }
     
-        return redirect()->route('roles.index')->with('success', 'Role updated successfully.');
+        return redirect()->route('roles.index')->with('message', 'Role updated successfully.');
     }
     
 
