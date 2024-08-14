@@ -13,14 +13,17 @@
                 <p>creado: {{ $element->created_at }}</p>
                 <p>Estado: {{ $element->is_active ? 'On' :'Off' }}</p>
 
+                @can('elements.edit')
                 <a href="{{ route('elements.edit',$element) }}">editar</a>
-
+                @endcan
+                
+            @can('elements.destroy')
                 <form action="{{ route('elements.destroy',$element) }}" method="POST">
                     @method('delete')
                     @csrf
                     <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white">Eliminar</button>
                 </form>
-                
+                @endcan
 
                 <br>
 

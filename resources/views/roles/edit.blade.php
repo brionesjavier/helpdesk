@@ -16,6 +16,7 @@
                             </div>
                         @endif
                     
+                        @can('roles.update')
                         <form action="{{ route('roles.update', $role->id) }}" method="POST">
                             @csrf
                             @method('PUT')
@@ -37,6 +38,9 @@
                             </div>
                             <button type="submit" class="btn btn-primary">Update Role</button>
                         </form>
+                       
+                            
+                        @endcan
                     </div>
                     
                 </div>

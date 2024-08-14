@@ -41,15 +41,21 @@
                                 <td class="border border-gray-400 px-4 py-2">{{ $ticket->user->name}}</td>
                                 <td class="border border-gray-400 px-4 py-2">{{ $ticket->created_at->format('Y-m-d') }}</td>
                                 <td class="border border-gray-400 px-4 py-2">
-                                    <a href="{{route('tickets.edit',$ticket)}}">editar</a> 
-                                    <a href="{{route('tickets.show',$ticket)}}">ver</a>
+                                    @can('tickets.edit')
+                                    <a href="{{route('tickets.edit',$ticket)}}">editar</a>
+                                    @endcan 
+                                    @can('tickets.show')
+                                    <a href="{{route('tickets.show',$ticket)}}">ver</a>  
+                                    @endcan
+                                    @can('tickets.destroy')
                                     <form action="{{route('tickets.destroy',$ticket)}}" method="post">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="bg-red-500 hover:bg-red-700 text-white">delete</button>
 
-                                    </form>
-                            
+                                    </form>  
+                                    @endcan
+
                                 </td>
                             </tr>
 

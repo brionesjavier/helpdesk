@@ -44,7 +44,7 @@ class TicketController extends Controller
     //TODO:ver ticket por id todo los usuario
     public function show(Request $request,Ticket $ticket)
     {   
-        $comments = Comment::where('ticket_id', $ticket->id)->get();
+        $comments = Comment::where('ticket_id', $ticket->id)->orderBy('created_at','desc')->get();
         return view('tickets.show', compact('comments','ticket'));
     }
 

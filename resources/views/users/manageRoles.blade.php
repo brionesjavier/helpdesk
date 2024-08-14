@@ -11,12 +11,16 @@
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 Editar/asignar  Roles a Usuario: {{ $user->name }}
             </h2>
+            @can('users.index')
             <div class="overflow-hidden shadow-sm sm:rounded-lg mb-4">
                 <div class="p-4 text-gray-900 dark:text-gray-100s space-x-8">
                     <a href="{{ route('users.index') }}" class="px-4 py-4 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-sm text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700">Cancelar</a>
                     
                 </div>
             </div>
+                
+            @endcan
+  
             
         </div>
 
@@ -32,6 +36,8 @@
                         
                         <h1>Usuario:  {{ $user->name }}</h1>
                         <br>
+@can('users.updateRoles')
+    
 
     <form action="{{ route('users.updateRoles', $user->id) }}" method="POST">
         @csrf
@@ -52,7 +58,7 @@
         Actualizar/asignar
         </x-primary-button>
     </form>
-                           
+    @endcan              
                     
                 </div>
             </div>

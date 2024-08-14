@@ -36,11 +36,10 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/roles/{role}', [RolePermissionController::class, 'destroy'])->name('roles.destroy');
 });
    
-Route::get('/users', [UserController::class, 'index'])->name('users.index');
-Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
-
-Route::get('/users/{user}/manage', [UserController::class, 'manageRoles'])->name('users.manageRoles');
-Route::post('/users/{user}/manage', [UserController::class, 'updateRoles'])->name('users.updateRoles');
+Route::get('/users', [UserController::class, 'index'])->name('users.index')->middleware('can:users.index');
+Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show')->middleware('can:users.show');
+Route::get('/users/{user}/manage', [UserController::class, 'manageRoles'])->name('users.manageRoles')->middleware('can:users.manageRoles');
+Route::post('/users/{user}/manage', [UserController::class, 'updateRoles'])->name('users.updateRoles')->middleware('can:users.updateRoles');
 
 //Route::resource('categories', CategoryController::class);
 Route::get('categories',[CategoryController::class,'index'])->name('categories.index');

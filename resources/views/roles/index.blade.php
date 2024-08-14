@@ -44,7 +44,12 @@
                                     <th scope="row">{{ $loop->iteration }}</th>
                                     <td>{{ $role->name }}</td>
                                     <td>
+                                        @can('roles.edit')
                                         <a href="{{ route('roles.edit', $role->id) }}" class="btn btn-warning btn-sm">Edit</a>
+                                        @endcan
+                                        @can('roles.destroy')
+                                            
+                                        
                                         <form action="{{ route('roles.destroy', $role->id) }}" method="POST" style="display:inline-block;">
                                             @csrf
                                             @method('DELETE')
@@ -53,6 +58,7 @@
                                             Delete
                                             </x-danger-button>
                                         </form>
+                                        @endcan
                                     </td>
                                 </tr>
                                 @endforeach

@@ -10,6 +10,9 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <h1>Comentario Ticket</h1>
+                    @can('comments.store')
+                        
+                    
                     <form action="{{ route('comments.store', $ticket) }}" method="POST">
                         @csrf
                         @method('post')
@@ -20,8 +23,12 @@
                         required>
                         </textarea>
                         <button type="submit">Commentar</button>
+                        @can('tickets.show')
                         <a href="{{ route('tickets.show', $ticket) }}">Volver</a>
+                        @endcan
+                        
                     </form>
+                    @endcan
                 </div>
             </div>
         </div>

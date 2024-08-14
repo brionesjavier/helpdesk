@@ -14,12 +14,13 @@
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 Asignar Roles a Usuario
             </h2>
+            @can('users.manageRoles')
             <div class="overflow-hidden shadow-sm sm:rounded-lg mb-4">
                 <div class="p-4 text-gray-900 dark:text-gray-100s space-x-8">
                     <a href="{{ route('users.manageRoles', $user)}}" class="px-4 py-4 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-sm text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700">{{ __('Asignar/Editar Roles') }}</a>
                 </div>
             </div>
-            
+            @endcan
         </div>
 
     </x-slot>
@@ -47,8 +48,7 @@
                             @endforelse
                         </ul>
                     
-                     {{--    <a href="{{ route('users.editRoles', $user) }}">Editar Roles</a>
-                        <a href="{{ route('users.assign', $user) }}">Asignar Nuevos Roles</a>  --}}    
+                     
                     
                 </div>
             </div>

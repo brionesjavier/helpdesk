@@ -49,13 +49,19 @@
                                 <td class="border border-gray-400 px-4 py-2">{{ $ticket->user->name}}</td>
                                 <td class="border border-gray-400 px-4 py-2">{{ $ticket->created_at->format('Y-m-d') }}</td>
                                 <td class="border border-gray-400 px-4 py-2">
+                                    @can('tickets.edit')
                                     <a href="{{route('tickets.edit',$ticket)}}" class="text-blue-500 hover:text-blue-700">editar</a>
+                                    @endcan
+                                    @can('tickets.show')
                                     <a href="{{route('tickets.show',$ticket)}}" class="text-blue-500 hover:text-blue-700">ver</a>
+                                    @endcan
+                                    @can('tickets.destroy')
                                     <form action="{{route('tickets.destroy',$ticket)}}" method="post" style="display:inline;">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded">delete</button>
-                                    </form>
+                                    </form> 
+                                    @endcan
                                 </td>
                             </tr>
 

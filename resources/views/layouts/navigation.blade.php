@@ -16,20 +16,24 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
                 </div>
+                @can('tickets.my')
+    
 
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('tickets.my')" :active="request()->routeIs('tickets.my')">
                         {{ __('My tickets') }}
                     </x-nav-link>
                 </div>
-
+                @endcan
+                @can('histories.my')
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('histories.my')" :active="request()->routeIs('histories.my')">
                         {{ __('My histories') }}
                     </x-nav-link>
                 </div>
-
+                @endcan
                 {{--support  --}}
+                @canany(['support.assigned'])
                 <div class="hidden sm:flex sm:items-center sm:ms-6">
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
@@ -43,16 +47,22 @@
                                 </div>
                             </button>
                         </x-slot>
-    
+                        
+                            
+                        
                         <x-slot name="content">
+                            @can('support.assigned')
                             <x-dropdown-link :href="route('support.assigned')">
                                 {{ __('ticket asignados') }}
                             </x-dropdown-link>
-                           
+                            @endcan 
                            
                         </x-slot>
                     </x-dropdown>
                 </div>
+                @endcanany
+
+                @canany(['categories.index','elements.index','states.index'])
                 {{--configuracion  --}}
                 <div class="hidden sm:flex sm:items-center sm:ms-6">
                     <x-dropdown align="right" width="48">
@@ -69,21 +79,27 @@
                         </x-slot>
     
                         <x-slot name="content">
+                            @can('categories.index')
                             <x-dropdown-link :href="route('categories.index')">
                                 {{ __('Categories') }}
                             </x-dropdown-link>
+                            @endcan
+                            @can('elements.index')
                             <x-dropdown-link :href="route('elements.index')">
                                 {{ __('Elements') }}
                             </x-dropdown-link>
-                            
+                            @endcan
+                            @can('states.index')
                             <x-dropdown-link :href="route('states.index')">
                                 {{ __('Estates') }}
                             </x-dropdown-link>
-                           
+                            @endcan
                         </x-slot>
                     </x-dropdown>
                 </div>
+                @endcanany
                 {{--Administracion  --}}
+                @canany(['users.index','roles.index','tickets.index','support.index'])
                 <div class="hidden sm:flex sm:items-center sm:ms-6">
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
@@ -99,27 +115,33 @@
                         </x-slot>
     
                         <x-slot name="content">
+                            @can('tickets.index')
                             <x-dropdown-link :href="route('tickets.index')">
                                 {{ __('todos los tickets') }}
                             </x-dropdown-link>
+                            @endcan
                             
+                            @can('support.index')
                             <x-dropdown-link :href="route('support.index')">
                                 {{ __('Asingnar tickets') }}
                             </x-dropdown-link>
-
+                            @endcan
+                            @can('roles.index')
                             <x-dropdown-link :href="route('roles.index')">
                                 {{ __('Roles') }}
                             </x-dropdown-link>
+                            @endcan
 
+                            @can('users.index')
                             <x-dropdown-link :href="route('users.index')">
                                 {{ __('Usuario') }}
                             </x-dropdown-link>
-
-                            
+                            @endcan
                            
                         </x-slot>
                     </x-dropdown>
                 </div>
+                @endcanany
             
                 
             </div>
@@ -178,41 +200,49 @@
             </x-responsive-nav-link>
         </div>
 
-       
+        @can('tickets.my')
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('tickets.my')" :active="request()->routeIs('tickets.my')">
                 {{ __('My Tickets') }}
             </x-responsive-nav-link>
         </div>
-        
+        @endcan
+        @can('categories.index')
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('categories.index')" :active="request()->routeIs('categories.index')">
                 {{ __('Categories') }}
             </x-responsive-nav-link>
         </div>
+        @endcan
 
+        @can('elements.index')
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('elements.index')" :active="request()->routeIs('elements.index')">
                 {{ __('Elements') }}
             </x-responsive-nav-link>
         </div>
-
+        @endcan
+        @can('states.index')
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('states.index')" :active="request()->routeIs('states.index')">
                 {{ __('states') }}
             </x-responsive-nav-link>
         </div>
-
+        @endcan
+        @can('tickets.index')
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('tickets.index')" :active="request()->routeIs('tickets.index')">
                 {{ __('tickets') }}
             </x-responsive-nav-link>
         </div>
+        @endcan
+        @can('support.index')
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('support.index')" :active="request()->routeIs('support.index')">
                 {{ __('support') }}
             </x-responsive-nav-link>
         </div>
+        @endcan
 
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">

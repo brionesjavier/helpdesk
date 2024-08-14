@@ -16,6 +16,9 @@
                             </div>
                         @endif
                     
+                        @can('roles.store')
+                            
+                        
                         <form action="{{ route('roles.store') }}" method="POST">
                             @csrf
                             <div class="mb-3">
@@ -35,6 +38,7 @@
                             </div>
                             <button type="submit" class="btn btn-primary">Create Role</button>
                         </form>
+                        @endcan
                     </div>
                     
                 </div>

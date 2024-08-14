@@ -3,6 +3,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
+                    @can('tickets.store')
                     <form method="POST" action="{{route('tickets.store')}}">
                         @csrf
                         @method('post')
@@ -38,11 +39,14 @@
 
                         <div class="mt-4 space-x-8">
                             <x-primary-button>Guardar</x-primary-button>
-                            <a href="{{route('tickets.my')}}" class="dark:text-gray-100">Cancelar</a>
+                            @can('tickets.my')
+                            <a href="{{route('tickets.my')}}" class="dark:text-gray-100">Cancelar</a> 
+                            @endcan
+                            
                         </div>
                     </form>
-
                     <script src="{{ asset('js/categorias.js') }}"></script>
+                    @endcan
                 </div>
             </div>
         </div>

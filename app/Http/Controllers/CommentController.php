@@ -40,7 +40,8 @@ class CommentController extends Controller
         // Recupera el ticket para asegurarte de que existe
         $ticket = Ticket::findOrFail($ticketId);
 
-        $comments = Comment::where('ticket_id', $ticketId)->get();
+        $comments = Comment::where('ticket_id', $ticketId)->orderBy('created_at', 'desc')//asc or desc
+        ->get();
         
         return view('comments.index', compact('ticket','comments'));
     }

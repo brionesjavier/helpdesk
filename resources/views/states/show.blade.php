@@ -8,7 +8,10 @@
                 <p class="text-2xl">Creado : {{ $state->created_at }}</p>
                 
             </div>
+            @can('states.edit')
             <a href="{{ route('states.edit',$state) }}">editar</a>
+            @endcan
+            @can('states.destroy')
             <form action="{{ route('states.destroy',$state) }}" method="POST">
                 @csrf
                 @method('delete')
@@ -16,6 +19,7 @@
                 <button type="sutmit"> Eliminar</button>
 
             </form>
+            @endcan
         </div>
     </div>
 </x-app-layout>

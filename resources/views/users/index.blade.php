@@ -45,10 +45,14 @@
                                 <td class="border border-gray-400 px-4 py-2">{{ $user->id }}</td>
                                 <td class="border border-gray-400 px-4 py-2">{{ $user->name }}</td>
                                 <td class="border border-gray-400 px-4 py-2">{{ $user->email}}</td>
-                                <td class="border border-gray-400 px-4 py-2">{{ $user->hasAnyRole() ? 'Sí' : 'No' }}</td>
+                                <td class="border border-gray-400 px-4 py-2">{{ $user->roles()->count() ? 'Sí' : 'No' }}</td>
                                 <td class="border border-gray-400 px-4 py-2">{{ $user->created_at}}</td>
                                 <td class="border border-gray-400 px-4 py-2">{{ $user->created_at->format('Y-m-d') }}</td>
-                                <td class="border border-gray-400 px-4 py-2"><a href="{{ route('users.show',$user) }}" class="text-blue-500 hover:text-blue-700">ver</a> </td>
+                                <td class="border border-gray-400 px-4 py-2">
+                                    @can('users.show')
+                                    <a href="{{ route('users.show',$user) }}" class="text-blue-500 hover:text-blue-700">ver</a>
+                                    @endcan
+                                </td>
                             </tr>
 
                             @empty

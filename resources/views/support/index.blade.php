@@ -7,13 +7,16 @@
         </div>
         @endif
 
-
+        @can('tickets.create')
+            
+        
         <div class="overflow-hidden shadow-sm sm:rounded-lg mb-4">
             <div class="p-6 text-gray-900 dark:text-gray-100s space-x-8">
                 <a href="{{ route('tickets.create') }}" class="px-4 py-4 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-sm text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700">{{ __('Agregar') }}</a>
 
             </div>
         </div>
+        @endcan
     </x-slot>
 
     <div class="py-12">
@@ -55,10 +58,11 @@
                                 </td>
 
 
-                                
+                                @can('support.show')
                                 <td class="border border-gray-400 px-4 py-2">
                                     <a href="{{route('support.show',$ticket)}}">ver</a>
                                 </td>
+                                @endcan
                             </tr>
 
                             @empty

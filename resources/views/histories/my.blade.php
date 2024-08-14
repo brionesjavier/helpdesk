@@ -38,7 +38,11 @@
                                     <td class="border border-gray-400 px-4 py-2">{{ $ticket->element->category->name }}/{{ $ticket->element->name}}</td>
                                     <td class="border border-gray-400 px-4 py-2">{{ $ticket->state->name}}</td>
                                     <td class="border border-gray-400 px-4 py-2">{{ $ticket->updated_at}}</td>
-                                    <td class="border border-gray-400 px-4 py-2"><a href="{{ route('history.index',$ticket) }}">Ver Historial</a></td>
+                                    <td class="border border-gray-400 px-4 py-2">
+                                                                                @can('history.index')
+                                                                                    <a href="{{ route('history.index',$ticket) }}">Ver Historial</a>
+                                                                                 @endcan
+                                    </td>
                             
                                 </tr>
     
