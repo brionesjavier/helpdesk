@@ -30,7 +30,9 @@
         </li>
     @endforeach
 </ul>
-
+                @can('support.store')
+        
+    
                     <h3>Asignar/Reasignar Ticket</h3>
                     <form action="{{ route('support.store', $ticket) }}" method="POST">
                         @csrf
@@ -52,7 +54,7 @@
                         </div>
                         <button type="submit" class="btn btn-primary">Asignar/Reasignar</button>
                     </form>
-
+                @endcan
                 </div>
 
 

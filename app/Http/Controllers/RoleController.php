@@ -14,18 +14,7 @@ class RoleController extends Controller
         return view('roles.assign', compact('users', 'roles'));
     }
 
-    public function assignRoles(Request $request)
-    {
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'roles' => 'array|exists:roles,name',
-        ]);
-
-        $user = User::findOrFail($request->user_id);
-        $user->syncRoles($request->roles);
-
-        return redirect()->route('roles.assign')->with('message', 'Roles asignados correctamente.');
-    }
+ 
 
     // Método para mostrar el formulario de edición de roles
     public function editRoles($id)

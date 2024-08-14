@@ -3,6 +3,9 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
+                    @can('states.update')
+                        
+                    
                     <form method="POST" action="{{ route('states.update',$state) }}">
                         @csrf
                         @method('put')
@@ -12,9 +15,13 @@
 
                         <div class="mt-4 space-x-8">
                             <x-primary-button>actualizar</x-primary-button>
+                            @can('elements.index')
                             <a href="{{route('elements.index')}}" class="dark:text-gray-100">Cancelar</a>
+                            @endcan
+                            
                         </div>
                     </form>
+                    @endcan
                 </div>
             </div>
         </div>
