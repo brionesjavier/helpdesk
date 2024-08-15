@@ -14,7 +14,7 @@ class RolePermissionController extends Controller
     }
 
     public function create() {
-        $permissions = Permission::all();
+        $permissions = Permission::orderby('name')->get();
         return view('roles.create', compact('permissions'));
     }
 

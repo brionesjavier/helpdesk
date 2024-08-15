@@ -64,8 +64,6 @@ class RolesAndPermissionsSeeder extends Seeder
             'tickets.close.submit' => 'Cerrar ticket.',
             'tickets.reopen' => 'Formulario para reabrir ticket.',
             'tickets.reopen.submit' => 'Reabrir ticket.',
-            'tickets.program' => 'Formulario para programar ticket.',
-            'tickets.program.submit' => 'Programar ticket.',
             'tickets.cancel' => 'Formulario para cancelar ticket.',
             'tickets.cancel.submit' => 'Cancelar ticket.',
             'support.assigned' => ' support.assigned',
