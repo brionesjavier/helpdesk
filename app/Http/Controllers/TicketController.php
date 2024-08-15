@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Comment;
 use App\Models\Ticket;
+use App\Models\TicketAssignment;
+use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -201,15 +203,16 @@ class TicketController extends Controller
 // Mostrar el formulario para derivar el ticket
 public function showDeriveForm(Ticket $ticket)
 {
-    return view('tickets.derive', compact('ticket'));
+    $users= User::where('assignable',true)->get();
+    return view('tickets.derive', compact('ticket','users'));
 }
 
 // Procesar la derivación del ticket
 public function derive(Request $request, Ticket $ticket)
 {
     $validated = $request->validate([
-        'content' => 'required|string',
-    ]);
+        'content' => 'required|string',]);
+    $userId=$request->user_id;
 
     $comment = $validated['content'];
 
@@ -218,10 +221,26 @@ public function derive(Request $request, Ticket $ticket)
         'user_id' => auth::id(),
         'ticket_id' => $ticket->id,
     ]);
-
+    
     // Actualizar el estado del ticket
     $ticket->state_id = 5; // ID del estado "Derivado" (ajustar según tu implementación)
+    //pasarle el id del usuario asignado a la tabla pivo
     $ticket->save();
+    // Desactivar asignaciones anteriores
+    TicketAssignment::where('ticket_id', $ticket->id)
+    ->update(['is_active' => false]);
+
+    $details = "Usuario derivado por " . Auth()->user()->name . " (ID: " . Auth()->id() . ")";
+    // Crear una nueva asignación
+    TicketAssignment::create([
+        'ticket_id' => $ticket->id,
+        'user_id' => $userId,
+        'details' => $details,
+        'is_active' => true,
+    ]);
+
+
+    
 
     // Obtener la URL de la última vista desde la sesión
     $lastView = $request->session()->get('last_view', route('tickets.index'));

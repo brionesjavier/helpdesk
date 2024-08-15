@@ -38,6 +38,8 @@ Route::delete('/roles/{role}', [RolePermissionController::class, 'destroy'])->na
 //Rutas de users 
 Route::get('/users', [UserController::class, 'index'])->name('users.index')->middleware('can:users.index');
 Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show')->middleware('can:users.show');
+Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit')->middleware('can:users.edit');
+Route::put('/users/{user}/update', [UserController::class, 'update'])->name('users.update')->middleware('can:users.update');
 Route::get('/users/{user}/manage', [UserController::class, 'manageRoles'])->name('users.manageRoles')->middleware('can:users.manageRoles');
 Route::post('/users/{user}/manage', [UserController::class, 'updateRoles'])->name('users.updateRoles')->middleware('can:users.updateRoles');
 
@@ -96,7 +98,7 @@ Route::post('/tickets/{ticket}/solve', [TicketController::class, 'solve'])->name
 
 // Rutas de Derivación de Tickets
 Route::get('/tickets/{ticket}/derive', [TicketController::class, 'showDeriveForm'])->name('tickets.derive')->middleware('can:tickets.derive');
-Route::post('/tickets/{ticket}/derive', [TicketController::class, 'solve'])->name('tickets.derive.submit')->middleware('can:tickets.derive.submit');
+Route::post('/tickets/{ticket}/derive', [TicketController::class, 'derive'])->name('tickets.derive.submit')->middleware('can:tickets.derive.submit');
 
 // Rutas de Cierre de Tickets
 Route::get('/tickets/{ticket}/close', [TicketController::class, 'showCloseForm'])->name('tickets.close')->middleware('can:tickets.close');

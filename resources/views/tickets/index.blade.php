@@ -59,9 +59,11 @@
                                     @endcan
                             
                                 </td>
+                                <td class="border border-gray-400 px-4 py-2">
                                 @can('history.index')
-                                <td class="border border-gray-400 px-4 py-2"><a href="{{ route('history.index',$ticket) }}">historial</a>
+                                <a href="{{ route('history.index',$ticket) }}">historial</a>
                                 @endcan
+                                </td>
                                 
                             </tr>
 

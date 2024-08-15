@@ -53,6 +53,29 @@ public function updateRoles(Request $request, $id)
     return redirect()->route('users.show', $id)->with('message', 'Roles actualizados con éxito.');
 }
 
+public function edit(User $user){
+    return view('users.edit', compact('user'));
+
+}
+
+public function update(Request $request,User $user){
+
+    $request->validate([
+        'name' => 'required|string',
+        'email' => 'required|email|unique:users,email,' . $user->id,
+        'assignable' => 'required|boolean',
+        ]);
+        
+        $user->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'assignable' => $request->assignable,
+        ]);
+
+        $user->save();
+
+        return redirect()->route('users.index')->with('message', 'Usuario actualizado con éxito.');
+}
 
 
 

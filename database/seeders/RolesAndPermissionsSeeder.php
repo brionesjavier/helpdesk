@@ -20,6 +20,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'roles.destroy' => 'Eliminar rol.',
             'users.index' => 'Ver lista de usuarios.',
             'users.show' => 'Ver detalles de usuario.',
+            'users.edit' => 'Editar usuario existente.',
+            'users.update' => 'Actualizar usuario.',
             'users.manageRoles' => 'Asignar y Editar roles de usuario.',
             'users.updateRoles' => 'Actualizar roles de usuario.',
             'categories.index' => 'Ver lista de categorías.',

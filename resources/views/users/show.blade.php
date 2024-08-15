@@ -14,13 +14,19 @@
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 Asignar Roles a Usuario
             </h2>
-            @can('users.manageRoles')
-            <div class="overflow-hidden shadow-sm sm:rounded-lg mb-4">
-                <div class="p-4 text-gray-900 dark:text-gray-100s space-x-8">
-                    <a href="{{ route('users.manageRoles', $user)}}" class="px-4 py-4 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-sm text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700">{{ __('Asignar/Editar Roles') }}</a>
+            @canany(['users.manageRoles','users.edit'])
+                <div class="overflow-hidden shadow-sm sm:rounded-lg mb-4">
+                    <div class="p-4 text-gray-900 dark:text-gray-100s space-x-8">
+                        @can('users.edit')
+                            <a href="{{ route('users.edit', $user)}}" class="px-4 py-4 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-sm text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700">{{ __('Editar usuario') }}</a>
+                        @endcan
+
+                        @can('users.manageRoles')
+                            <a href="{{ route('users.manageRoles', $user)}}" class="px-4 py-4 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-sm text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700">{{ __('Asignar/Editar Roles') }}</a>     
+                        @endcan
+                    </div>
                 </div>
-            </div>
-            @endcan
+            @endcanany
         </div>
 
     </x-slot>

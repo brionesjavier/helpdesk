@@ -39,7 +39,7 @@ class TicketAssignmentController extends Controller
     {
         $ticket = Ticket::with('assignedUsers')->findOrFail($ticketId);
         $assignments = $ticket->assignedUsers()->orderBy('ticket_assigns.created_at', 'desc')->first();
-        $users= User::all();
+        $users= User::where('assignable',true)->get();
         return view('support.show', compact('ticket', 'assignments','users'));
     }
     
