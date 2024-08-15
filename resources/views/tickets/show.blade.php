@@ -42,20 +42,52 @@
                             <p> {{ $ticket->description }}</p>
 
                 </div>
-            {{--     <div class="p-6 text-gray-600 dark:text-gray-300">
-                <a  href="{{ route('tickets.edit',$ticket) }}">editar</a>
-                </div> --}}
-                <div class="overflow-hidden shadow-sm sm:rounded-lg mb-4">
-                    <div class="p-4 text-gray-900 dark:text-gray-100s space-x-8">
-                        @can('comments.index')
-                        <a href="{{ route('comments.index',$ticket) }}" class="px-4 py-4 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-sm text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700">{{ __('Comentar') }}</a>
-                        @endcan
+                <div class="flex items-center p-4 text-gray-900 dark:text-gray-100s space-x-8">
 
-                        @can('tickets.solve')
-                        <a href="{{ route('tickets.solve',$ticket )}}" class="px-4 py-4 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-sm text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700">{{ __('solucionar') }}</a>
+                    @if ($ticket->state->id ==4)
+                        @can('tickets.close')
+                        <form action="{{ route('tickets.close',$ticket)}}" method="POST">
+                            @csrf
+                            @method('post')
+                            <button type="submit" class="px-4 py-4 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-sm text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700">cerrar</button>
+                        </form>
                         @endcan
+                    @endif
+                
+                    <div class="p-4 text-gray-900 dark:text-gray-100s space-x-8">
+                        @if ($ticket->state->id ==1 ||$ticket->state->id ==2 || $ticket->state->id ==3|| $ticket->state->id ==5)
+                            @can('comments.index')
+                                <a href="{{ route('comments.index',$ticket) }}" class="px-4 py-4 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-sm text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700">{{ __('Comentar') }}</a>
+                            @endcan
+                        @endif
+                        @if ($ticket->state->id ==2 || $ticket->state->id ==3)
+                            @can('tickets.derive')
+                                <a href="{{ route('tickets.derive',$ticket )}}" class="px-4 py-4 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-sm text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700">{{ __('Derivar') }}</a>
+                            @endcan
+                        @endif
+
+                        @if ($ticket->state->id ==2|| $ticket->state->id ==3||$ticket->state->id ==5)
+                            @can('tickets.solve')
+                                <a href="{{ route('tickets.solve',$ticket )}}" class="px-4 py-4 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-sm text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700">{{ __('solucionar') }}</a>
+                            @endcan
+                        @endif
+                        @if ($ticket->state->id != 4 && $ticket->state->id != 7 && $ticket->state->id != 8)
+                            @can('tickets.cancel')
+                            <a href="{{ route('tickets.cancel',$ticket )}}" class="px-4 py-4 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-sm text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700">{{ __('Cancelar/anular') }}</a>
+                            @endcan
+                        @endif
+
+                        @if ($ticket->state->id == 4)
+                            @can('tickets.reopen')
+                                <a href="{{ route('tickets.reopen',$ticket )}}" class="px-4 py-4 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-sm text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700">{{ __('Objetar') }}</a>
+                            @endcan
+                        @endif
                     </div>
-                </div>
+                
+
+                
+            </div>
+                
 
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     

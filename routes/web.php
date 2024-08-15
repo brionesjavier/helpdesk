@@ -101,16 +101,11 @@ Route::get('/tickets/{ticket}/derive', [TicketController::class, 'showDeriveForm
 Route::post('/tickets/{ticket}/derive', [TicketController::class, 'derive'])->name('tickets.derive.submit')->middleware('can:tickets.derive.submit');
 
 // Rutas de Cierre de Tickets
-Route::get('/tickets/{ticket}/close', [TicketController::class, 'showCloseForm'])->name('tickets.close')->middleware('can:tickets.close');
-Route::post('/tickets/{ticket}/close', [TicketController::class, 'close'])->name('tickets.close.submit')->middleware('can:tickets.close.submit');
+Route::post('/tickets/{ticket}/close', [TicketController::class, 'close'])->name('tickets.close')->middleware('can:tickets.close');
 
 // Rutas de Reapertura de Tickets
 Route::get('/tickets/{ticket}/reopen', [TicketController::class, 'showReopenForm'])->name('tickets.reopen')->middleware('can:tickets.reopen');
 Route::post('/tickets/{ticket}/reopen', [TicketController::class, 'reopen'])->name('tickets.reopen.submit')->middleware('can:tickets.reopen.submit');
-
-// Rutas de Programación de Tickets
-Route::get('/tickets/{ticket}/program', [TicketController::class, 'showProgramForm'])->name('tickets.program')->middleware('can:tickets.program');
-Route::post('/tickets/{ticket}/program', [TicketController::class, 'program'])->name('tickets.program.submit')->middleware('can:tickets.program.submit');
 
 // Rutas de Cancelación de Tickets
 Route::get('/tickets/{ticket}/cancel', [TicketController::class, 'showCancelForm'])->name('tickets.cancel')->middleware('can:tickets.cancel');

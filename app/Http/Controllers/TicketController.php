@@ -188,7 +188,7 @@ class TicketController extends Controller
         ]);
     
 
-        $ticket->state_id =4 /* ID del estado "Solucionado" */;
+        $ticket->state_id = 4 ;/* 4 ID del estado "Solucionado" */
         $ticket->solved_at = now();
         $ticket->save();
 
@@ -210,8 +210,7 @@ public function showDeriveForm(Ticket $ticket)
 // Procesar la derivación del ticket
 public function derive(Request $request, Ticket $ticket)
 {
-    $validated = $request->validate([
-        'content' => 'required|string',]);
+    $validated = $request->validate(['content' => 'required|string',]);
     $userId=$request->user_id;
 
     $comment = $validated['content'];
@@ -223,14 +222,15 @@ public function derive(Request $request, Ticket $ticket)
     ]);
     
     // Actualizar el estado del ticket
-    $ticket->state_id = 5; // ID del estado "Derivado" (ajustar según tu implementación)
-    //pasarle el id del usuario asignado a la tabla pivo
+    $ticket->state_id = 6; 
+    
     $ticket->save();
+
     // Desactivar asignaciones anteriores
     TicketAssignment::where('ticket_id', $ticket->id)
     ->update(['is_active' => false]);
 
-    $details = "Usuario derivado por " . Auth()->user()->name . " (ID: " . Auth()->id() . ")";
+    $details = "Usuario derivado por " . Auth::user()->name . " (ID: " . Auth::id() . ")";
     // Crear una nueva asignación
     TicketAssignment::create([
         'ticket_id' => $ticket->id,
@@ -238,9 +238,6 @@ public function derive(Request $request, Ticket $ticket)
         'details' => $details,
         'is_active' => true,
     ]);
-
-
-    
 
     // Obtener la URL de la última vista desde la sesión
     $lastView = $request->session()->get('last_view', route('tickets.index'));
@@ -250,38 +247,6 @@ public function derive(Request $request, Ticket $ticket)
 }
 
 
-// Mostrar el formulario para cerrar el ticket
-public function showCloseForm(Ticket $ticket)
-{
-    return view('tickets.close', compact('ticket'));
-}
-
-// Procesar el cierre del ticket
-public function close(Request $request, Ticket $ticket)
-{
-    $validated = $request->validate([
-        'content' => 'required|string',
-    ]);
-
-    $comment = $validated['content'];
-
-    $ticket->comment()->create([
-        'content' => $comment,
-        'user_id' => auth::id(),
-        'ticket_id' => $ticket->id,
-    ]);
-
-    // Actualizar el estado del ticket
-    $ticket->state_id = 6; // ID del estado "Cerrado" (ajustar según tu implementación)
-    $ticket->closed_at = now();
-    $ticket->save();
-
-    // Obtener la URL de la última vista desde la sesión
-    $lastView = $request->session()->get('last_view', route('tickets.index'));
-
-    // Redirigir a la última vista
-    return redirect($lastView)->with('message', 'Ticket cerrado con comentario agregado.');
-}
 
 
 // Mostrar el formulario para reabrir el ticket
@@ -293,20 +258,15 @@ public function showReopenForm(Ticket $ticket)
 // Procesar la reapertura del ticket
 public function reopen(Request $request, Ticket $ticket)
 {
-    $validated = $request->validate([
-        'content' => 'required|string',
-    ]);
-
+    $validated = $request->validate([ 'content' => 'required|string',]);
     $comment = $validated['content'];
-
     $ticket->comment()->create([
         'content' => $comment,
         'user_id' => auth::id(),
-        'ticket_id' => $ticket->id,
-    ]);
+        'ticket_id' => $ticket->id,]);
 
     // Actualizar el estado del ticket
-    $ticket->state_id = 1; // ID del estado "Reabierto" (ajustar según tu implementación)
+    $ticket->state_id = 5; /* 5 ID del estado "Reabierto" */
     $ticket->save();
 
     // Obtener la URL de la última vista desde la sesión
@@ -316,20 +276,10 @@ public function reopen(Request $request, Ticket $ticket)
     return redirect($lastView)->with('message', 'Ticket reabierto con comentario agregado.');
 }
 
-// Mostrar el formulario para programar el ticket
-public function showProgramForm(Ticket $ticket)
+// Procesar el cierre del ticket
+public function close( Request $request,Ticket $ticket)
 {
-    return view('tickets.program', compact('ticket'));
-}
-
-// Procesar la programación del ticket
-public function program(Request $request, Ticket $ticket)
-{
-    $validated = $request->validate([
-        'content' => 'required|string',
-    ]);
-
-    $comment = $validated['content'];
+    $comment = "requerimiento cerrado";
 
     $ticket->comment()->create([
         'content' => $comment,
@@ -338,15 +288,15 @@ public function program(Request $request, Ticket $ticket)
     ]);
 
     // Actualizar el estado del ticket
-    $ticket->state_id = 7; // ID del estado "Programado" (ajustar según tu implementación)
-    $ticket->programmed_at = now();
+    $ticket->state_id = 7; // ID del estado "Cerrado" (ajustar según tu implementación)
+    $ticket->updated_at = now();
     $ticket->save();
 
     // Obtener la URL de la última vista desde la sesión
     $lastView = $request->session()->get('last_view', route('tickets.index'));
 
     // Redirigir a la última vista
-    return redirect($lastView)->with('message', 'Ticket programado con comentario agregado.');
+    return redirect($lastView)->with('message', 'Ticket cerrado con comentario agregado.');
 }
 
 // Mostrar el formulario para cancelar el ticket
@@ -371,8 +321,8 @@ public function cancel(Request $request, Ticket $ticket)
     ]);
 
     // Actualizar el estado del ticket
-    $ticket->state_id = 9; // ID del estado "Cancelado" (ajustar según tu implementación)
-    $ticket->cancelled_at = now();
+    $ticket->state_id = 8; /* 8 ID del estado "Cancelado" */
+    $ticket->updated_at = now();
     $ticket->save();
 
     // Obtener la URL de la última vista desde la sesión

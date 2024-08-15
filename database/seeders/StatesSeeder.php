@@ -20,9 +20,8 @@ class StatesSeeder extends Seeder
             ['id' => 4, 'name' => 'Solucionado'],
             ['id' => 5, 'name' => 'Objetado'],
             ['id' => 6, 'name' => 'Derivado'],
-            ['id' => 7, 'name' => 'Programado'],
-            ['id' => 8, 'name' => 'Finalizado'],
-            ['id' => 9, 'name' => 'Cancelado'],
+            ['id' => 7, 'name' => 'Finalizado'],
+            ['id' => 8, 'name' => 'Cancelado'],
         ];
 
         foreach ($states as $state) {
