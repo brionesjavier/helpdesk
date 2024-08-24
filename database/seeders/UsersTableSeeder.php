@@ -13,7 +13,7 @@ class UsersTableSeeder extends Seeder
         // Usuario 1
         User::create([
             'name' => 'Admin User',
-            'email' => 'admin@example.com',
+            'email' => 'admin@admin.com',
             'password' => Hash::make('password'),
             'email_verified_at' => now(),
         ]);
@@ -21,7 +21,7 @@ class UsersTableSeeder extends Seeder
         // Usuario 2
         User::create([
             'name' => 'Test User',
-            'email' => 'testuser@example.com',
+            'email' => 'test@test.com',
             'password' => Hash::make('password'),
             'email_verified_at' => now(),
         ]);
@@ -29,15 +29,15 @@ class UsersTableSeeder extends Seeder
         // Puedes agregar más usuarios de prueba de la misma manera
         // Usuario 3
         User::create([
-            'name' => 'javier ',
-            'email' => 'javier@gmail.com',
-            'password' => Hash::make('123456'),
+            'name' => 'camilo ',
+            'email' => 'root@root.com',
+            'password' => Hash::make('password'),
             'email_verified_at' => now(),
         ]);
         User::create([
             'name' => 'jose ',
-            'email' => 'jose@gmail.com',
-            'password' => Hash::make('123456'),
+            'email' => 'josee@gmail.com',
+            'password' => Hash::make('password'),
             'email_verified_at' => now(),
         ]);
     }
