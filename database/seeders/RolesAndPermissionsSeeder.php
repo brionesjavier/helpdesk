@@ -92,17 +92,17 @@ class RolesAndPermissionsSeeder extends Seeder
                 'comments.store', 'comments.index', 'history.index',
                 'tickets.my', 'histories.my', 'tickets.solve', 'tickets.solve.submit',
                 'tickets.derive', 'tickets.derive.submit', 'tickets.close', 'tickets.close.submit',
-                'tickets.reopen', 'tickets.reopen.submit', 'tickets.program', 'tickets.program.submit',
+                'tickets.reopen', 'tickets.reopen.submit', 'users.edit',
                 'tickets.cancel', 'tickets.cancel.submit',
             ],
             'user' => [
                 'tickets.my', 'histories.my', 'tickets.create', 'tickets.store',
-                'tickets.show', 'comments.store', 'comments.index',
+                'tickets.show', 'comments.store', 'comments.index','categories.show',
             ],
             'support' => [
                 'tickets.index', 'tickets.solve', 'tickets.solve.submit', 'tickets.derive', 'tickets.derive.submit',
                 'tickets.close', 'tickets.close.submit', 'tickets.reopen', 'tickets.reopen.submit',
-                'tickets.program', 'tickets.program.submit', 'tickets.cancel', 'tickets.cancel.submit',
+                 'tickets.cancel', 'tickets.cancel.submit',
                 'history.index', 'comments.index', 'comments.store',
             ],
         ];
