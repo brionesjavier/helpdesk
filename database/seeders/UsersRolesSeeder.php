@@ -23,7 +23,8 @@ class UsersRolesSeeder extends Seeder
         $user = User::firstOrCreate([
             'email' => 'root@gmail.com',
         ], [
-            'name' => 'Root User',
+            'first_name' => 'Root ',
+            'last_name' => 'Admin',
             'password' => Hash::make('password'), // Cambia por tu contraseña deseada
         ]);
 

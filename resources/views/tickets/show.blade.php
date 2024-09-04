@@ -39,7 +39,8 @@
                             @endif
                            
                             <p>Descripcion:</p>
-                            <p> {{ $ticket->description }}</p>
+                            
+                            <p class="whitespace-pre-line">- {{ $ticket->description }}</p>
 
                 </div>
                 <div class="flex items-center p-4 text-gray-900 dark:text-gray-100s space-x-8">
