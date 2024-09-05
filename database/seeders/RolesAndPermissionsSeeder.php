@@ -29,7 +29,6 @@ class RolesAndPermissionsSeeder extends Seeder
             'categories.store' => 'Guardar nueva categoría.',
             'categories.edit' => 'Editar categoría existente.',
             'categories.update' => 'Actualizar categoría.',
-            'getElements' => 'Obtener elementos de categoría.',
             'categories.show' => 'Ver detalles de categoría.',
             'categories.destroy' => 'Eliminar categoría.',
             'elements.index' => 'Ver lista de elementos.',
@@ -84,12 +83,13 @@ class RolesAndPermissionsSeeder extends Seeder
         $rolesPermissions = [
             'admin' => [
                 'roles.index', 'roles.create', 'roles.store', 'roles.edit', 'roles.update', 'roles.destroy',
-                'users.index', 'users.show', 'users.manageRoles', 'users.updateRoles',
+                'users.index', 'users.show', 'users.update','users.manageRoles', 'users.updateRoles',
                 'categories.index', 'categories.create', 'categories.store', 'categories.edit', 'categories.update', 'categories.show', 'categories.destroy',
                 'elements.index', 'elements.create', 'elements.store', 'elements.show', 'elements.edit', 'elements.update', 'elements.destroy',
                 'states.index', 'states.store', 'states.show', 'states.edit', 'states.update',
                 'tickets.index', 'tickets.create', 'tickets.store', 'tickets.show', 'tickets.edit', 'tickets.update', 'tickets.destroy',
                 'comments.store', 'comments.index', 'history.index',
+                'support.assigned','support.store', 'support.show', 'support.index',
                 'tickets.my', 'histories.my', 'tickets.solve', 'tickets.solve.submit',
                 'tickets.derive', 'tickets.derive.submit', 'tickets.close', 'tickets.close.submit',
                 'tickets.reopen', 'tickets.reopen.submit', 'users.edit',
