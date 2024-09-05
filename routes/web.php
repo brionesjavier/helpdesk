@@ -5,6 +5,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\StateController;
@@ -17,9 +18,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
+/* Route::get('/dashboard', function () {
     return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard'); */
+Route::get('/dashboard',[TicketController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -119,18 +121,8 @@ Route::post('/support/{ticket}', [TicketAssignmentController::class, 'store'])->
 // Rutas de Tickets Asignados a soporte
 Route::get('/tickets-assigned', [TicketAssignmentController::class, 'assigned'])->name('support.assigned')->middleware('can:support.assigned');
 
-/* Route::get('/tickets/{ticket}/solve', [TicketController::class, 'showSolveForm'])->name('tickets.solve');//solucionar ticket con comentario #4
-Route::post('/tickets/{ticket}/solve', [TicketController::class, 'solve'])->name('tickets.solve.submit');
-Route::get('/tickets/{ticket}/derive', [TicketController::class, 'showDeriveForm'])->name('tickets.derive');//derivar ticket con su comentario #6
-Route::post('/tickets/{ticket}/derive', [TicketController::class, 'solve'])->name('tickets.derive.submit');
-Route::get('/tickets/{ticket}/close', [TicketController::class, 'showCloseForm'])->name('tickets.close');//cerrar ticket con comentario #8
-Route::post('/tickets/{ticket}/close', [TicketController::class, 'close'])->name('tickets.close.submit');
-Route::get('/tickets/{ticket}/reopen', [TicketController::class, 'showReopenForm'])->name('tickets.reopen');//reabrir ticket con comentario #5
-Route::post('/tickets/{ticket}/reopen', [TicketController::class, 'reopen'])->name('tickets.reopen.submit');
-Route::get('/tickets/{ticket}/program', [TicketController::class, 'showProgramForm'])->name('tickets.program');//programar ticket con comentario #7
-Route::post('/tickets/{ticket}/program', [TicketController::class, 'program'])->name('tickets.program.submit');
-Route::get('/tickets/{ticket}/cancel', [TicketController::class, 'showCancelForm'])->name('tickets.cancel');//cancelar ticket con comentario #9
-Route::post('/tickets/{ticket}/cancel', [TicketController::class, 'cancel'])->name('tickets.cancel.submit');
- */
+//reporte
+
+Route::get('/reports/tickets', [ReportController::class, 'ticketsReport'])->name('reports.tickets');
 
 require __DIR__.'/auth.php';

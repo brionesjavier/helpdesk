@@ -20,16 +20,16 @@
 
                     <h3>Historial de Asignaciones</h3>
                     
-<ul>
-    @foreach($ticket->assignedUsers as $assignment)
-        <li>
-            {{ $assignment->name }} asignado el {{ $assignment->pivot->created_at }}: {{ $assignment->pivot->details }}
-            @if($assignment->pivot->is_active)
-                <strong>(Asignación Actual)</strong>
-            @endif
-        </li>
-    @endforeach
-</ul>
+                    <ul>
+                        @foreach($ticket->assignedUsers as $assignment)
+                            <li>
+                                {{ $assignment->first_name }} {{ $assignment->last_name }} asignado el {{ $assignment->pivot->created_at }}: {{ $assignment->pivot->details }}
+                                @if($assignment->pivot->is_active)
+                                    <strong>(Asignación Actual)</strong>
+                                @endif
+                            </li>
+                        @endforeach
+                    </ul>
                 @can('support.store')
         
     
@@ -41,7 +41,7 @@
                             <select name="user_id" id="user_id" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"">
                     @foreach($users as $user)
                                 <option 
-                                     value=" {{ $user->id }}">{{ $user->name }}
+                                     value=" {{ $user->id }}">{{ $user->first_name }} {{ $user->last_name }}
                                 </option>
                     @endforeach
                             </select>

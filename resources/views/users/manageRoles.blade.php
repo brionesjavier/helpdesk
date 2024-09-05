@@ -9,7 +9,7 @@
 
         <div class="flex items-center justify-between">
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                Editar/asignar  Roles a Usuario: {{ $user->name }}
+                Editar/asignar  Roles a Usuario: {{ $user->first_name }} {{ $user->last_name }}
             </h2>
             @can('users.index')
             <div class="overflow-hidden shadow-sm sm:rounded-lg mb-4">
@@ -34,7 +34,7 @@
                         {{-- aqui el codigo --}}
 
                         
-                        <h1>Usuario:  {{ $user->name }}</h1>
+                        <h1>Usuario:  {{ $user->first_name }} {{ $user->last_name }}</h1>
                         <br>
 @can('users.updateRoles')
     

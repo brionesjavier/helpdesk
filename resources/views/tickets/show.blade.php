@@ -32,7 +32,7 @@
                     
                             <p>ticket : {{ $ticket->id }}</p> 
                             <p>Titulo: {{ $ticket->title }}</p> 
-                            <p>creado por: {{ $ticket->user->name}}</p>
+                            <p>creado por: {{ $ticket->user->first_name}}{{ $ticket->user->last_name}}</p>
                             <p>proceso: {{ $ticket->state->name }}</p> 
                             @if ($ticket->solved_at)
                             <p>Fecha de Solución: {{ $ticket->solved_at }}</p>
@@ -93,10 +93,24 @@
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     
                     <ul>
-                        @foreach($comments as $comment)
-                            <li> {{ $comment->created_at }} {{ $comment->user->name }} </li>
-                            <li>{{ $comment->content }}</li>
-                        @endforeach
+                        <div class="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg shadow-lg">
+                            @foreach($comments as $comment)
+                                <div class="mb-4 border border-gray-300 dark:border-gray-700 rounded-lg">
+                                    <!-- Barra superior: Fecha, nombre y estado -->
+                                    <div class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-300 p-2 rounded-t-lg  ">
+                                        <span> {{ $comment->created_at->format('d/m/Y H:i') }} </span>
+                                        <span> {{ $comment->user->first_name }} {{ $comment->user->last_name }} </span>
+                                        <span> {{ $comment->ticket_state }} </span>
+                                    </div>
+                                    <!-- Barra inferior: Contenido del comentario -->
+                                    <div class="bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 p-4 rounded-b-lg">
+                                        {{ $comment->content }}
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                        
+                        
                     </ul>
                     
             

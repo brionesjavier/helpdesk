@@ -31,7 +31,7 @@
                         <thead>
                             <tr>
                                 <th class="border border-gray-400 px-4 py-2 text-gray-200">Id</th>
-                                <th class="border border-gray-400 px-4 py-2 text-gray-200">Name</th>
+                                <th class="border border-gray-400 px-4 py-2 text-gray-200">Usuario</th>
                                 <th class="border border-gray-400 px-4 py-2 text-gray-200">Email</th>
                                 <th class="border border-gray-400 px-4 py-2 text-gray-200">role asignado</th>
                                 <th class="border border-gray-400 px-4 py-2 text-gray-200">Fecha de creacion</th>
@@ -43,7 +43,7 @@
                             @forelse ( $users as $user )
                             <tr>
                                 <td class="border border-gray-400 px-4 py-2">{{ $user->id }}</td>
-                                <td class="border border-gray-400 px-4 py-2">{{ $user->name }}</td>
+                                <td class="border border-gray-400 px-4 py-2">{{ $user->first_name }} {{ $user->last_name }}</td>
                                 <td class="border border-gray-400 px-4 py-2">{{ $user->email}}</td>
                                 <td class="border border-gray-400 px-4 py-2">{{ $user->roles()->count() ? 'Sí' : 'No' }}</td>
                                 <td class="border border-gray-400 px-4 py-2">{{ $user->created_at}}</td>

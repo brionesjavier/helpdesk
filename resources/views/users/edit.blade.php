@@ -33,9 +33,19 @@
                             @method('put')
                             <!-- Name -->
                             <div>
-                                <x-input-label for="name" :value="__('Name')" />
-                                <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" value="{{ $user->name }}" required autofocus autocomplete="name" />
-                                <x-input-error :messages="$errors->get('name')" class="mt-2" />
+                                <x-input-label for="first_name" :value="__('Nombre')" />
+                                <x-text-input   id="first_name" 
+                                                class="block mt-1 w-full" 
+                                                type="text" name="first_name" 
+                                                value="{{ $user->first_name }}" 
+                                                required autofocus autocomplete="first_name" />
+                                <x-input-error :messages="$errors->get('first_name')" class="mt-2" />
+                            </div>
+
+                            <div>
+                                <x-input-label for="last_name" :value="__('Apellido')" />
+                                <x-text-input id="last_name" class="block mt-1 w-full" type="text" name="last_name" value="{{ $user->last_name }}" required autofocus autocomplete="last_name" />
+                                <x-input-error :messages="$errors->get('last_name')" class="mt-2" />
                             </div>
                     
                             <!-- Email Address -->
@@ -44,6 +54,21 @@
                                 <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" value="{{ $user->email }}" required autocomplete="username" />
                                 <x-input-error :messages="$errors->get('email')" class="mt-2" />
                             </div>
+
+                            {{-- phone --}}
+                            <div class="mt-4">
+                                <x-input-label for="phone" :value="__('Telefono')" />
+                                <x-text-input   id="phone" 
+                                                class="block mt-1 w-full" 
+                                                type="tel"
+                                                name="phone" 
+                                                value="{{ $user->phone }}" 
+                                                required autofocus autocomplete="phone" />
+                                <x-input-error :messages="$errors->get('phone')" class="mt-2"/>
+                            </div>
+
+
+                                
                     
                              
                              <!-- Asignar ticket -->

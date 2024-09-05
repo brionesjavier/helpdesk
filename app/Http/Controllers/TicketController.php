@@ -26,6 +26,16 @@ class TicketController extends Controller
         return view('tickets.index',compact('tickets') );
     }
 
+    public function dashboard()
+{
+    $ticketsPendientes = Ticket::where('state_id', 1)->count();
+    $ticketsEnProceso = Ticket::where('state_id', 2)->count();
+    $ticketsSolucionados = Ticket::where('state_id', 5)->count();
+    $ticketsCancelados = Ticket::where('state_id', 6)->count();
+
+    return view('dashboard', compact('ticketsPendientes', 'ticketsEnProceso', 'ticketsSolucionados', 'ticketsCancelados'));
+}
+
     //TODO:bandeja usuario
     public function myTickets(Request $request):View
     {

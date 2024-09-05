@@ -145,7 +145,7 @@
             
                 
             </div>
-
+            @auth
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 <x-dropdown align="right" width="48">
@@ -179,6 +179,7 @@
                     </x-slot>
                 </x-dropdown>
             </div>
+            @endauth
 
             <!-- Hamburger -->
             <div class="-me-2 flex items-center sm:hidden">
@@ -245,6 +246,7 @@
         @endcan
 
         <!-- Responsive Settings Options -->
+        @auth
         <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
             <div class="px-4">
                 <div class="font-medium text-base text-gray-800 dark:text-gray-200">{{  Auth::user()->first_name }} {{ Auth::user()->last_name }}</div>
@@ -268,5 +270,7 @@
                 </form>
             </div>
         </div>
+        @endauth
+
     </div>
 </nav>

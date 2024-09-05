@@ -65,16 +65,14 @@ public function update(Request $request,User $user){
         'last_name' => 'required|string',
         'email' => 'required|email|unique:users,email,' . $user->id,
         'phone'=>'required|regex:/^\d{9}$/',
-        'password' => 'required|string|min:8',
         'assignable' => 'required|boolean',
         ]);
         
         $user->update([
-            'first_name' => $request->name,
+            'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'email' => $request->email,
             'phone' => $request->phone,
-            'password' => bcrypt($request->password),
             'assignable' => $request->assignable,
         ]);
 

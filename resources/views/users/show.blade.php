@@ -41,7 +41,7 @@
                         
    
                         <h1>Detalles del Usuario</h1>
-                        <p><strong>Nombre:</strong> {{ $user->name }}</p>
+                        <p><strong>Nombre:</strong> {{ $user->first_name }} {{ $user->last_name }}</p>
                         <p><strong>Email:</strong> {{ $user->email }}</p>
                         
                         <h2>Roles Asignados:</h2>
