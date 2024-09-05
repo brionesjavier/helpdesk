@@ -24,6 +24,9 @@ class AssignTicketRequest extends FormRequest
         return [
             'user_id' => 'required|exists:users,id',
             'details' => 'nullable|string',
+            'priority' => 'required|in:low,medium,high',
+
+
         ];
     }
 }

@@ -6,18 +6,31 @@
                 <div class="p-6 text-gray-900 dark:text-gray-100">
 
                     <h1>Detalles del Ticket</h1>
-                    <p><strong>ID del Ticket:</strong> {{ $ticket->id }}</p>
-                    <p><strong>Título:</strong> {{ $ticket->title }}</p>
 
+                    <p>ticket : {{ $ticket->id }}</p> 
+                    <p>Titulo: {{ $ticket->title }}</p> 
+                    <p>creado por: {{ $ticket->user->first_name}}{{ $ticket->user->last_name}}</p>
+                    <p>proceso: {{ $ticket->state->name }}</p> 
+
+                   <div class=" border rounded-lg  bg-gray-600">
+                        <p>Descripcion:</p>
+                        
+                        <p class="whitespace-pre-line">- {{ $ticket->description }}</p>
+                    </div>
                     <h3>Asignado Actualmente a:</h3>
                     <p>
                         @if($assignments)
-                        {{ $assignments->name }}
+                        {{ $assignments->first_name }} {{ $assignments->last_name }}
                         @else
                         No asignado
                         @endif
                     </p>
-
+                    @if ($assignments)
+                   
+                    @endif
+                @can('support.store')
+        
+                <div class="border-y-2 border-gray-300 my-4">
                     <h3>Historial de Asignaciones</h3>
                     
                     <ul>
@@ -30,22 +43,33 @@
                             </li>
                         @endforeach
                     </ul>
-                @can('support.store')
-        
-    
+                </div>
+                
                     <h3>Asignar/Reasignar Ticket</h3>
                     <form action="{{ route('support.store', $ticket) }}" method="POST">
                         @csrf
                         <div class="form-group">
                             <label for="user_id">Asignar a:</label>
-                            <select name="user_id" id="user_id" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"">
-                    @foreach($users as $user)
+                            <select name="user_id" id="user_id" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full">
+                
+                            @forelse ( $users as $user )
                                 <option 
-                                     value=" {{ $user->id }}">{{ $user->first_name }} {{ $user->last_name }}
+                                value=" {{ $user->id }}">{{ $user->first_name }} {{ $user->last_name }}
                                 </option>
-                    @endforeach
+                            @empty
+                                <option value="">Sin usuarios</option>
+                            @endforelse
                             </select>
                             <x-input-error :messages="$errors->get('user_id')" class="mt-2" />
+                               
+
+                            <label for="user_id">Prioridad</label>
+                            <select name="priority" id="priority" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full">
+                                <option value="low" {{ $ticket->priority == 'low' ? 'selected' : '' }}>Low</option>
+                                <option value="medium" {{ $ticket->priority == 'medium' ? 'selected' : '' }}>Medium</option>
+                                <option value="high" {{ $ticket->priority == 'high' ? 'selected' : '' }}>High</option>
+                            </select>
+                            <x-input-error :messages="$errors->get('priority')" class="mt-2" />
                         </div>
                         <div class="form-group ">
                             <label for="details">Detalles:</label>

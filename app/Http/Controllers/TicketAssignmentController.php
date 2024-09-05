@@ -48,9 +48,12 @@ class TicketAssignmentController extends Controller
     {
         $userId = $request->validated()['user_id'];
         $details = $request->validated()['details'];
+        $priority = $request->validated()['priority'];
+
 
         /// Actualizar el estado del ticket
-        $ticket->update([ 'state_id' => 2 ]);
+        $ticket->update([ 'state_id' => 2 ,
+                            'priority'=>$priority]);
        
 
         $currentAssignee = $ticket->assignedUsers()->where('is_active',true)->first();
