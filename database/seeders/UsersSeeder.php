@@ -34,6 +34,7 @@ class UsersSeeder extends Seeder
             'first_name' => 'soporte',
             'last_name' => 'test',
             'email' => 'soporte@gmail.com',
+            'assignable'=>true,
             'password' => Hash::make('password'), // Encriptar la contraseña
         ]);
 
