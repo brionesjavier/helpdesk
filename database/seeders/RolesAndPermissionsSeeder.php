@@ -55,6 +55,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'history.index' => 'Ver historial de tickets.',
             'tickets.my' => 'Ver mis tickets.',
             'histories.my' => 'Ver mi historial.',
+            'tickets.process'=>'Comenzar Proceso',
+            'tickets.process.submit'=>'Formulario para comenzar el proceso',
             'tickets.solve' => 'Formulario para solucionar ticket.',
             'tickets.solve.submit' => 'Resolver ticket.',
             'tickets.derive' => 'Formulario para derivar ticket.',
@@ -65,10 +67,10 @@ class RolesAndPermissionsSeeder extends Seeder
             'tickets.reopen.submit' => 'Reabrir ticket.',
             'tickets.cancel' => 'Formulario para cancelar ticket.',
             'tickets.cancel.submit' => 'Cancelar ticket.',
-            'support.assigned' => ' support.assigned',
-            'support.store' => 'support.store',
-            'support.show' => 'support.show',
-            'support.index' => 'support.index',
+            'support.assigned' => 'Bandeja de soporte ',
+            'support.store' => 'Asignar a soporte',
+            'support.show' => 'formulario para asignar a soporte',
+            'support.index' => 'ver tickets para asignar a soporte',
         ];
 
         // Crear o actualizar los permisos

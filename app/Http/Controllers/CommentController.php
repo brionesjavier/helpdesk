@@ -19,7 +19,9 @@ class CommentController extends Controller
         Comment::create([
             'ticket_id' => $ticket->id,
             'user_id' => auth::id(),
+            'state_ticket' => $ticket->state->name,
             'content' => $request->input('content'),
+
         ]);
         
         if(($ticket->state_id == 2 ||$ticket->state_id == 5)&&  $ticket->assignedUsers()->where('user_id', auth::id())->exists()){

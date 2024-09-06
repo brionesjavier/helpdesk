@@ -95,6 +95,10 @@ Route::get('my-histories', [HistoryController::class, 'myHistories'])->name('his
 Route::get('/my-tickets', [TicketController::class, 'myTickets'])->name('tickets.my')->middleware('can:tickets.my');
 
 // Rutas de Solución de Tickets
+Route::get('/tickets/{ticket}/process', [TicketController::class, 'showProcessForm'])->name('tickets.process')->middleware('can:tickets.process');
+Route::post('/tickets/{ticket}/process', [TicketController::class, 'process'])->name('tickets.process.submit')->middleware('can:tickets.process.submit');
+
+// Rutas de Solución de Tickets
 Route::get('/tickets/{ticket}/solve', [TicketController::class, 'showSolveForm'])->name('tickets.solve')->middleware('can:tickets.solve');
 Route::post('/tickets/{ticket}/solve', [TicketController::class, 'solve'])->name('tickets.solve.submit')->middleware('can:tickets.solve.submit');
 

@@ -39,8 +39,11 @@
                                     <td class="border border-gray-400 px-4 py-2">{{ $ticket->state->name}}</td>
                                     <td class="border border-gray-400 px-4 py-2">{{ $ticket->updated_at}}</td>
                                     <td class="border border-gray-400 px-4 py-2">
+                                                                                @can('tickets.show')
+                                                                                    <a href="{{ route('tickets.show', $ticket) }}" class="text-blue-500 hover:text-blue-700">ver</a>
+                                                                                @endcan
                                                                                 @can('history.index')
-                                                                                    <a href="{{ route('history.index',$ticket) }}">Ver Historial</a>
+                                                                                    <a href="{{ route('history.index',$ticket) }}">Historial</a>
                                                                                  @endcan
                                     </td>
                             

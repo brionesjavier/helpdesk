@@ -207,9 +207,41 @@ class TicketController extends Controller
 
         //return redirect()->route('tickets.my')->with('message', 'Ticket eliminado con exito');
     }
+/** para vista de comenzar proceso */
+public function showProcessForm(Ticket $ticket):View
+{
+    return view('tickets.process', compact('ticket'));
+}
+
+public function process(Request $request, Ticket $ticket)
+{
+
+    $validated = $request->validate([
+        'content' => 'required|string',
+    ]);
+
+    $comment = $validated['content'];
+    // Actualizar el estado del ticket
+    $ticket->update(['state_id' => 3,]); /* 3 ID del estado "En proceso" */
+    $ticket->comment()->create([
+        'content' => $comment,
+        'user_id' => auth::id(),
+        'ticket_id' => $ticket->id,
+        'state_ticket' => $ticket->state->name,
+    ]);
+
+
+     // Obtener la URL de la última vista desde la sesión
+     $lastView = $request->session()->get('last_view', route('tickets.index'));
+
+     // Redirigir a la última vista
+     return redirect($lastView)->with('message', 'ticket marcado como en proceso.');
+
+}
+
 
 /** para vista de solucion */
-    public function showSolveForm(Ticket $ticket)
+    public function showSolveForm(Ticket $ticket):View
     {
         return view('tickets.solve', compact('ticket'));
     }
@@ -222,17 +254,15 @@ class TicketController extends Controller
         ]);
 
         $comment = $validated['content'];
-
+        // Actualizar el estado del ticket
+        $ticket->update(['state_id' => 4,]); /* 4 ID del estado "Solucionado" */
         $ticket->comment()->create([
             'content' => $comment,
             'user_id' => auth::id(),
             'ticket_id' => $ticket->id,
+            'state_ticket' => $ticket->state->name,
         ]);
     
-
-        $ticket->state_id = 4 ;/* 4 ID del estado "Solucionado" */
-        $ticket->solved_at = now();
-        $ticket->save();
 
          // Obtener la URL de la última vista desde la sesión
          $lastView = $request->session()->get('last_view', route('tickets.index'));
@@ -242,8 +272,37 @@ class TicketController extends Controller
 
 }
 
+// Mostrar el formulario para reabrir el ticket
+public function showReopenForm(Ticket $ticket)
+{
+    return view('tickets.reopen', compact('ticket'));
+}
+
+// Procesar la reapertura del ticket
+public function reopen(Request $request, Ticket $ticket)
+{
+    $validated = $request->validate([ 'content' => 'required|string',]);
+    $comment = $validated['content'];
+
+    $ticket->update(['state_id' => 5,]); /* 5 ID del estado "Reabierto" */
+    $ticket->comment()->create([
+        'content' => $comment,
+        'user_id' => auth::id(),
+        'ticket_id' => $ticket->id,
+        'state_ticket' => $ticket->state->name,
+    ]);
+
+    
+
+    // Obtener la URL de la última vista desde la sesión
+    $lastView = $request->session()->get('last_view', route('tickets.index'));
+
+    // Redirigir a la última vista
+    return redirect($lastView)->with('message', 'Ticket reabierto con comentario agregado.');
+}
+
 // Mostrar el formulario para derivar el ticket
-public function showDeriveForm(Ticket $ticket)
+public function showDeriveForm(Ticket $ticket):View
 {
     $users= User::where('assignable',true)->get();
     return view('tickets.derive', compact('ticket','users'));
@@ -256,21 +315,17 @@ public function derive(Request $request, Ticket $ticket)
     $userId=$request->user_id;
 
     $comment = $validated['content'];
-
+    
+    $ticket->update(['state_id' => 6,]); /* 6 ID del estado "derivado" */
     $ticket->comment()->create([
         'content' => $comment,
         'user_id' => auth::id(),
         'ticket_id' => $ticket->id,
+        'state_ticket' => $ticket->state->name,
     ]);
     
-    // Actualizar el estado del ticket
-    $ticket->state_id = 6; 
-    
-    $ticket->save();
-
     // Desactivar asignaciones anteriores
-    TicketAssignment::where('ticket_id', $ticket->id)
-    ->update(['is_active' => false]);
+    TicketAssignment::where('ticket_id', $ticket->id)->update(['is_active' => false]);
 
     $details = "Usuario derivado por " . Auth::user()->name . " (ID: " . Auth::id() . ")";
     // Crear una nueva asignación
@@ -288,51 +343,18 @@ public function derive(Request $request, Ticket $ticket)
     return redirect($lastView)->with('message', 'Ticket derivado con comentario agregado.');
 }
 
-
-
-
-// Mostrar el formulario para reabrir el ticket
-public function showReopenForm(Ticket $ticket)
-{
-    return view('tickets.reopen', compact('ticket'));
-}
-
-// Procesar la reapertura del ticket
-public function reopen(Request $request, Ticket $ticket)
-{
-    $validated = $request->validate([ 'content' => 'required|string',]);
-    $comment = $validated['content'];
-    $ticket->comment()->create([
-        'content' => $comment,
-        'user_id' => auth::id(),
-        'ticket_id' => $ticket->id,]);
-
-    // Actualizar el estado del ticket
-    $ticket->state_id = 5; /* 5 ID del estado "Reabierto" */
-    $ticket->save();
-
-    // Obtener la URL de la última vista desde la sesión
-    $lastView = $request->session()->get('last_view', route('tickets.index'));
-
-    // Redirigir a la última vista
-    return redirect($lastView)->with('message', 'Ticket reabierto con comentario agregado.');
-}
-
 // Procesar el cierre del ticket
 public function close( Request $request,Ticket $ticket)
 {
     $comment = "requerimiento cerrado";
 
+    $ticket->update(['state_id' => 7,]); /* 7 ID del estado "Cerrado" */
     $ticket->comment()->create([
         'content' => $comment,
         'user_id' => auth::id(),
         'ticket_id' => $ticket->id,
+        'state_ticket' => $ticket->state->name,
     ]);
-
-    // Actualizar el estado del ticket
-    $ticket->state_id = 7; // ID del estado "Cerrado" (ajustar según tu implementación)
-    $ticket->updated_at = now();
-    $ticket->save();
 
     // Obtener la URL de la última vista desde la sesión
     $lastView = $request->session()->get('last_view', route('tickets.index'));
@@ -342,7 +364,7 @@ public function close( Request $request,Ticket $ticket)
 }
 
 // Mostrar el formulario para cancelar el ticket
-public function showCancelForm(Ticket $ticket)
+public function showCancelForm(Ticket $ticket):View
 {
     return view('tickets.cancel', compact('ticket'));
 }
@@ -356,16 +378,14 @@ public function cancel(Request $request, Ticket $ticket)
 
     $comment = $validated['content'];
 
+    $ticket->update(['state_id' => 8,]); /* 8 ID del estado "Cancelado" */
+
     $ticket->comment()->create([
         'content' => $comment,
         'user_id' => auth::id(),
         'ticket_id' => $ticket->id,
+        'state_ticket' => $ticket->state->name,
     ]);
-
-    // Actualizar el estado del ticket
-    $ticket->state_id = 8; /* 8 ID del estado "Cancelado" */
-    $ticket->updated_at = now();
-    $ticket->save();
 
     // Obtener la URL de la última vista desde la sesión
     $lastView = $request->session()->get('last_view', route('tickets.index'));

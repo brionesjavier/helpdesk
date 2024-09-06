@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Auth;
 class TicketAssignmentController extends Controller
 {
     public function index(Request $request){
+
+
         // Guardar la URL actual en la sesión
         $request->session()->put('last_view', url()->current());
         //$tickets = Ticket::where('state_id', 1)->orwhere('state_id',5)->get();
@@ -25,13 +27,17 @@ class TicketAssignmentController extends Controller
         // Obtener el usuario autenticado
         $user = auth::user();
 
-     
+        $priorities = [
+            'low' => 'Baja',
+            'medium' => 'Media',
+            'high' => 'Alta'
+        ];
 
         // Obtener los tickets asignados al usuario
         $tickets = $user->assignedTickets()->wherePivot('is_active', true)->get();
 
         // Retornar la vista con los tickets asignados
-        return view('support.assigned', compact('tickets'));
+        return view('support.assigned', compact('tickets','priorities'));
     }
 
 
