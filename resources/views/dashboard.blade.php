@@ -12,8 +12,9 @@
 
                     @if (auth()->user()->getAllPermissions()->isNotEmpty())
 
-
+                    <p class="text-xl">Proceso de mis requerimientos</p>
                     <div class="flex flex-wrap gap-4 p-4">
+                        
                         <!-- Tickets Pendientes -->
                         <div class="w-1/2 bg-red-600 text-white p-6 rounded-lg shadow-lg hover:bg-red-700 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105">
                             <p class="text-xl font-semibold">Tickets Pendientes</p>

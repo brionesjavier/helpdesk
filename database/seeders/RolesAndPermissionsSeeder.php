@@ -98,6 +98,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'user' => [
                 'tickets.my', 'histories.my', 'tickets.create', 'tickets.store',
                 'tickets.show', 'comments.store', 'comments.index','categories.show',
+                'tickets.cancel', 'tickets.cancel.submit',
             ],
             'support' => [
                 'tickets.index', 'tickets.solve', 'tickets.solve.submit', 'tickets.derive', 'tickets.derive.submit',

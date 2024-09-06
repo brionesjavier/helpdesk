@@ -20,14 +20,17 @@ class HistoryController extends Controller
 
     public function index($ticketId)
     {
-        $histories = History::where('ticket_id', $ticketId)->get();
+        $histories = History::where('ticket_id', $ticketId)
+        ->get();
+
         return view('histories.index', compact('histories'));
     }
 
     public function myHistories(Request $request){
         $tickets = Ticket::where('created_by', Auth::id())
         ->orderBy('updated_at', 'DESC')
-        ->get();
+        ->paginate();
+        //->get();
 
         // Guardar la URL actual en la sesión
         $request->session()->put('last_view', url()->current());

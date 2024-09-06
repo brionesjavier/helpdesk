@@ -28,10 +28,40 @@ class TicketController extends Controller
 
     public function dashboard()
 {
-    $ticketsPendientes = Ticket::where('state_id', 1)->count();
-    $ticketsEnProceso = Ticket::where('state_id', 2)->count();
-    $ticketsSolucionados = Ticket::where('state_id', 5)->count();
-    $ticketsCancelados = Ticket::where('state_id', 6)->count();
+
+    $userId=auth::id();
+    $ticketsPendientes = Ticket::where('created_by',$userId)
+                                ->where('is_active',true)
+                                ->where(function ($query) {
+                                    $query->where('state_id', 1);
+                                })
+                                ->count();
+
+                                
+    $ticketsEnProceso = Ticket::where('created_by',$userId)
+                                ->where('is_active',true)
+                                ->where(function ($query) {
+                                    $query->where('state_id', 2)
+                                          ->orWhere('state_id', 3)
+                                          ->orWhere('state_id', 6);
+                                })
+                                ->count();
+
+    $ticketsSolucionados = Ticket::where('created_by',$userId)
+                                ->where('is_active',true)
+                                ->where(function ($query) {
+                                    $query->where('state_id', 4)
+                                        ->orWhere('state_id', 7);
+                                })
+                                ->count();
+
+    $ticketsCancelados = Ticket::where('created_by',$userId)
+                                ->where('is_active',true)
+                                ->where(function($query){
+                                    $query->where('state_id', 8)
+                                        ->orWhere('state_id', 5);
+                                })
+                                ->count();
 
     return view('dashboard', compact('ticketsPendientes', 'ticketsEnProceso', 'ticketsSolucionados', 'ticketsCancelados'));
 }
@@ -43,7 +73,9 @@ class TicketController extends Controller
         $userId=auth::id();
         $tickets = Ticket::where('created_by',$userId)
                         ->where('is_active',true)
-                        ->get();
+                        ->paginate();
+                        //->get();
+   
 
         // Guardar la URL actual en la sesión
         $request->session()->put('last_view', url()->current());

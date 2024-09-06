@@ -45,7 +45,7 @@
                     </ul>
                 </div>
                 
-                    <h3>Asignar/Reasignar Ticket</h3>
+                    {{-- <h3>Asignar/Reasignar Ticket</h3> --}}
                     <form action="{{ route('support.store', $ticket) }}" method="POST">
                         @csrf
                         <div class="form-group">
