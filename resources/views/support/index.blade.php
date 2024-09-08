@@ -1,21 +1,23 @@
 <x-app-layout>
     <x-slot name="header">
-        {{-- mensaje de evento --}}
+        {{-- Mensaje de evento --}}
         @if(session()->has('message'))
-        <div class="text-center bg-gray-100 rounded-md p-2">
-            <span class="text-indigo-600 text-xl font-semibold">{{ session('message') }}</span>
-        </div>
+            <div class="text-center bg-gray-100 dark:bg-gray-700 rounded-md p-2">
+                <span class="text-indigo-600 dark:text-indigo-300 text-xl font-semibold">{{ session('message') }}</span>
+            </div>
         @endif
 
         @can('tickets.create')
-            
-        
-        <div class="overflow-hidden shadow-sm sm:rounded-lg mb-4">
-            <div class="p-6 text-gray-900 dark:text-gray-100s space-x-8">
-                <a href="{{ route('tickets.create') }}" class="px-4 py-4 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-sm text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700">{{ __('Agregar') }}</a>
-
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+                    Listado de Tickets
+                </h2>
+                @can('tickets.create')
+                    <a href="{{ route('tickets.create') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-300 ease-in-out">
+                        {{ __('Agregar') }}
+                    </a>
+                @endcan
             </div>
-        </div>
         @endcan
     </x-slot>
 
@@ -23,55 +25,60 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <table class="table-auto">
-                        <thead>
-                            <tr>
-                                <th class="border border-gray-400 px-4 py-2 text-gray-200">titulo</th>
-                                <th class="border border-gray-400 px-4 py-2 text-gray-200">categoria</th>
-                                <th class="border border-gray-400 px-4 py-2 text-gray-200">elemento</th>
-                                <th class="border border-gray-400 px-4 py-2 text-gray-200">estado</th>
-                                <th class="border border-gray-400 px-4 py-2 text-gray-200">usuario</th>
-                                <th class="border border-gray-400 px-4 py-2 text-gray-200">creado</th>
-                                <th class="border border-gray-400 px-4 py-2 text-gray-200">estado</th>
-                                <th class="border border-gray-400 px-4 py-2 text-gray-200">asignar</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ( $tickets as $ticket )
-                            <tr>
-                                <td class="border border-gray-400 px-4 py-2">{{ $ticket->title }}</td>
-                                <td class="border border-gray-400 px-4 py-2">{{ $ticket->element->category->name }}</td>
-                                <td class="border border-gray-400 px-4 py-2">{{ $ticket->element->name}}</td>
-                                <td class="border border-gray-400 px-4 py-2">{{ $ticket->state->name}}</td>
-                                <td class="border border-gray-400 px-4 py-2">{{ $ticket->user->first_name}} {{ $ticket->user->last_name}}</td>
-                                <td class="border border-gray-400 px-4 py-2">{{ $ticket->created_at->format('Y-m-d') }}</td>
-                                <td class="border border-gray-400 px-4 py-2">
-                                    
-                                    @forelse ( $ticket->assignedUsers as $assignment )
-                                            @if($assignment->pivot->is_active)
-                                                <span class="text-green-500">Activo</span>  
-                                            @endif
-                                    @empty
-                                        <span class="text-red-500">Inactivo</span>
-                                    @endforelse
-                                       
-                                </td>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                            <thead class="bg-gray-50 dark:bg-gray-900">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Título</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Categoría y Elemento</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Estado</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Usuario</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Creado</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Asignación</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                                @forelse ($tickets as $index => $ticket)
+                                    <tr class="{{ $index % 2 == 0 ? 'bg-gray-100 dark:bg-gray-700' : 'bg-gray-50 dark:bg-gray-800' }} hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100 truncate" title="{{ $ticket->title }}" style="max-width: 300px;">{{ $ticket->title }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 truncate" style="max-width: 200px;" title="{{ $ticket->element->category->name }} - {{ $ticket->element->name }}">
+                                            {{ $ticket->element->category->name }} - {{ $ticket->element->name }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ $ticket->state->name }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ $ticket->user->first_name }} {{ $ticket->user->last_name }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ $ticket->created_at->format('Y-m-d') }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            @forelse ($ticket->assignedUsers as $assignment)
+                                                @if($assignment->pivot->is_active)
+                                                    <span class="text-green-500">Activo</span>
+                                                @endif
+                                            @empty
+                                                <span class="text-red-500">Inactivo</span>
+                                            @endforelse
+                                        </td>
+                                        @can('support.store')
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                <a href="{{ route('support.show', $ticket) }}" class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-blue-700 dark:hover:bg-blue-800">
+                                                    Asignar
+                                                </a>
+                                            </td>
+                                        @endcan
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="7" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                                            ¡No existen tickets almacenados!
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
 
-
-                                @can('support.show')
-                                <td class="border border-gray-400 px-4 py-2">
-                                    <a href="{{route('support.show',$ticket)}}">ver</a>
-                                </td>
-                                @endcan
-                            </tr>
-
-                            @empty
-                            <h2 class="text-xl text-white p-4">¡No existen ticket almacenados!</h2>
-                            @endforelse
-                        </tbody>
-                    </table>
-
-
+                        <div class="mt-4">
+                            {{ $tickets->links() }}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

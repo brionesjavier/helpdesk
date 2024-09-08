@@ -18,7 +18,8 @@ class TicketController extends Controller
     //TODO:bandeja administracion
     public function index(Request $request)
     {
-        $tickets = Ticket::get();
+        $tickets = Ticket::paginate();
+        //::get();
 
         // Guardar la URL actual en la sesión
         $uri=$request->session()->put('last_view', url()->current());

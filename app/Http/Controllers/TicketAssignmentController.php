@@ -17,7 +17,9 @@ class TicketAssignmentController extends Controller
         // Guardar la URL actual en la sesión
         $request->session()->put('last_view', url()->current());
         //$tickets = Ticket::where('state_id', 1)->orwhere('state_id',5)->get();
-        $tickets = Ticket::all();
+        $tickets = Ticket::paginate();
+        
+        //all();
         return view('support.index', compact('tickets'));
     }
 
@@ -34,7 +36,10 @@ class TicketAssignmentController extends Controller
         ];
 
         // Obtener los tickets asignados al usuario
-        $tickets = $user->assignedTickets()->wherePivot('is_active', true)->get();
+        $tickets = $user->assignedTickets()->wherePivot('is_active', true)
+        ->paginate();
+        
+        //->get();
 
         // Retornar la vista con los tickets asignados
         return view('support.assigned', compact('tickets','priorities'));

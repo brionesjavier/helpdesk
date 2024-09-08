@@ -9,10 +9,38 @@ use Illuminate\Http\Request;
 
 class ElementController extends Controller
 {
-    public function index(){
+   /*  public function index(){
         $elements = Element::where('is_active',true)->get();
         return view('elements.index',['elements'=>$elements]);
+    } */
+
+    public function index(Request $request)
+    {
+        $search = $request->input('search');
+        $categoryId = $request->input('category_id');
+
+        $elements = Element::query()
+            ->when($search, function($query, $search) {
+                return $query->where('name', 'like', "%{$search}%")
+                             ->orWhereHas('category', function($query) use ($search) {
+                                 $query->where('name', 'like', "%{$search}%");
+                             });
+            })
+            ->when($categoryId, function($query, $categoryId) {
+                return $query->where('category_id', $categoryId);
+            })
+            ->paginate();
+            //->get();
+
+        $categories = Category::all(); // Para el filtro de categorías
+
+        return view('elements.index', [
+            'elements' => $elements,
+            'categories' => $categories,
+        ]);
     }
+
+
 
     public function create(){
 
