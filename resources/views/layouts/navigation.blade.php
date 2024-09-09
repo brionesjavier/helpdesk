@@ -142,6 +142,8 @@
                     </x-dropdown>
                 </div>
                 @endcanany
+                 <!-- Include Theme Toggle Component -->
+                 <x-theme-toggle />
             
                 
             </div>
