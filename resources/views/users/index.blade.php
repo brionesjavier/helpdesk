@@ -19,6 +19,9 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
+                    @can('users.search')
+                        
+                
                     <!-- Formulario de búsqueda -->
                     <form method="GET" action="{{ route('users.index') }}" class="mb-6 bg-gray-50 dark:bg-gray-700 p-4 rounded-lg shadow-md">
                         <div class="flex flex-wrap gap-4 items-center">
@@ -64,7 +67,7 @@
                             </div>
                         </div>
                     </form>
-
+@endcan
                     <!-- Tabla de usuarios -->
                     <div class="overflow-x-auto">
                         <table class="w-full border-collapse">

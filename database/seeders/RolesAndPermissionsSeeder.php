@@ -19,6 +19,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'roles.update' => 'Actualizar rol.',
             'roles.destroy' => 'Eliminar rol.',
             'users.index' => 'Ver lista de usuarios.',
+            'users.search'=>'Ver formulario de busqueda para lista de usuarios .',
             'users.show' => 'Ver detalles de usuario.',
             'users.edit' => 'Editar usuario existente.',
             'users.update' => 'Actualizar usuario.',
