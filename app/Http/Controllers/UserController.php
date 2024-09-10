@@ -14,7 +14,7 @@ class UserController extends Controller
     {
         $search = $request->input('search');
         $role = $request->input('role');
-        $assignable = $request->input('assignable'); // Nuevo parámetro para asignable
+        $assignable = $request->input('assignable'); // Parámetro para asignable
     
         // Construir la consulta base
         $query = User::query();
@@ -22,11 +22,26 @@ class UserController extends Controller
         // Aplicar búsqueda por nombre, apellido, email, teléfono e id
         if ($search) {
             $query->where(function ($q) use ($search) {
-                $q->where('first_name', 'like', "%$search%")
-                  ->orWhere('last_name', 'like', "%$search%")
-                  ->orWhere('email', 'like', "%$search%")
-                  ->orWhere('phone', 'like', "%$search%")
-                  ->orWhere('id', $search);
+                // Verifica si es un número de teléfono válido
+                if (is_numeric($search) && strlen($search) >= 6) {
+                    $q->orWhere('phone', 'like', "%$search%");
+                }
+    
+                // Verifica si es un correo electrónico con al menos 4 caracteres
+                if (filter_var($search, FILTER_VALIDATE_EMAIL) && strlen($search) >= 4) {
+                    $q->orWhere('email', 'like', "%$search%");
+                }
+    
+                // Verifica si es un nombre, apellido o ID
+                if (!is_numeric($search) || strlen($search) < 6) {
+                    $q->orWhere('first_name', 'like', "%$search%")
+                      ->orWhere('last_name', 'like', "%$search%");
+                }
+    
+                // Verifica si es un ID
+                if (is_numeric($search) && strlen($search) < 6) {
+                    $q->orWhere('id', $search);
+                }
             });
         }
     
