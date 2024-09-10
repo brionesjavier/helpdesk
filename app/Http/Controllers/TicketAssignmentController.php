@@ -15,41 +15,64 @@ class TicketAssignmentController extends Controller
 {
     public function index(Request $request)
     {
-
         // Obtener los parámetros de la solicitud
         $search = $request->input('search');
         $state = $request->input('state');
+        $user = $request->input('user');
+        $assignment = $request->input('assignment'); // Nuevo parámetro para asignación
         $sortBy = $request->input('sort_by', 'created_at');
         $sortDirection = $request->input('sort_direction', 'desc');
-
+    
         // Construir la consulta base
         $query = Ticket::query();
-
+    
         // Aplicar búsqueda por título o folio
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%$search%")
-                    ->orWhere('id', 'like', "%$search%");
+                  ->orWhere('id', 'like', "%$search%");
             });
         }
-
+    
+        // Aplicar búsqueda por usuario
+        if ($user && $user != 'all') {
+            $query->whereHas('assignedUsers', function ($q) use ($user) {
+                $q->where('user_id', $user)
+                  ->where('is_active', true);
+            });
+        }
+    
         // Filtrar por estado
         if ($state && $state != 'all') {
             $query->where('state_id', $state);
         }
-
+    
+        // Filtrar por asignación
+        if ($assignment && $assignment == 'has_assignment') {
+            $query->whereHas('assignedUsers', function ($q) {
+                $q->where('is_active', true);
+            });
+        } elseif ($assignment && $assignment == 'no_assignment') {
+            $query->doesntHave('assignedUsers');
+        }
+    
         // Ordenar los resultados
         $query->orderBy($sortBy, $sortDirection);
-
+    
         // Paginación
-        $tickets = $query->paginate(10);
-
+        $tickets = $query->paginate(10)->appends($request->except('page'));
+    
         // Obtener todos los estados para el filtro
         $states = State::all();
-        //$tickets = Ticket::where('state_id', 1)->orwhere('state_id',5)->get();
-
-        return view('support.index', compact('tickets', 'states'));
+    
+        // Obtener todos los usuarios para el filtro de asignación
+        $users = User::where('assignable', true)->get();
+    
+        return view('support.index', compact('tickets', 'states', 'users'));
     }
+    
+    
+    
 
     //TODO: bandeja soporte
     public function assigned(): View

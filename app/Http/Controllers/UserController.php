@@ -10,12 +10,44 @@ use Spatie\Permission\Models\Role;
 class UserController extends Controller
 {
 
-    public function index():View
+    public function index(Request $request): View
     {
-        $users = User::paginate();
-
+        $search = $request->input('search');
+        $role = $request->input('role');
+        $assignable = $request->input('assignable'); // Nuevo parámetro para asignable
+    
+        // Construir la consulta base
+        $query = User::query();
+    
+        // Aplicar búsqueda por nombre, apellido, email, teléfono e id
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('first_name', 'like', "%$search%")
+                  ->orWhere('last_name', 'like', "%$search%")
+                  ->orWhere('email', 'like', "%$search%")
+                  ->orWhere('phone', 'like', "%$search%")
+                  ->orWhere('id', $search);
+            });
+        }
+    
+        // Filtrar por rol
+        if ($role) {
+            $query->whereHas('roles', function ($q) use ($role) {
+                $q->where('name', $role);
+            });
+        }
+    
+        // Filtrar por assignable
+        if ($assignable !== null) {
+            $query->where('assignable', $assignable);
+        }
+    
+        // Paginación
+        $users = $query->paginate(10);
+    
         return view('users.index', compact('users'));
     }
+    
 
 
     // Muestra la información del usuario y sus roles
