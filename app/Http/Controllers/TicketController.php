@@ -19,14 +19,43 @@ class TicketController extends Controller
     //TODO:bandeja administracion
     public function index(Request $request)
     {
-        $tickets = Ticket::paginate();
-        //::get();
-
+        // Obtener los parámetros de la solicitud
+        $search = $request->input('search');
+        $state = $request->input('state');
+        $sortBy = $request->input('sort_by', 'created_at');
+        $sortDirection = $request->input('sort_direction', 'desc');
+    
+        // Construir la consulta base
+        $query = Ticket::query();
+    
+        // Aplicar búsqueda por título o folio
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%$search%")
+                  ->orWhere('id', 'like', "%$search%");
+            });
+        }
+    
+        // Filtrar por estado
+        if ($state && $state != 'all') {
+            $query->where('state_id', $state);
+        }
+    
+        // Ordenar los resultados
+        $query->orderBy($sortBy, $sortDirection);
+    
+        // Paginación
+        $tickets = $query->paginate(10);
+    
+        // Obtener todos los estados para el filtro
+        $states = State::all();
+    
         // Guardar la URL actual en la sesión
-        $uri=$request->session()->put('last_view', url()->current());
-
-        return view('tickets.index',compact('tickets') );
+        $request->session()->put('last_view', url()->current());
+    
+        return view('tickets.index', compact('tickets', 'states'));
     }
+    
 
     public function dashboard()
 {

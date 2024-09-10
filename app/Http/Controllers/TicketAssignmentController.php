@@ -3,24 +3,52 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AssignTicketRequest;
+use App\Models\State;
 use App\Models\Ticket;
 use App\Models\TicketAssignment;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+
 class TicketAssignmentController extends Controller
 {
-    public function index(Request $request){
+    public function index(Request $request)
+    {
 
+        // Obtener los parámetros de la solicitud
+        $search = $request->input('search');
+        $state = $request->input('state');
+        $sortBy = $request->input('sort_by', 'created_at');
+        $sortDirection = $request->input('sort_direction', 'desc');
 
-        // Guardar la URL actual en la sesión
-        $request->session()->put('last_view', url()->current());
+        // Construir la consulta base
+        $query = Ticket::query();
+
+        // Aplicar búsqueda por título o folio
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%$search%")
+                    ->orWhere('id', 'like', "%$search%");
+            });
+        }
+
+        // Filtrar por estado
+        if ($state && $state != 'all') {
+            $query->where('state_id', $state);
+        }
+
+        // Ordenar los resultados
+        $query->orderBy($sortBy, $sortDirection);
+
+        // Paginación
+        $tickets = $query->paginate(10);
+
+        // Obtener todos los estados para el filtro
+        $states = State::all();
         //$tickets = Ticket::where('state_id', 1)->orwhere('state_id',5)->get();
-        $tickets = Ticket::paginate();
-        
-        //all();
-        return view('support.index', compact('tickets'));
+
+        return view('support.index', compact('tickets', 'states'));
     }
 
     //TODO: bandeja soporte
@@ -37,12 +65,13 @@ class TicketAssignmentController extends Controller
 
         // Obtener los tickets asignados al usuario
         $tickets = $user->assignedTickets()->wherePivot('is_active', true)
-        ->paginate();
-        
+            ->paginate();
+
+        $states = State::all();
         //->get();
 
         // Retornar la vista con los tickets asignados
-        return view('support.assigned', compact('tickets','priorities'));
+        return view('support.assigned', compact('tickets', 'priorities', 'states'));
     }
 
 
@@ -50,10 +79,10 @@ class TicketAssignmentController extends Controller
     {
         $ticket = Ticket::with('assignedUsers')->findOrFail($ticketId);
         $assignments = $ticket->assignedUsers()->orderBy('ticket_assigns.created_at', 'desc')->first();
-        $users= User::where('assignable',true)->get();
-        return view('support.show', compact('ticket', 'assignments','users'));
+        $users = User::where('assignable', true)->get();
+        return view('support.show', compact('ticket', 'assignments', 'users'));
     }
-    
+
 
     public function store(AssignTicketRequest $request, Ticket $ticket)
     {
@@ -63,21 +92,23 @@ class TicketAssignmentController extends Controller
 
 
         /// Actualizar el estado del ticket
-        $ticket->update([ 'state_id' => 2 ,
-                            'priority'=>$priority]);
-       
+        $ticket->update([
+            'state_id' => 2,
+            'priority' => $priority
+        ]);
 
-        $currentAssignee = $ticket->assignedUsers()->where('is_active',true)->first();
+
+        $currentAssignee = $ticket->assignedUsers()->where('is_active', true)->first();
 
         if ($currentAssignee && $currentAssignee->id == $userId) {
             // Si el usuario seleccionado es el mismo que el actual, redirige con un mensaje de error
             return redirect()->route('support.show', $ticket)
-                             ->with('error', 'El ticket ya está asignado a este usuario.');
+                ->with('error', 'El ticket ya está asignado a este usuario.');
         }
 
         // Desactivar asignaciones anteriores
         TicketAssignment::where('ticket_id', $ticket->id)
-                        ->update(['is_active' => false]);
+            ->update(['is_active' => false]);
 
         // Crear nueva asignación
         TicketAssignment::create([
@@ -87,13 +118,12 @@ class TicketAssignmentController extends Controller
             'is_active' => true,
         ]);
 
-         // Obtener la URL de la última vista desde la sesión
-         $lastView = $request->session()->get('last_view', route('tickets.index'));
+        // Obtener la URL de la última vista desde la sesión
+        $lastView = $request->session()->get('last_view', route('tickets.index'));
 
-         // Redirigir a la última vista
-        return redirect($lastView)->with('message', 'Ticket asignado/reasignado correctamente.');  
+        // Redirigir a la última vista
+        return redirect($lastView)->with('message', 'Ticket asignado/reasignado correctamente.');
 
-       // return redirect()->route('support.show', $ticket)->with('success', 'Ticket asignado/reasignado correctamente.');
+        // return redirect()->route('support.show', $ticket)->with('success', 'Ticket asignado/reasignado correctamente.');
     }
-
 }

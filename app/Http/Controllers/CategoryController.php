@@ -16,7 +16,7 @@ class CategoryController extends Controller
     {
 
         //$categories = Category::get();
-        $categories = Category::paginate();
+        $categories = Category::paginate(10);
 
         return view('categories.index', compact('categories'));
         //

@@ -25,6 +25,9 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
+                    @can('tickets.my.search')
+                        
+                    
                     <!-- Formulario de búsqueda -->
                     <form method="GET" action="{{ route('tickets.my') }}" class="mb-6 bg-gray-50 dark:bg-gray-700 p-6 rounded-lg shadow-md">
                         <div class="flex flex-col md:flex-row md:items-end md:space-x-4 space-y-4">
@@ -84,7 +87,7 @@
                             </div>
                         </div>
                     </form>
-
+                    @endcan
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                             <thead class="bg-gray-100 dark:bg-gray-900">
