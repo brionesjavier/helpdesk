@@ -17,6 +17,6 @@ export default {
         },
     },
 
-    darkMode: 'class', // Activa el soporte del modo oscuro basado en la clase "dark"
+    darkMode: 'selector', // Activa el soporte del modo oscuro basado en la clase "dark"
     plugins: [forms],
 };

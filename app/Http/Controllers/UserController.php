@@ -39,6 +39,9 @@ class UserController extends Controller
             'last_name' => 'required|string',
             'email' => 'required|email|unique:users,email,' . $user->id,
             'phone' => 'required|regex:/^\d{9}$/',
+            'birthdate'=>'required|date|before_or_equal:'.date('Y-m-d'),
+            'address'=>'required|string',
+            'city'=>'required|string',
             'assignable' => 'required|boolean',
         ]);
 
@@ -47,6 +50,9 @@ class UserController extends Controller
             'last_name' => $request->last_name,
             'email' => $request->email,
             'phone' => $request->phone,
+            'birthdate' => $request->birthdate,
+            'address' => $request->address,
+            'city' => $request->city,
             'assignable' => $request->assignable,
         ]);
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Comment;
+use App\Models\State;
 use App\Models\Ticket;
 use App\Models\TicketAssignment;
 use App\Models\User;
@@ -68,22 +69,58 @@ class TicketController extends Controller
 }
 
     //TODO:bandeja usuario
-    public function myTickets(Request $request):View
-    {
+    
+ public function myTickets(Request $request): View
+{
+    $userId = Auth::id();
 
-        $userId=auth::id();
-        $tickets = Ticket::where('created_by',$userId)
-                        ->where('is_active',true)
-                        ->paginate();
-                        //->get();
-   
+    // Inicializa la consulta
+    $query = Ticket::where('created_by', $userId)
+                   ->where('is_active', true);
 
-        // Guardar la URL actual en la sesión
-        $request->session()->put('last_view', url()->current());
-
-
-        return view('tickets.my',compact('tickets') );
+    // Filtro por búsqueda en título o folio
+    if ($request->filled('search')) {
+        $search = $request->input('search');
+        $query->where(function ($q) use ($search) {
+            $q->where('title', 'like', "%{$search}%")
+              ->orWhere('id', 'like', "%{$search}%");
+        });
     }
+
+    // Filtro por estado
+    if ($request->filled('state') && $request->state != 'all') {
+        $query->where('state_id', $request->state);
+    }
+
+    // Ordenar según el criterio seleccionado
+    $sortField = $request->input('sort_by', 'created_at');
+    $sortDirection = $request->input('sort_direction', 'desc');
+
+    // Validar los valores de ordenamiento
+    if (!in_array($sortField, ['created_at', 'id', 'title', 'updated_at'])) {
+        $sortField = 'created_at'; // valor por defecto
+    }
+    if (!in_array($sortDirection, ['asc', 'desc'])) {
+        $sortDirection = 'desc'; // valor por defecto
+    }
+
+    $query->orderBy($sortField, $sortDirection);
+
+    // Paginación
+    $tickets = $query->paginate(10);
+
+    // Obtener los estados
+    $states = State::all();
+
+    // Guardar la URL actual en la sesión
+    $request->session()->put('last_view', url()->current());
+
+    return view('tickets.my', compact('tickets', 'states'));
+}
+
+    
+    
+    
 
     //mostrar datos
     //TODO:ver ticket por id todo los usuario

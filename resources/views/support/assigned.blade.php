@@ -62,7 +62,7 @@
                                         <td class="px-6 py-3 text-sm border-b border-gray-300 dark:border-gray-700">{{ $priorities[$ticket->priority] ?? 'Desconocida' }}</td>
                                         <td class="px-6 py-3 text-sm border-b border-gray-300 dark:border-gray-700">{{ $ticket->state->name }}</td>
                                         <td class="px-6 py-3 text-sm border-b border-gray-300 dark:border-gray-700">{{ $ticket->updated_at->format('Y-m-d H:i') }}</td>
-                                        <td class="px-6 py-3 text-sm border-b border-gray-300 dark:border-gray-700 flex space-x-2">
+                                        <td class="px-6 py-3 text-sm  flex space-x-2 my-4">
                                             @can('tickets.edit')
                                                 @if($ticket->state_id == 1)
                                                     <a href="{{ route('tickets.edit', $ticket) }}" class="bg-blue-500 text-white px-3 py-1 rounded-md shadow-sm hover:bg-blue-600 transition duration-300 ease-in-out">Editar</a>

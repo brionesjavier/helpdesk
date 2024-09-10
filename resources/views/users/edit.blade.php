@@ -2,32 +2,15 @@
     <x-slot name="header">
         {{-- Mensaje de evento --}}
         @if(session()->has('message'))
-        <div class="text-center bg-gray-100 rounded-md p-2">
-            <span class="text-indigo-600 text-xl font-semibold">{{ session('message') }}</span>
-        </div>
+            <div class="text-center bg-gray-100 dark:bg-gray-800 rounded-md p-2 mb-4">
+                <span class="text-indigo-600 dark:text-indigo-400 text-xl font-semibold">{{ session('message') }}</span>
+            </div>
         @endif
 
         <div class="flex items-center justify-between">
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                Asignar Roles a Usuario
+                Editar Usuario
             </h2>
-            @canany(['users.manageRoles', 'users.edit'])
-                <div class="overflow-hidden shadow-sm sm:rounded-lg mb-4">
-                    <div class="p-4 text-gray-900 dark:text-gray-100 space-x-8">
-                        @can('users.edit')
-                            <a href="{{ route('users.edit', $user) }}" class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-sm text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700">
-                                {{ __('Editar usuario') }}
-                            </a>
-                        @endcan
-
-                        @can('users.manageRoles')
-                            <a href="{{ route('users.manageRoles', $user) }}" class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-sm text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700">
-                                {{ __('Asignar/Editar Roles') }}
-                            </a>
-                        @endcan
-                    </div>
-                </div>
-            @endcanany
         </div>
     </x-slot>
 
@@ -40,15 +23,138 @@
                     <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-md shadow-md">
                         <h1 class="text-2xl font-semibold mb-4">Detalles del Usuario</h1>
                         <div class="space-y-4">
-                            <p><strong>Nombre:</strong> {{ $user->first_name }} {{ $user->last_name }}</p>
-                            <p><strong>Email:</strong> {{ $user->email }}</p>
-                            <p><strong>Teléfono:</strong> {{ $user->phone ?? 'No proporcionado' }}</p>
-                            <p><strong>Dirección:</strong> {{ $user->address ?? 'No proporcionada' }}</p>
-                            <p><strong>Ciudad:</strong> {{ $user->city ?? 'No proporcionada' }}</p>
-                            <p><strong>Fecha de Nacimiento:</strong> {{ $user->birthdate ? \Carbon\Carbon::parse($user->birthdate)->format('d/m/Y') : 'No proporcionada' }}</p>
-                            <p><strong>Fecha de Creación:</strong> {{ $user->created_at->format('d/m/Y H:i:s') }}</p>
-                            <p><strong>Fecha de Actualización:</strong> {{ $user->updated_at->format('d/m/Y H:i:s') }}</p>
-                            <p><strong>Asignable:</strong> {{ $user->is_assignable ? 'Sí' : 'No' }}</p>
+                            <form method="POST" action="{{ route('users.update', $user) }}">
+                                @csrf
+                                @method('PUT')
+
+                                <!-- First Name -->
+                                <div>
+                                    <x-input-label for="first_name" :value="__('Nombre')" />
+                                    <x-text-input 
+                                        id="first_name" 
+                                        class="block mt-1 w-full" 
+                                        type="text" 
+                                        name="first_name" 
+                                        value="{{ old('first_name', $user->first_name) }}" 
+                                        required 
+                                        autofocus 
+                                        autocomplete="given-name" 
+                                    />
+                                    <x-input-error :messages="$errors->get('first_name')" class="mt-2" />
+                                </div>
+
+                                <!-- Last Name -->
+                                <div>
+                                    <x-input-label for="last_name" :value="__('Apellido')" />
+                                    <x-text-input 
+                                        id="last_name" 
+                                        class="block mt-1 w-full" 
+                                        type="text" 
+                                        name="last_name" 
+                                        value="{{ old('last_name', $user->last_name) }}" 
+                                        required 
+                                        autofocus 
+                                        autocomplete="family-name" 
+                                    />
+                                    <x-input-error :messages="$errors->get('last_name')" class="mt-2" />
+                                </div>
+
+                                <!-- Birthdate -->
+                                <div>
+                                    <x-input-label for="birthdate" :value="__('Fecha de nacimiento')" />
+                                    <x-text-input 
+                                        id="birthdate" 
+                                        class="block mt-1 w-full" 
+                                        type="date" 
+                                        name="birthdate" 
+                                        value="{{ old('birthdate', $user->birthdate) }}" 
+                                        required 
+                                        autofocus 
+                                        autocomplete="bday"
+                                    />
+                                    <x-input-error :messages="$errors->get('birthdate')" class="mt-2" />
+                                </div>
+
+                                <!-- Email Address -->
+                                <div>
+                                    <x-input-label for="email" :value="__('Email')" />
+                                    <x-text-input 
+                                        id="email" 
+                                        class="block mt-1 w-full" 
+                                        type="email" 
+                                        name="email" 
+                                        value="{{ old('email', $user->email) }}" 
+                                        required 
+                                        autocomplete="email" 
+                                    />
+                                    <x-input-error :messages="$errors->get('email')" class="mt-2" />
+                                </div>
+
+                                <!-- Phone -->
+                                <div>
+                                    <x-input-label for="phone" :value="__('Teléfono')" />
+                                    <x-text-input 
+                                        id="phone" 
+                                        class="block mt-1 w-full" 
+                                        type="tel" 
+                                        name="phone" 
+                                        value="{{ old('phone', $user->phone) }}" 
+                                        required 
+                                        autofocus 
+                                        autocomplete="tel" 
+                                    />
+                                    <x-input-error :messages="$errors->get('phone')" class="mt-2" />
+                                </div>
+
+                                <!-- Address (Optional) -->
+                                <div>
+                                    <x-input-label for="address" :value="__('Dirección *(opcional)')" />
+                                    <x-text-input 
+                                        id="address" 
+                                        class="block mt-1 w-full" 
+                                        type="text" 
+                                        name="address" 
+                                        value="{{ old('address', $user->address) }}" 
+                                        autofocus 
+                                        autocomplete="address" 
+                                    />
+                                    <x-input-error :messages="$errors->get('address')" class="mt-2" />
+                                </div>
+                           
+                                <!-- City (Optional) -->
+                                <div>
+                                    <x-input-label for="city" :value="__('Ciudad *(opcional)')" />
+                                    <x-text-input 
+                                        id="city" 
+                                        class="block mt-1 w-full" 
+                                        type="text" 
+                                        name="city" 
+                                        value="{{ old('city', $user->city) }}" 
+                                        autofocus 
+                                        autocomplete="address-level2" 
+                                    />
+                                    <x-input-error :messages="$errors->get('city')" class="mt-2" />
+                                </div>
+
+                                <!-- Assignable -->
+                                <div>
+                                    <x-input-label for="assignable" :value="__('Soporte/Administracion Asignable')" />
+                                    <select 
+                                        id="assignable" 
+                                        name="assignable" 
+                                        class="block mt-1 w-full border border-gray-300 dark:border-gray-800 rounded-md shadow-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-indigo-300 dark:focus:border-indigo-500 focus:ring focus:ring-indigo-200 dark:focus:ring-indigo-700 focus:ring-opacity-50"
+                                    >
+                                        <option value="" disabled selected>Selecciona una opción</option>
+                                        <option value="1" {{ old('assignable', $user->assignable) == '1' ? 'selected' : '' }}>Sí</option>
+                                        <option value="0" {{ old('assignable', $user->assignable) == '0' ? 'selected' : '' }}>No</option>
+                                    </select>
+                                    <x-input-error :messages="$errors->get('assignable')" class="mt-2" />
+                                </div>
+
+                                <x-primary-button class="mt-4">
+                                    Actualizar
+                                </x-primary-button>
+                            </form>
                         </div>
                     </div>
 
@@ -64,12 +170,6 @@
                         </ul>
                     </div>
 
-                    <!-- Botón para Volver -->
-                    <div class="mt-6">
-                        <a href="{{ route('users.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-500 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:bg-gray-600 dark:hover:bg-gray-700">
-                            Volver
-                        </a>
-                    </div>
                 </div>
             </div>
         </div>
