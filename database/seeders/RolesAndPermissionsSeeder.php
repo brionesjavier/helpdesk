@@ -76,6 +76,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'support.show' => 'formulario para asignar a soporte',
             'support.index' => 'ver tickets para asignar a soporte',
             'support.search' => 'formulario de busqueda para  soporte',
+            'support.center'=> 'bandeja de tickets sin asignar'
         ];
 
         // Crear o actualizar los permisos

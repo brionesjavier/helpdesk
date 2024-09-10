@@ -56,8 +56,14 @@
                                 {{ __('ticket asignados') }}
                             </x-dropdown-link>
                             @endcan 
-                           
+
+                            @can('support.center')
+                            <x-dropdown-link :href="route('support.center')">
+                                {{ __('centro Soporte') }}
+                            </x-dropdown-link>
+                            @endcan 
                         </x-slot>
+                        
                     </x-dropdown>
                 </div>
                 @endcanany

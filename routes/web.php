@@ -119,6 +119,7 @@ Route::post('/tickets/{ticket}/cancel', [TicketController::class, 'cancel'])->na
 
 // Rutas de Asignación de Tickets
 Route::get('/support', [TicketAssignmentController::class, 'index'])->name('support.index')->middleware('can:support.index');//ticket sin asignar soporte
+Route::get('/support/center', [TicketAssignmentController::class, 'center'])->name('support.center')->middleware('can:support.center');
 Route::get('/support/{ticket}', [TicketAssignmentController::class, 'show'])->name('support.show')->middleware('can:support.show');
 Route::post('/support/{ticket}', [TicketAssignmentController::class, 'store'])->name('support.store')->middleware('can:support.store');
 

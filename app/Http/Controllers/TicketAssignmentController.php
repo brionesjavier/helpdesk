@@ -70,6 +70,26 @@ class TicketAssignmentController extends Controller
     
         return view('support.index', compact('tickets', 'states', 'users'));
     }
+
+
+    public function center(Request $request) {
+        // Construir la consulta base
+        $query = Ticket::query();
+    
+        // Filtrar por tickets no asignados
+        $query->doesntHave('assignedUsers');
+    
+        // Ordenar los resultados
+        $sortBy = $request->input('sort_by', 'created_at');
+        $sortDirection = $request->input('sort_direction', 'desc');
+        $query->orderBy($sortBy, $sortDirection);
+    
+        // Paginación
+        $tickets = $query->paginate(10)->appends($request->except('page'));
+    
+        return view('support.center', compact('tickets'));
+    }
+    
     
     
     
