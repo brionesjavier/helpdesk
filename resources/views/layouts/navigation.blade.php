@@ -68,6 +68,8 @@
                 </div>
                 @endcanany
 
+               
+
                 @canany(['categories.index','elements.index','states.index'])
                 {{--configuracion  --}}
                 <div class="hidden sm:flex sm:items-center sm:ms-6">
@@ -143,6 +145,12 @@
                                 {{ __('Usuario') }}
                             </x-dropdown-link>
                             @endcan
+
+                            
+                            <x-dropdown-link :href="route('reports.tickets')">
+                                {{ __('Reportes') }}
+                            </x-dropdown-link>
+                        
                            
                         </x-slot>
                     </x-dropdown>

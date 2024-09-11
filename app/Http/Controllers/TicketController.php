@@ -8,6 +8,7 @@ use App\Models\State;
 use App\Models\Ticket;
 use App\Models\TicketAssignment;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -322,7 +323,7 @@ public function process(Request $request, Ticket $ticket)
 
         $comment = $validated['content'];
         // Actualizar el estado del ticket
-        $ticket->update(['state_id' => 4,]); /* 4 ID del estado "Solucionado" */
+        $ticket->update(['state_id' => 4,'solved_at'=>Carbon::now()]); /* 4 ID del estado "Solucionado" */
         $ticket->comment()->create([
             'content' => $comment,
             'user_id' => auth::id(),
