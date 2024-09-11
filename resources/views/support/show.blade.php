@@ -1,5 +1,11 @@
 <x-app-layout>
     <x-slot name="header">
+        {{-- Mensaje de evento --}}
+        @if (session()->has('message'))
+            <div class="text-center bg-gray-100 dark:bg-gray-700 rounded-md p-2">
+                <span class="text-indigo-600 dark:text-indigo-300 text-xl font-semibold">{{ session('message') }}</span>
+            </div>
+        @endif
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
             {{ __('Detalles del Ticket') }} {{ $ticket->id }}
         </h2>
@@ -52,7 +58,7 @@
                                 @endforeach
                             </ul>
                 
-                             @if (!in_array($ticket->state_id, [4,7,8]))
+                             @if ((!in_array($ticket->state_id, [4,7,8])&& $ticket->is_active == 1))
     
 
                             <h3 class="text-lg font-semibold mb-2">Asignar/Reasignar Ticket</h3>
@@ -89,6 +95,9 @@
                                 <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-300 ease-in-out">
                                     Asignar/Reasignar
                                 </button>
+                                <a href="javascript:history.back()" class="ml-4 bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                                    Volver
+                                </a>
                             </form>
                             @else
                             <p class="text-red-500">No se puede asignar o reasignar el ticket en el estado actual.</p>

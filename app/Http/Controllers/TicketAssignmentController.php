@@ -44,11 +44,13 @@ class TicketAssignmentController extends Controller
                   ->where('is_active', true);
             });
         }
-    
+        //filtrar por estado ticket
+        $query->whereNotIn('state_id', [4, 7, 8]);// 4= solucionado , 7 = Finalizado, 8 = Cancelado
         // Filtrar por estado
         if ($state && $state != 'all') {
             $query->where('state_id', $state);
         }
+        
     
         // Filtrar por asignación
         if ($assignment && $assignment == 'has_assignment') {
@@ -66,7 +68,8 @@ class TicketAssignmentController extends Controller
         $tickets = $query->paginate(10)->appends($request->except('page'));
     
         // Obtener todos los estados para el filtro
-        $states = State::all();
+        //$states = State::all();
+        $states = State::whereNotIn('id', [4, 7, 8])->get();
     
         // Obtener todos los usuarios para el filtro de asignación
         $users = User::where('assignable', true)->get();
@@ -84,6 +87,9 @@ class TicketAssignmentController extends Controller
 
         // Construir la consulta base
         $query = Ticket::query();
+
+        //filtrar por estado ticket
+        $query->whereNotIn('state_id', [4, 7, 8]);// 4= solucionado , 7 = Finalizado, 8 = Cancelado
     
         // Filtrar por tickets no asignados
         $query->doesntHave('assignedUsers');
@@ -120,6 +126,7 @@ class TicketAssignmentController extends Controller
 
         // Obtener los tickets asignados al usuario
         $tickets = $user->assignedTickets()->wherePivot('is_active', true)
+            ->whereNotIn('state_id', [4, 7, 8])
             ->paginate();
 
         $states = State::all();
@@ -145,20 +152,12 @@ class TicketAssignmentController extends Controller
         $details = $request->validated()['details'];
         $priority = $request->validated()['priority'];
 
-
-        /// Actualizar el estado del ticket
-        $ticket->update([
-            'state_id' => 2,
-            'priority' => $priority
-        ]);
-
-
         $currentAssignee = $ticket->assignedUsers()->where('is_active', true)->first();
 
         if ($currentAssignee && $currentAssignee->id == $userId) {
             // Si el usuario seleccionado es el mismo que el actual, redirige con un mensaje de error
             return redirect()->route('support.show', $ticket)
-                ->with('error', 'El ticket ya está asignado a este usuario.');
+                ->with('message', 'El ticket ya está asignado a este usuario.');
         }
 
         // Desactivar asignaciones anteriores
@@ -171,6 +170,12 @@ class TicketAssignmentController extends Controller
             'user_id' => $userId,
             'details' => $details,
             'is_active' => true,
+        ]);
+
+         /// Actualizar el estado del ticket
+         $ticket->update([
+            'state_id' => 2,
+            'priority' => $priority
         ]);
 
         // Obtener la URL de la última vista desde la sesión

@@ -108,7 +108,7 @@
 
                                 <!-- Address (Optional) -->
                                 <div>
-                                    <x-input-label for="address" :value="__('Dirección *(opcional)')" />
+                                    <x-input-label for="address" :value="__('Dirección')" />
                                     <x-text-input 
                                         id="address" 
                                         class="block mt-1 w-full" 
@@ -123,7 +123,7 @@
                            
                                 <!-- City (Optional) -->
                                 <div>
-                                    <x-input-label for="city" :value="__('Ciudad *(opcional)')" />
+                                    <x-input-label for="city" :value="__('Ciudad')" />
                                     <x-text-input 
                                         id="city" 
                                         class="block mt-1 w-full" 

@@ -131,19 +131,23 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100"><a href="{{ route('tickets.show',$ticket) }}">{{ $ticket->title }}</a></td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ $ticket->created_at->format('Y-m-d H:i:s') }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                            @forelse($ticket->assignedUsers->unique('id') as $user)
-                                                {{ $user->first_name }} {{ $user->last_name }}@if(!$loop->last), @endif
-                                            @empty
-                                                Sin asignar
-                                            @endforelse
+                                            <a href="{{ route('support.show',$ticket) }}">
+                                                @forelse($ticket->assignedUsers->unique('id') as $user)
+                                                    {{ $user->first_name }} {{ $user->last_name }}@if(!$loop->last), @endif
+                                                @empty
+                                                    Sin asignar
+                                                @endforelse
+                                            </a>
                                         </td>
                                         
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                            
                                             @foreach($ticket->assignedUsers as $index => $user)
                                                 @if ($index === 0)
                                                     {{ $user->pivot->created_at->format('Y-m-d H:i:s') }}
                                                 @endif
                                             @endforeach
+                                        
                                         @if($ticket->assignedUsers->isEmpty())
                                             Sin asignar
                                         @endif

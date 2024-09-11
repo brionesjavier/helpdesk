@@ -299,11 +299,7 @@ public function process(Request $request, Ticket $ticket)
     ]);
 
 
-     // Obtener la URL de la última vista desde la sesión
-     $lastView = $request->session()->get('last_view', route('tickets.index'));
-
-     // Redirigir a la última vista
-     return redirect($lastView)->with('message', 'ticket marcado como en proceso.');
+     return redirect()->route('tickets.show', compact('ticket') )->with('message', 'ticket  en proceso.');
 
 }
 
@@ -338,7 +334,7 @@ public function process(Request $request, Ticket $ticket)
          $lastView = $request->session()->get('last_view', route('tickets.index'));
 
          // Redirigir a la última vista
-         return redirect($lastView)->with('message', 'Comentario agregado y ticket marcado como solucionado.');
+         return redirect($lastView)->with('message', ' ticket solucionado.');
 
 }
 
@@ -368,7 +364,7 @@ public function reopen(Request $request, Ticket $ticket)
     $lastView = $request->session()->get('last_view', route('tickets.index'));
 
     // Redirigir a la última vista
-    return redirect($lastView)->with('message', 'Ticket reabierto con comentario agregado.');
+    return redirect($lastView)->with('message', 'Ticket reabierto.');
 }
 
 // Mostrar el formulario para derivar el ticket
@@ -412,7 +408,7 @@ public function derive(Request $request, Ticket $ticket)
     $lastView = $request->session()->get('last_view', route('tickets.index'));
 
     // Redirigir a la última vista
-    return redirect($lastView)->with('message', 'Ticket derivado con comentario agregado.');
+    return redirect($lastView)->with('message', 'Ticket derivado .');
 }
 
 // Procesar el cierre del ticket
@@ -460,13 +456,14 @@ public function cancel(Request $request, Ticket $ticket)
         'state_ticket' => 'Cancelado',
     ]);
 
-    $ticket->update(['state_id' => 8,]); /* 8 ID del estado "Cancelado" */
+    $ticket->update(['state_id' => 8,'solved_at'=>Carbon::now()]); /* 8 ID del estado "Cancelado" */
 
     // Obtener la URL de la última vista desde la sesión
     $lastView = $request->session()->get('last_view', route('tickets.index'));
 
+
     // Redirigir a la última vista
-    return redirect($lastView)->with('message', 'Ticket cancelado con comentario agregado.');
+    return redirect($lastView)->with('message', 'Ticket cancelado ');
 }
 
 

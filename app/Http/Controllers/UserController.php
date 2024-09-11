@@ -87,8 +87,8 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email,' . $user->id,
             'phone' => 'required|regex:/^\d{9}$/',
             'birthdate'=>'required|date|before_or_equal:'.date('Y-m-d'),
-            'address'=>'required|string',
-            'city'=>'required|string',
+            'address'=>'string',
+            'city'=>'string',
             'assignable' => 'required|boolean',
         ]);
 

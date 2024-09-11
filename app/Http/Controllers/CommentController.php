@@ -24,13 +24,6 @@ class CommentController extends Controller
 
         ]);
         
-        if(($ticket->state_id == 2 ||$ticket->state_id == 5)&&  $ticket->assignedUsers()->where('user_id', auth::id())->exists()){
-            $ticket->update(['state_id'=>3]);
-            //registro historial
-            $stateName = $ticket->state->name;
-            $message = "Ticket actualizado:  Estado: $stateName ";
-            HistoryController::logAction($ticket->id, auth::id(), $message);
-        }
 
         HistoryController::logAction($ticket->id, auth::id(), "Agregado un comentario: $request->content");
         //return redirect()->back()->with('success', 'Comentario añadido con éxito.');

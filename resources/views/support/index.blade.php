@@ -224,7 +224,7 @@
                         </table>
 
                         <div class="mt-4">
-                            {{ __('$tickets->links()') }}
+                           {{--   __('$tickets->links()')  --}}
                             {{ $tickets->appends(request()->except('page'))->links() }}
                         </div>
                     </div>

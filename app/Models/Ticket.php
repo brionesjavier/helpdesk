@@ -61,6 +61,14 @@ class Ticket extends Model
             $minutes = abs($now->diffInMinutes($createdAt));
         }
 
+                // Llama a getSLAInMinutesOnCancellation y verifica si no es null
+                $sla = $this->getSLAInMinutesOnCancellation();
+
+                if ($sla !== null) {
+                    // Hacer algo con el SLA si no es null
+                    return $sla;
+                }
+
         // Redondear a la unidad más cercana
         return round($minutes);
     }
@@ -77,8 +85,31 @@ class Ticket extends Model
     
             return round($minutes);
         }
-    
+
+                // Llama a getSLAInMinutesOnCancellation y verifica si no es null
+                $sla = $this->getSLAInMinutesOnCancellation();
+
+                if ($sla !== null) {
+                    // Hacer algo con el SLA si no es null
+                    return $sla;
+                }
+        
         return null;
     }
+
+
+   public function getSLAInMinutesOnCancellation(){
+    // Verifica si no hay usuarios asignados y si el ticket ha sido resuelto.
+    if ($this->assignedUsers->isEmpty() && $this->solved_at) {
+
+        // Convierte las fechas de creación y resolución a objetos Carbon.
+        $assignedAt = Carbon::parse($this->created_at);
+        $solvedAt = Carbon::parse($this->solved_at);
+
+        // Calcula y retorna la diferencia en minutos entre ambas fechas, redondeada al entero más cercano.
+        return round(abs($assignedAt->diffInMinutes($solvedAt)));
+    }
+        return null;
+   }
 
 }
