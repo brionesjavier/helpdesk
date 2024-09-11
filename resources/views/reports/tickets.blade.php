@@ -15,34 +15,87 @@
 
             <!-- Buscador y filtros -->
             <div class="mb-4">
-                <form method="GET" action="{{ route('reports.tickets') }}">
-                    <div class="flex space-x-4 mb-4">
-                        <input type="text" name="search" placeholder="Search by title, user, or ID" 
-                               value="{{ $search }}" class="rounded-md border-gray-300 dark:bg-gray-700 dark:text-white">
+                <form action="{{ route('reports.tickets') }}" method="GET">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <!-- Filtro de búsqueda -->
+                        <div>
+                            <label for="search" class="block text-sm font-medium text-gray-700 dark:text-white">Buscar</label>
+                            <input type="text" name="search" id="search" value="{{ request('search') }}" 
+                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:text-white">
+                        </div>
+                
+                        <!-- Filtro de estado -->
+                        <div>
+                            <label for="status" class="block text-sm font-medium text-gray-700 dark:text-white">Estado</label>
+                            <select name="status" id="status" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:text-white">
+                                <option value="all">Todos los estados</option>
+                                @foreach($states as $state)
+                                    <option value="{{ $state->id }}" {{ request('status') == $state->id ? 'selected' : '' }}>
+                                        {{ $state->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                
+                        <!-- Filtro de prioridad -->
+                        <div>
+                            <label for="priority" class="block text-sm font-medium text-gray-700 dark:text-white">Prioridad</label>
+                            <select name="priority" id="priority" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:text-white">
+                                <option value="all">Todas las prioridades</option>
+                                <option value="high" {{ request('priority') == 'high' ? 'selected' : '' }}>Alta</option>
+                                <option value="medium" {{ request('priority') == 'medium' ? 'selected' : '' }}>Media</option>
+                                <option value="low" {{ request('priority') == 'low' ? 'selected' : '' }}>Baja</option>
+                            </select>
+                        </div>
 
-                        <select name="priority" class="rounded-md border-gray-300 dark:bg-gray-700 dark:text-white">
-                            <option value="">All Priorities</option>
-                            <option value="low" {{ request('priority') == 'low' ? 'selected' : '' }}>Low</option>
-                            <option value="medium" {{ request('priority') == 'medium' ? 'selected' : '' }}>Medium</option>
-                            <option value="high" {{ request('priority') == 'high' ? 'selected' : '' }}>High</option>
-                        </select>
-
-                        <select name="status" class="rounded-md border-gray-300 dark:bg-gray-700 dark:text-white">
-                            <option value="">All Statuses</option>
-                            @foreach($states as $state)
-                                <option value="{{ $state->id }}" {{ request('status') == $state->id ? 'selected' : '' }}>
-                                    {{ $state->name }}
-                                </option>
-                            @endforeach
-                        </select>
-
-                        <input type="date" name="start_date" placeholder="Start Date" 
-                                class="rounded-md border-gray-300 dark:bg-gray-700 dark:text-white">
-
-                        <input type="date" name="end_date" placeholder="End Date" 
-                               value="{{ request('end_date', now()->toDateString()) }}" class="rounded-md border-gray-300 dark:bg-gray-700 dark:text-white">
-
-                        <button type="submit" class="bg-indigo-500 text-white px-4 py-2 rounded-md">Search</button>
+                        <div >
+                            <label for="category" class="block text-sm font-medium text-gray-700 dark:text-white">Categoría</label>
+                            <select name="category" id="category" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:text-white">
+                                <option value="all">Todas las Categorías</option>
+                                @foreach($categories as $cat)
+                                    <option value="{{ $cat->id }}" {{ (request('category') == $cat->id) ? 'selected' : '' }}>
+                                        {{ $cat->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                
+                        <!-- Filtro de usuario asignado -->
+                        <div>
+                            <label for="user" class="block text-sm font-medium text-gray-700 dark:text-white">Usuario Asignado</label>
+                            <select name="user" id="user" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:text-white">
+                                <option value="all">Todos los usuarios</option>
+                                @foreach($users as $user)
+                                    <option value="{{ $user->id }}" {{ request('user') == $user->id ? 'selected' : '' }}>
+                                        {{ $user->first_name }} {{ $user->last_name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                
+                        <!-- Filtro de fecha de inicio -->
+                        <div>
+                            <label for="start_date" class="block text-sm font-medium text-gray-700 dark:text-white">Fecha de Inicio</label>
+                            <input type="date" name="start_date" id="start_date" value="{{ request('start_date') }}" 
+                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:text-white">
+                        </div>
+                
+                        <!-- Filtro de fecha de fin -->
+                        <div>
+                            <label for="end_date" class="block text-sm font-medium text-gray-700 dark:text-white">Fecha de Fin</label>
+                            <input type="date" name="end_date" id="end_date" value="{{ request('end_date') }}" 
+                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:text-white">
+                        </div>
+                        
+                        <!-- Botones de acción -->
+                        <div class="flex items-end">
+                            <button type="submit" class="mr-2 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Aplicar Filtros
+                            </button>
+                            <a href="{{ route('reports.tickets') }}" class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Limpiar
+                            </a>
+                        </div>
                     </div>
                 </form>
             </div>
