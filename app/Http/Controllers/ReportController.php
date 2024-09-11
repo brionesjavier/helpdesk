@@ -8,6 +8,7 @@ use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class ReportController extends Controller
 {
@@ -101,6 +102,87 @@ class ReportController extends Controller
         return view('reports.tickets', compact('tickets', 'search', 'status', 'priority', 'startDate', 'endDate', 'states', 'users', 'categories', 'category'));
     }
     
+
+    public function ticketsSummaryReport()
+    {
+        // Contar tickets totales
+        $totalTickets = Ticket::count();
+    
+        // Calcular SLA de atención promedio para cada usuario
+        $slaAttentionByUser = User::select(
+            'users.id',
+            'users.first_name',
+            'users.last_name',
+            DB::raw('AVG(TIMESTAMPDIFF(MINUTE, ticket_assigns.created_at, tickets.created_at)) as avg_attention_time'),
+            DB::raw('COUNT(ticket_assigns.id) as total')
+        )
+            ->join('ticket_assigns', 'users.id', '=', 'ticket_assigns.user_id')
+            ->join('tickets', 'ticket_assigns.ticket_id', '=', 'tickets.id')
+            ->groupBy('users.id', 'users.first_name', 'users.last_name')
+            ->orderBy('total', 'desc')
+            ->get();
+    
+        // Calcular SLA de solución promedio para cada usuario
+        $slaResolutionByUser = User::select(
+            'users.id',
+            'users.first_name',
+            'users.last_name',
+            DB::raw('AVG(TIMESTAMPDIFF(MINUTE, ticket_assigns.created_at, tickets.solved_at)) as avg_resolution_time'),
+            DB::raw('COUNT(ticket_assigns.id) as total')
+        )
+            ->join('ticket_assigns', 'users.id', '=', 'ticket_assigns.user_id')
+            ->join('tickets', 'ticket_assigns.ticket_id', '=', 'tickets.id')
+            ->whereNotNull('tickets.solved_at')
+            ->groupBy('users.id', 'users.first_name', 'users.last_name')
+            ->orderBy('total', 'desc')
+            ->get();
+    
+        // Calcular el SLA de atención promedio general
+        $avgAttentionTime = Ticket::select(DB::raw('AVG(TIMESTAMPDIFF(MINUTE, ticket_assigns.created_at, tickets.created_at)) as avg_attention_time'))
+            ->join('ticket_assigns', 'tickets.id', '=', 'ticket_assigns.ticket_id')
+            ->value('avg_attention_time');
+            
+        // Calcular el SLA de solución promedio general
+        $avgResolutionTime = Ticket::select(DB::raw('AVG(TIMESTAMPDIFF(MINUTE, ticket_assigns.created_at, tickets.solved_at)) as avg_resolution_time'))
+            ->join('ticket_assigns', 'tickets.id', '=', 'ticket_assigns.ticket_id')
+            ->whereNotNull('tickets.solved_at')
+            ->value('avg_resolution_time');
+    
+        // Otros datos necesarios para el informe
+        $ticketsByCategory = Ticket::select('categories.name as category', DB::raw('count(tickets.id) as total'))
+            ->join('elements', 'tickets.element_id', '=', 'elements.id')
+            ->join('categories', 'elements.category_id', '=', 'categories.id')
+            ->groupBy('categories.name')
+            ->get();
+    
+        $ticketsByElement = Ticket::select('elements.name as element', DB::raw('count(tickets.id) as total'))
+            ->join('elements', 'tickets.element_id', '=', 'elements.id')
+            ->groupBy('elements.name')
+            ->get();
+    
+        $ticketsByPriority = Ticket::select('priority', DB::raw('count(id) as total'))
+            ->groupBy('priority')
+            ->get();
+    
+        $ticketsByUser = User::select('users.first_name', 'users.last_name', DB::raw('count(ticket_assigns.id) as total'))
+            ->join('ticket_assigns', 'users.id', '=', 'ticket_assigns.user_id')
+            ->groupBy('users.id')
+            ->get();
+    
+        return view('reports.summary', compact(
+            'totalTickets',
+            'ticketsByCategory',
+            'ticketsByElement',
+            'ticketsByPriority',
+            'ticketsByUser',
+            'slaAttentionByUser',
+            'slaResolutionByUser',
+            'avgAttentionTime',
+            'avgResolutionTime'
+        ));
+    }
+    
+
 }
 
     

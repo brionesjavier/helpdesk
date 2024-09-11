@@ -130,4 +130,7 @@ Route::get('/tickets-assigned', [TicketAssignmentController::class, 'assigned'])
 
 Route::get('/reports/tickets', [ReportController::class, 'ticketsReport'])->name('reports.tickets');
 
+Route::get('/reports/summary', [ReportController::class, 'ticketsSummaryReport'])->name('reports.summary');
+
+
 require __DIR__.'/auth.php';
