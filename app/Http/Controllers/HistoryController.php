@@ -19,8 +19,11 @@ class HistoryController extends Controller
         ]);
     }
 
-    public function index($ticketId)
+    public function index(Request $request,$ticketId)
     {
+        // Guardar la URL actual en la sesión
+        $request->session()->put('last_view', url()->current());
+
         $histories = History::where('ticket_id', $ticketId)
         ->get();
 
@@ -40,6 +43,9 @@ class HistoryController extends Controller
     } */
     public function myHistories(Request $request)
 {
+     // Guardar la URL actual en la sesión
+    $request->session()->put('last_view', url()->current());
+
     // Recuperar los parámetros de búsqueda
     $search = $request->input('search');
     $stateId = $request->input('state');

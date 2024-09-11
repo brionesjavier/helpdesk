@@ -15,6 +15,9 @@ class TicketAssignmentController extends Controller
 {
     public function index(Request $request)
     {
+        // Guardar la URL actual en la sesión
+        $request->session()->put('last_view', url()->current());
+
         // Obtener los parámetros de la solicitud
         $search = $request->input('search');
         $state = $request->input('state');
@@ -67,12 +70,18 @@ class TicketAssignmentController extends Controller
     
         // Obtener todos los usuarios para el filtro de asignación
         $users = User::where('assignable', true)->get();
+
+        
     
         return view('support.index', compact('tickets', 'states', 'users'));
     }
 
 
     public function center(Request $request) {
+
+        // Guardar la URL actual en la sesión
+        $request->session()->put('last_view', url()->current());
+
         // Construir la consulta base
         $query = Ticket::query();
     
@@ -95,8 +104,11 @@ class TicketAssignmentController extends Controller
     
 
     //TODO: bandeja soporte
-    public function assigned(): View
+    public function assigned(Request $request): View
     {
+        // Guardar la URL actual en la sesión
+        $request->session()->put('last_view', url()->current());
+
         // Obtener el usuario autenticado
         $user = auth::user();
 
@@ -162,7 +174,7 @@ class TicketAssignmentController extends Controller
         ]);
 
         // Obtener la URL de la última vista desde la sesión
-        $lastView = $request->session()->get('last_view', route('tickets.index'));
+        $lastView = $request->session()->get('last_view', route('tickets.my'));
 
         // Redirigir a la última vista
         return redirect($lastView)->with('message', 'Ticket asignado/reasignado correctamente.');

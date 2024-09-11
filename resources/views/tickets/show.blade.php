@@ -12,11 +12,11 @@
                 {{ __('Ticket') }}: {{ $ticket->id }} - {{ $ticket->state->name }}
             </h2>
             @can('tickets.edit')
-            {{-- <div class="overflow-hidden shadow-sm sm:rounded-lg mb-4">
-                <div class="p-4 text-gray-900 dark:text-gray-100 space-x-4"> --}}
-                    <a href="{{ route('tickets.edit',$ticket) }}" class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">{{ __('Editar') }}</a>
-            {{--     </div>
-            </div> --}}
+                @if ($ticket->state_id==1)
+                <a href="{{ route('tickets.edit',$ticket) }}" class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">{{ __('Editar') }}</a>
+                @endif
+                    <
+            
             @endcan
         </div>
     </x-slot>

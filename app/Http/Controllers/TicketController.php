@@ -322,14 +322,16 @@ public function process(Request $request, Ticket $ticket)
         ]);
 
         $comment = $validated['content'];
-        // Actualizar el estado del ticket
-        $ticket->update(['state_id' => 4,'solved_at'=>Carbon::now()]); /* 4 ID del estado "Solucionado" */
+        
         $ticket->comment()->create([
             'content' => $comment,
             'user_id' => auth::id(),
             'ticket_id' => $ticket->id,
-            'state_ticket' => $ticket->state->name,
+            'state_ticket' => 'Solucionado',
         ]);
+
+        // Actualizar el estado del ticket
+        $ticket->update(['state_id' => 4,'solved_at'=>Carbon::now()]); /* 4 ID del estado "Solucionado" */
     
 
          // Obtener la URL de la última vista desde la sesión
@@ -352,15 +354,15 @@ public function reopen(Request $request, Ticket $ticket)
     $validated = $request->validate([ 'content' => 'required|string',]);
     $comment = $validated['content'];
 
-    $ticket->update(['state_id' => 5,]); /* 5 ID del estado "Reabierto" */
+    
     $ticket->comment()->create([
         'content' => $comment,
         'user_id' => auth::id(),
         'ticket_id' => $ticket->id,
-        'state_ticket' => $ticket->state->name,
+        'state_ticket' => 'Objetado',
     ]);
 
-    
+    $ticket->update(['state_id' => 5,]); /* 5 ID del estado "Reabierto" */
 
     // Obtener la URL de la última vista desde la sesión
     $lastView = $request->session()->get('last_view', route('tickets.index'));
@@ -384,14 +386,16 @@ public function derive(Request $request, Ticket $ticket)
 
     $comment = $validated['content'];
     
-    $ticket->update(['state_id' => 6,]); /* 6 ID del estado "derivado" */
+    
     $ticket->comment()->create([
         'content' => $comment,
         'user_id' => auth::id(),
         'ticket_id' => $ticket->id,
-        'state_ticket' => $ticket->state->name,
+        'state_ticket' => 'Derivado',
     ]);
     
+    $ticket->update(['state_id' => 6,]); /* 6 ID del estado "derivado" */
+
     // Desactivar asignaciones anteriores
     TicketAssignment::where('ticket_id', $ticket->id)->update(['is_active' => false]);
 
@@ -421,8 +425,10 @@ public function close( Request $request,Ticket $ticket)
         'content' => $comment,
         'user_id' => auth::id(),
         'ticket_id' => $ticket->id,
-        'state_ticket' => $ticket->state->name,
+        'state_ticket' => 'Finalizado',
     ]);
+
+    $ticket->update(['state_id' => 7,]); /* 7 ID del estado "Cerrado" */
 
     // Obtener la URL de la última vista desde la sesión
     $lastView = $request->session()->get('last_view', route('tickets.index'));
@@ -446,14 +452,15 @@ public function cancel(Request $request, Ticket $ticket)
 
     $comment = $validated['content'];
 
-    $ticket->update(['state_id' => 8,]); /* 8 ID del estado "Cancelado" */
 
     $ticket->comment()->create([
         'content' => $comment,
         'user_id' => auth::id(),
         'ticket_id' => $ticket->id,
-        'state_ticket' => $ticket->state->name,
+        'state_ticket' => 'Cancelado',
     ]);
+
+    $ticket->update(['state_id' => 8,]); /* 8 ID del estado "Cancelado" */
 
     // Obtener la URL de la última vista desde la sesión
     $lastView = $request->session()->get('last_view', route('tickets.index'));

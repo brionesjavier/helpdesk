@@ -109,13 +109,13 @@
                                             @can('tickets.show')
                                                 <a href="{{ route('tickets.show', $ticket) }}" class="inline-flex items-center px-3 py-1.5 text-white bg-blue-600 hover:bg-blue-700 border border-transparent rounded-md shadow-sm text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Ver</a>
                                             @endcan
-                                            @can('tickets.destroy')
+                                          {{--   @can('tickets.destroy')
                                                 <form action="{{ route('tickets.destroy', $ticket) }}" method="post" style="display:inline;">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="inline-flex items-center px-3 py-1.5 text-white bg-red-600 hover:bg-red-700 border border-transparent rounded-md shadow-sm text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">Eliminar</button>
                                                 </form>
-                                            @endcan
+                                            @endcan --}}
                                             @can('history.index')
                                                 <a href="{{ route('history.index', $ticket) }}" class="inline-flex items-center px-3 py-1.5 text-white bg-green-600 hover:bg-green-700 border border-transparent rounded-md shadow-sm text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">Historial</a>
                                             @endcan

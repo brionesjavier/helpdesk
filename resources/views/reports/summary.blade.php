@@ -43,7 +43,7 @@
                     <tbody>
                         @foreach ($ticketsByCategory as $item)
                             <tr>
-                                <td class="py-2 px-4 border-b">{{ $item->category }}</td>
+                                <td class="py-2 px-4 border-b">{{ $item->name }}</td>
                                 <td class="py-2 px-4 border-b">{{ $item->total }}</td>
                             </tr>
                         @endforeach

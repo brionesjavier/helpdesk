@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Detalles del Ticket') }}
+            {{ __('Detalles del Ticket') }} {{ $ticket->id }}
         </h2>
     </x-slot>
 
@@ -9,9 +9,9 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-
-                    <h1 class="text-2xl font-semibold mb-4">Detalles del Ticket</h1>
-
+{{-- 
+                    <h1 class="text-2xl font-semibold mb-4">Detalles del Ticket {{ $ticket->id }} </h1>
+ --}}
                     <div class="mb-4">
                         <p><strong>Ticket ID:</strong> {{ $ticket->id }}</p>
                         <p><strong>Título:</strong> {{ $ticket->title }}</p>
@@ -44,10 +44,16 @@
                                         {{ $assignment->first_name }} {{ $assignment->last_name }} asignado el {{ $assignment->pivot->created_at }}: {{ $assignment->pivot->details }}
                                         @if($assignment->pivot->is_active)
                                             <strong class="text-green-600 dark:text-green-400">(Asignación Actual)</strong>
+                                        @else
+                                            <strong class="text-red-600 dark:text-red-400">(Sin Asignación )</strong>
+
                                         @endif
                                     </li>
                                 @endforeach
                             </ul>
+                
+                             @if (!in_array($ticket->state_id, [4,7,8]))
+    
 
                             <h3 class="text-lg font-semibold mb-2">Asignar/Reasignar Ticket</h3>
                             <form action="{{ route('support.store', $ticket) }}" method="POST">
@@ -84,6 +90,10 @@
                                     Asignar/Reasignar
                                 </button>
                             </form>
+                            @else
+                            <p class="text-red-500">No se puede asignar o reasignar el ticket en el estado actual.</p>
+                            
+                            @endif
                         </div>
                     @endcan
                 </div>
