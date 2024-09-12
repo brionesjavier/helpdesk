@@ -51,7 +51,7 @@ Route::get('categories/create', [CategoryController::class,'create'])->name('cat
 Route::post('categories/create', [CategoryController::class,'store'])->name('categories.store')->middleware('can:categories.store');
 Route::get('categories/{category}/edit', [CategoryController::class,'edit'])->name('categories.edit')->middleware('can:categories.edit');
 Route::put('categories/{category}/update', [CategoryController::class,'update'])->name('categories.update')->middleware('can:categories.update');
-Route::get('categories/{category}/elements', [CategoryController::class,'getElements'])->name('getElements')->middleware('can:categories.show');
+Route::get('categories/{category}/elements', [CategoryController::class,'getElements'])->name('getElements')->middleware('can:getElements');
 Route::get('categories/{category}', [CategoryController::class,'show'])->name('categories.show')->middleware('can:categories.show');
 Route::delete('categories/{category}', [CategoryController::class,'destroy'])->name('categories.destroy')->middleware('can:categories.destroy');
 
@@ -128,9 +128,9 @@ Route::get('/tickets-assigned', [TicketAssignmentController::class, 'assigned'])
 
 //reporte
 
-Route::get('/reports/tickets', [ReportController::class, 'ticketsReport'])->name('reports.tickets');
+Route::get('/reports/tickets', [ReportController::class, 'ticketsReport'])->name('reports.tickets')->middleware('can:reports.tickets');;
 
-Route::get('/reports/summary', [ReportController::class, 'ticketsSummaryReport'])->name('reports.summary');
+Route::get('/reports/summary', [ReportController::class, 'ticketsSummaryReport'])->name('reports.summary')->middleware('can:reports.summary');;
 
 
 require __DIR__.'/auth.php';

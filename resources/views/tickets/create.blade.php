@@ -11,8 +11,9 @@
                         <x-text-input id="title" class="block mt-1 w-full" type="text" name="title" :value="old('title')"  placeholder="Ingresa Nombre de la categoría" />
                         <x-input-error :messages="$errors->get('title')" class="mt-2" />
 
+                           
                         <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-300">categoria</label>
-                        <select name="category" onchange="loadElement(this)" id="" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full">
+                        <select name="category"  id="" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full">
                             <option value="" selected>Seleccione una categoría</option>
                             @foreach ($categories as $key => $category)
                                 <option value="{{ $category->id }}" >{{  $category->name }}</option>
@@ -45,7 +46,7 @@
                             
                         </div>
                     </form>
-                    <script src="{{ asset('js/categorias.js') }}"></script>
+                    
                     @endcan
                 </div>
             </div>

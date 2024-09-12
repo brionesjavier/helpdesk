@@ -65,13 +65,13 @@
                             <div class="flex-none relative">
                                 <x-input-label for="sort_direction" :value="__('Dirección')" />
                                 <select id="sort_direction" name="sort_direction" class="block mt-1 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-indigo-300 dark:focus:border-indigo-500 focus:ring focus:ring-indigo-200 dark:focus:ring-indigo-700 focus:ring-opacity-50">
-                                    <option value="desc" {{ request('sort_direction') == 'desc' ? 'selected' : '' }}>
-                                        Descendente
-                                        <span class="inline-block ml-2">&#9660;</span> <!-- Flecha hacia abajo -->
+                                    <option value="desc" class="inline-block ml-2" {{ request('sort_direction') == 'desc' ? 'selected' : '' }}>
+                                        Descendente &#9660;
+                                        <!-- Flecha hacia abajo -->
                                     </option>
-                                    <option value="asc" {{ request('sort_direction') == 'asc' ? 'selected' : '' }}>
-                                        Ascendente
-                                        <span class="inline-block ml-2">&#9650;</span> <!-- Flecha hacia arriba -->
+                                    <option value="asc" class="inline-block ml-2" {{ request('sort_direction') == 'asc' ? 'selected' : '' }}>
+                                        Ascendente &#9650;
+                                        <!-- Flecha hacia arriba -->
                                     </option>
                                 </select>
                             </div>
