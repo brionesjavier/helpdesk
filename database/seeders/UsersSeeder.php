@@ -53,6 +53,7 @@ class UsersSeeder extends Seeder
         //asignando roles a usuario
         $usuario->assignRole($userRole);
         $soporte->assignRole($soporteRole);
+        $soporte->assignRole($userRole);
         $administrador->assignRole($adminRole);
 
 

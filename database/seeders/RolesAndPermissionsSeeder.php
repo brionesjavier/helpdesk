@@ -32,6 +32,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'categories.update' => 'Actualizar categoría.',
             'categories.show' => 'Ver detalles de categoría.',
             'categories.destroy' => 'Eliminar categoría.',
+            'getElements'=>'obtiene los sub elemento de categoria Api',
             'elements.index' => 'Ver lista de elementos.',
             'elements.create' => 'Crear nuevo elemento.',
             'elements.store' => 'Guardar nuevo elemento.',
@@ -108,13 +109,13 @@ class RolesAndPermissionsSeeder extends Seeder
             ],
             'user' => [
                 'tickets.my', 'histories.my', 'tickets.create', 'tickets.store',
-                'tickets.show', 'comments.store', 'comments.index','categories.show',
+                'tickets.show', 'comments.store', 'comments.index','getElements',
                 'tickets.cancel', 'tickets.cancel.submit',
             ],
             'support' => [
                 'tickets.index', 'tickets.solve', 'tickets.solve.submit', 'tickets.derive', 'tickets.derive.submit',
                 'tickets.close', 'tickets.close.submit', 'tickets.reopen', 'tickets.reopen.submit',
-                 'tickets.cancel', 'tickets.cancel.submit',
+                 'tickets.cancel', 'tickets.cancel.submit','support.center','support.search',
                 'history.index', 'comments.index', 'comments.store',
             ],
         ];
