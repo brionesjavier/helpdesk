@@ -17,19 +17,50 @@ class ReportController extends Controller
      */
     public function ticketsReport(Request $request)
     {
-        // Obtener los valores de los filtros desde la solicitud
+
+    // Guardar la URL actual en la sesión
+    $request->session()->put('last_view', url()->current());
+
+     // Validar los datos del formulario
+     $validated = $request->validate([
+        'search' => 'nullable|string|max:255',
+        'status' => 'nullable|integer|exists:ticket_states,id',
+        'priority' => 'nullable|string|in:low,medium,high',
+        'start_date' => 'nullable|date',
+        'end_date' => 'nullable|date|after_or_equal:start_date',
+        'user' => 'nullable|integer|exists:users,id',
+        'category' => 'nullable|integer|exists:categories,id',
+        'order_by' => 'nullable|string|in:created_at,priority,title,id',
+        'direction' => 'nullable|string|in:asc,desc',
+
+    ]);
+
+    // Extraer los valores validados o establecer valores predeterminados
+    $search = $validated['search'] ?? null;
+    $status = $validated['status'] ?? 'all';
+    $priority = $validated['priority'] ?? 'all';
+    $startDate = isset($validated['start_date']) ? Carbon::parse($validated['start_date'])->startOfDay() : null;
+    $endDate = isset($validated['end_date']) ? Carbon::parse($validated['end_date'])->endOfDay() : Carbon::now()->endOfDay();
+    $user = $validated['user'] ?? 'all';
+    $category = $validated['category'] ?? 'all';
+    $orderBy = $validated['order_by'] ?? 'created_at';
+    $direction = $validated['direction'] ?? 'desc';
+
+
+
+       /*  // Obtener los valores de los filtros desde la solicitud
         $search = $request->input('search');
         $status = $request->input('status');
         $priority = $request->input('priority');
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
         $user = $request->input('user');
-        $category = $request->input('category'); // Obtener la categoría desde el request
+        $category = $request->input('category'); // Obtener la categoría desde el request */
 
         // Ajustar la fecha final para incluir hasta el final del día
-        $endDate = $endDate ? Carbon::parse($endDate)->endOfDay() : now()->endOfDay();
+       /*  $endDate = $endDate ? Carbon::parse($endDate)->endOfDay() : now()->endOfDay();
         // Si no se proporciona una fecha de inicio, usar una fecha por defecto (null)
-        $startDate = $startDate ? Carbon::parse($startDate)->startOfDay() : null;
+        $startDate = $startDate ? Carbon::parse($startDate)->startOfDay() : null; */
 
         // Construir la consulta para los tickets con filtros dinámicos
         $tickets = Ticket::with(['assignedUsers', 'state', 'element.category']) // Relaciones necesarias
@@ -64,7 +95,8 @@ class ReportController extends Controller
                     $query->where('id', $category); // Filtrar por categoría
                 });
             })
-            ->orderBy('created_at', 'desc') // Ordenar por fecha de creación
+            //->orderBy('created_at', 'desc') // Ordenar por fecha de creación
+            ->orderBy($orderBy, $direction) // Ordenar por ID en desc
             ->paginate(10); // Paginación de resultados
 
         // Agregar el SLA en minutos a los tickets
@@ -91,6 +123,7 @@ class ReportController extends Controller
             'end_date' => $endDate->toDateString(),
             'user' => $user,
             'category' => $category,
+            'order_by' => $orderBy,
         ]);
 
         // Obtener categorías, estados y usuarios para los filtros
