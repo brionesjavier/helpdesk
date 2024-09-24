@@ -8,10 +8,58 @@ use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class ReportController extends Controller
 {
+
+    public function dashboard()
+    {
+    
+        $userId=Auth::id();
+        $ticketsPendientes = Ticket::where('created_by',$userId)
+                                    ->where('is_active',true)
+                                    ->where(function ($query) {
+                                        $query->where('state_id', 1);
+                                    })
+                                    ->count();
+    
+                                    
+        $ticketsEnProceso = Ticket::where('created_by',$userId)
+                                    ->where('is_active',true)
+                                    ->where(function ($query) {
+                                        $query->where('state_id', 2)
+                                              ->orWhere('state_id', 3)
+                                              ->orWhere('state_id', 6);
+                                    })
+                                    ->count();
+    
+        $ticketsSolucionados = Ticket::where('created_by',$userId)
+                                    ->where('is_active',true)
+                                    ->where(function ($query) {
+                                        $query->where('state_id', 4)
+                                            ->orWhere('state_id', 7);
+                                    })
+                                    ->count();
+    
+        $ticketsCancelados = Ticket::where('created_by',$userId)
+                                    ->where('is_active',true)
+                                    ->where(function($query){
+                                        $query->where('state_id', 8)
+                                            ->orWhere('state_id', 5);
+                                    })
+                                    ->count();
+    
+        return view('dashboard', compact('ticketsPendientes', 'ticketsEnProceso', 'ticketsSolucionados', 'ticketsCancelados'));
+    }
+
+
+    public function sla(Ticket $ticket){
+
+        return view('reports.sla',compact('ticket'));
+    }
+
     /**
      * Muestra el reporte de tickets filtrado por diversos parámetros
      */
@@ -45,22 +93,6 @@ class ReportController extends Controller
     $category = $validated['category'] ?? 'all';
     $orderBy = $validated['order_by'] ?? 'created_at';
     $direction = $validated['direction'] ?? 'desc';
-
-
-
-       /*  // Obtener los valores de los filtros desde la solicitud
-        $search = $request->input('search');
-        $status = $request->input('status');
-        $priority = $request->input('priority');
-        $startDate = $request->input('start_date');
-        $endDate = $request->input('end_date');
-        $user = $request->input('user');
-        $category = $request->input('category'); // Obtener la categoría desde el request */
-
-        // Ajustar la fecha final para incluir hasta el final del día
-       /*  $endDate = $endDate ? Carbon::parse($endDate)->endOfDay() : now()->endOfDay();
-        // Si no se proporciona una fecha de inicio, usar una fecha por defecto (null)
-        $startDate = $startDate ? Carbon::parse($startDate)->startOfDay() : null; */
 
         // Construir la consulta para los tickets con filtros dinámicos
         $tickets = Ticket::with(['assignedUsers', 'state', 'element.category']) // Relaciones necesarias

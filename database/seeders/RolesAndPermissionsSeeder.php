@@ -80,6 +80,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'support.center'=> 'bandeja de tickets sin asignar',
             'reports.tickets'=>'reporte de datos de tickets',
             'reports.summary'=>'reporte de datos de tickets con resumen de tickets por estado',
+            'reports.sla'=>'reporte de los sla '
 
         ];
 

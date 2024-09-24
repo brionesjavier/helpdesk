@@ -14,7 +14,10 @@ return new class extends Migration
         Schema::create('histories', function (Blueprint $table) {
             $table->id();
             $table->foreignId('ticket_id')->constrained()->onDelete('cascade');
+            $table->foreignId('state_id')->nullable()->constrained('ticket_states');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->boolean('change_state')->default(false);
+            $table->integer('sla_time')->nullable(); // Tiempo de SLA en minutos
             $table->string('action');
             $table->timestamps();
         });

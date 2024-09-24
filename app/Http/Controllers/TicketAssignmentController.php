@@ -7,6 +7,7 @@ use App\Models\State;
 use App\Models\Ticket;
 use App\Models\TicketAssignment;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -172,11 +173,17 @@ class TicketAssignmentController extends Controller
             'is_active' => true,
         ]);
 
-         /// Actualizar el estado del ticket
-         $ticket->update([
+        // Actualizar el estado del ticket
+        $ticket->update([
             'state_id' => 2,
-            'priority' => $priority
+            'priority' => $priority,
+            'sla_assigned_start_time' => Carbon::now(),
+            'sla_due_time' => $this->calculateDueTime($priority), // Asignar la fecha límite del SLA
         ]);
+
+         // Calcular el SLA actual
+         $slaTime = $ticket->getSlaAttention(); // Suponiendo que este método ya está definido
+        HistoryController::logAction($ticket, true, auth::id(), "El ticket fue asignado al usuario con ID $userId  por el usuario con ID ".auth::id() ,$slaTime);
 
         // Obtener la URL de la última vista desde la sesión
         $lastView = $request->session()->get('last_view', route('tickets.my'));
@@ -186,4 +193,23 @@ class TicketAssignmentController extends Controller
 
         // return redirect()->route('support.show', $ticket)->with('success', 'Ticket asignado/reasignado correctamente.');
     }
+
+    // Método para calcular la fecha límite del SLA
+    protected function calculateDueTime($priority)
+    {
+        $now = Carbon::now();
+        switch ($priority) {
+            case 'critical':
+                return $now->addHours(4);
+            case 'high':
+                return $now->addHours(8);
+            case 'medium':
+                return $now->addDays(1);
+            case 'low':
+                return $now->addDays(3);
+            default:
+                return null; // O manejar el caso de prioridad no definida
+        }
+    }
+    
 }

@@ -111,6 +111,7 @@ class RolesTableSeeder extends Seeder
             // Reports
             'reports.tickets',
             'reports.summary',
+            'reports.sla'
         ];
 
         // Create or update each permission in the system

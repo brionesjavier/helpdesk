@@ -11,8 +11,15 @@ class History extends Model
     // Define los campos que pueden ser asignados masivamente
     protected $fillable = [
         'ticket_id',
+        'state_id',
+        'change_state',
         'user_id',
         'action',
+        'sla_time'
     ];
+
+    public function ticket(){
+        return $this->belongsTo(Ticket::class);
+    }
 
 }

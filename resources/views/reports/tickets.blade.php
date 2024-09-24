@@ -221,78 +221,79 @@
                                             class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                             <a href="{{ route('support.show', $ticket) }}">
                                                 @forelse($ticket->assignedUsers->unique('id') as $user)
-                                                    {{ $user->first_name }} {{ $user->last_name }}@if (!$loop->last)
+                                                    {{ $user->first_name }} {{ $user->last_name }}
+                                                    @if (!$loop->last)
                                                         ,
                                                     @endif
-                                                    @empty
-                                                        Sin asignar
-                                                    @endforelse
-                                                </a>
-                                            </td>
-
-                                            <td
-                                                class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-
-                                                @foreach ($ticket->assignedUsers as $index => $user)
-                                                    @if ($index === 0)
-                                                        {{ $user->pivot->created_at->format('Y-m-d H:i:s') }}
-                                                    @endif
-                                                @endforeach
-
-                                                @if ($ticket->assignedUsers->isEmpty())
+                                                @empty
                                                     Sin asignar
+                                                @endforelse
+                                            </a>
+                                        </td>
+
+                                        <td
+                                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+
+                                            @foreach ($ticket->assignedUsers as $index => $user)
+                                                @if ($index === 0)
+                                                    {{ $user->pivot->created_at->format('Y-m-d H:i:s') }}
                                                 @endif
-                                            </td>
-                                            <td
-                                                class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                            @endforeach
+
+                                            @if ($ticket->assignedUsers->isEmpty())
+                                                Sin asignar
+                                            @endif
+                                        </td>
+                                        <td
+                                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
 
 
 
-                                                @if ($ticket->assignedUsers->count() > 0)
-                                                    {{ $ticket->sla }} minutos
-                                                @else
-                                                    {{ $ticket->getSlaInMinutesAttribute() }} minutos
-                                                @endif
+                                            @if ($ticket->assignedUsers->count() > 0)
+                                                {{ $ticket->sla }} minutos
+                                            @else
+                                                {{ $ticket->getSlaInMinutesAttribute() }} minutos
+                                            @endif
 
-                                            </td>
+                                        </td>
 
 
-                                            <td
-                                                class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                                {{ $ticket->state->name }}</td>
-                                            <td
-                                                class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                                {{ $ticket->priority ?? 'N/A' }}</td>
-                                            <td
-                                                class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                                {{ $ticket->element->category->name }}</td>
-                                            <td
-                                                class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                                {{ $ticket->element->name }}</td>
+                                        <td
+                                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                            {{ $ticket->state->name }}</td>
+                                        <td
+                                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                            {{ $ticket->priority ?? 'N/A' }}</td>
+                                        <td
+                                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                            {{ $ticket->element->category->name }}</td>
+                                        <td
+                                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                            {{ $ticket->element->name }}</td>
 
-                                            <td
-                                                class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                                {{ $ticket->description }}</td>
-                                            <td
-                                                class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                                {{ $ticket->solved_at ? $ticket->solved_at->format('Y-m-d H:i:s') : 'N/A' }}
-                                            </td>
-                                            <td
-                                                class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                                {{ $ticket->getSlaSolutionInMinutesAttribute() ? $ticket->getSlaSolutionInMinutesAttribute() . ' minutos' : 'N/A' }}
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                                        <td
+                                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                            {{ $ticket->description }}</td>
+                                        <td
+                                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                            {{ $ticket->solved_at ? $ticket->solved_at->format('Y-m-d H:i:s') : 'N/A' }}
+                                        </td>
+                                        <td
+                                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                            {{ $ticket->getSlaSolutionInMinutesAttribute() ? $ticket->getSlaSolutionInMinutesAttribute() . ' minutos' : 'N/A' }}
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
 
-                            <!-- Paginación -->
-                            <div class="mt-4">
-                                {{ $tickets->appends(request()->query())->links() }}
-                            </div>
+                        <!-- Paginación -->
+                        <div class="mt-4">
+                            {{ $tickets->appends(request()->query())->links() }}
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </x-app-layout>
+    </div>
+</x-app-layout>

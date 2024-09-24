@@ -9,107 +9,129 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Ticket extends Model
 {
-    protected $table ='tickets';
-    protected $fillable = ['title', 
-                            'description', 
-                            'element_id', 
-                            'state_id',
-                            'priority',
-                            'created_by',
-                            'is_active',
-                            'solved_at',]; // Campos que se pueden llenar
-
-    protected $casts = [
-                        'solved_at' => 'datetime',];
     use HasFactory;
 
-    public function state(){
+    protected $table = 'tickets';
+
+    protected $fillable = [
+        'title',
+        'description',
+        'element_id',
+        'state_id',
+        'priority',
+        'created_by',
+        'is_active',
+        'solved_at',
+        'attention_deadline',   // Tiempo para SLA de atencion
+        'sla_assigned_start_time',   // Tiempo de inicio después de la asignación
+        'sla_due_time' //tiempo para sla de proceso
+    ];
+
+    protected $casts = [
+        'solved_at' => 'datetime',
+        'attention_deadline' => 'datetime',
+        'sla_assigned_start_time' => 'datetime',
+        'sla_due_time' => 'datetime'
+    ];
+
+    public function state()
+    {
         return $this->belongsTo(State::class);
     }
-    public function element(){
+
+    public function element()
+    {
         return $this->belongsTo(Element::class);
     }
-    public function user(){
-        return $this->belongsTo(User::class , 'created_by');
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function comment(){
-
+    public function comment()
+    {
         return $this->hasMany(Comment::class);
     }
+    public function history(){
+        return $this->hasMany(History::class);
+    }
 
-    public function assignedUsers():BelongsToMany
+    public function assignedUsers(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'ticket_assigns')
-                                                                ->withPivot('details', 'is_active')
-                                                                ->withTimestamps();
+            ->withPivot('details', 'is_active')
+            ->withTimestamps();
     }
-      /**
+
+    /**
      * Obtener el SLA en minutos desde la creación del ticket.
-     *
-     * @return int
      */
     public function getSlaInMinutesAttribute()
     {
         $createdAt = $this->created_at;
         $now = Carbon::now();
 
-        // Si la fecha de creación es en el futuro, utiliza el valor absoluto
-        if ($createdAt > $now) {
-            $minutes = abs($now->diffInMinutes($createdAt));
-        } else {
-            $minutes = abs($now->diffInMinutes($createdAt));
-        }
 
-                // Llama a getSLAInMinutesOnCancellation y verifica si no es null
-                $sla = $this->getSLAInMinutesOnCancellation();
+        $minutes = abs($now->diffInMinutes($createdAt));
 
-                if ($sla !== null) {
-                    // Hacer algo con el SLA si no es null
-                    return $sla;
-                }
-
-        // Redondear a la unidad más cercana
-        return round($minutes);
+        // Verifica si hay un SLA por cancelación
+        $sla = $this->getSLAInMinutesOnCancellation();
+        return $sla !== null ? $sla : round($minutes);
     }
-
 
     public function getSlaSolutionInMinutesAttribute()
     {
         // Verifica si hay al menos un usuario asignado
         if ($this->assignedUsers->isNotEmpty() && $this->solved_at) {
-            // Obtén la fecha de asignación del primer usuario asignado
             $assignedAt = Carbon::parse($this->assignedUsers->first()->pivot->created_at);
             $solvedAt = Carbon::parse($this->solved_at);
-            $minutes = abs($assignedAt->diffInMinutes($solvedAt));
-    
-            return round($minutes);
+            return round(abs($assignedAt->diffInMinutes($solvedAt)));
         }
 
-                // Llama a getSLAInMinutesOnCancellation y verifica si no es null
-                $sla = $this->getSLAInMinutesOnCancellation();
+        return $this->getSLAInMinutesOnCancellation();
+    }
 
-                if ($sla !== null) {
-                    // Hacer algo con el SLA si no es null
-                    return $sla;
-                }
+    public function getSLAInMinutesOnCancellation()
+    {
+        // Verifica si no hay usuarios asignados y si el ticket ha sido resuelto.
+        if ($this->assignedUsers->isEmpty() && $this->solved_at) {
+            $assignedAt = Carbon::parse($this->created_at);
+            $solvedAt = Carbon::parse($this->solved_at);
+            return round(abs($assignedAt->diffInMinutes($solvedAt)));
+        }
+        return null;
+    }
+
+    /**
+     * Calcula el tiempo en minutos entre la creación del ticket y la asignación.
+     *
+     * @return int|null Devuelve la diferencia en minutos, o null si no es aplicable.
+     */
+    public function getSlaAttention()
+    {
         
+        if ($this->created_at && $this->sla_assigned_start_time) {
+            $attention = Carbon::parse($this->created_at)->diffInMinutes($this->sla_assigned_start_time);
+            return abs(round($attention));
+        }
+        return null; // O considera return 0 si prefieres manejar 0 minutos en lugar de null.
+    }
+
+    public function getSlaResolutionTime()
+    {
+        if ($this->sla_assigned_start_time && $this->solved_at) {
+            return Carbon::parse($this->sla_assigned_start_time)
+                ->diffInMinutes($this->solved_at);
+        }
         return null;
     }
 
-
-   public function getSLAInMinutesOnCancellation(){
-    // Verifica si no hay usuarios asignados y si el ticket ha sido resuelto.
-    if ($this->assignedUsers->isEmpty() && $this->solved_at) {
-
-        // Convierte las fechas de creación y resolución a objetos Carbon.
-        $assignedAt = Carbon::parse($this->created_at);
-        $solvedAt = Carbon::parse($this->solved_at);
-
-        // Calcula y retorna la diferencia en minutos entre ambas fechas, redondeada al entero más cercano.
-        return round(abs($assignedAt->diffInMinutes($solvedAt)));
-    }
-        return null;
-   }
-
+    public function getTotalSlaTime()
+{
+    // Filtrar el historial donde change_state es true y sumar el tiempo de SLA
+    return $this->history()
+        ->where('change_state', true)
+        ->sum('sla_time'); // 'sla_time' debe ser el nombre de la columna en tu tabla de historias
+}
 }

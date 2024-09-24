@@ -1,5 +1,11 @@
 <x-app-layout>
     <x-slot name="header">
+        {{-- Mensaje de evento --}}
+        @if(session()->has('message'))
+            <div class="text-center bg-gray-100 dark:bg-gray-900 rounded-md p-2">
+                <span class="text-indigo-600 dark:text-indigo-400 text-xl font-semibold">{{ session('message') }}</span>
+            </div>
+        @endif
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
             {{ __('Ticket') }}: {{ $ticket->id }} - {{ $ticket->state->name }}
         </h2>

@@ -16,8 +16,7 @@ use Illuminate\Support\Facades\Auth;
 
 class TicketController extends Controller
 {
-    // mostrar tickets
-    //TODO:bandeja administracion
+    // mostrar Todos los tickets
     public function index(Request $request)
     {
         // Obtener los parámetros de la solicitud
@@ -58,45 +57,7 @@ class TicketController extends Controller
     }
     
 
-    public function dashboard()
-{
 
-    $userId=auth::id();
-    $ticketsPendientes = Ticket::where('created_by',$userId)
-                                ->where('is_active',true)
-                                ->where(function ($query) {
-                                    $query->where('state_id', 1);
-                                })
-                                ->count();
-
-                                
-    $ticketsEnProceso = Ticket::where('created_by',$userId)
-                                ->where('is_active',true)
-                                ->where(function ($query) {
-                                    $query->where('state_id', 2)
-                                          ->orWhere('state_id', 3)
-                                          ->orWhere('state_id', 6);
-                                })
-                                ->count();
-
-    $ticketsSolucionados = Ticket::where('created_by',$userId)
-                                ->where('is_active',true)
-                                ->where(function ($query) {
-                                    $query->where('state_id', 4)
-                                        ->orWhere('state_id', 7);
-                                })
-                                ->count();
-
-    $ticketsCancelados = Ticket::where('created_by',$userId)
-                                ->where('is_active',true)
-                                ->where(function($query){
-                                    $query->where('state_id', 8)
-                                        ->orWhere('state_id', 5);
-                                })
-                                ->count();
-
-    return view('dashboard', compact('ticketsPendientes', 'ticketsEnProceso', 'ticketsSolucionados', 'ticketsCancelados'));
-}
 
     //TODO:bandeja usuario
     
@@ -148,10 +109,6 @@ class TicketController extends Controller
     return view('tickets.my', compact('tickets', 'states'));
 }
 
-    
-    
-    
-
     //mostrar datos
     //TODO:ver ticket por id todo los usuario
     public function show(Request $request,Ticket $ticket)
@@ -188,21 +145,17 @@ class TicketController extends Controller
             'description' => $request->description,
             'element_id' => $request->element_id,
             'state_id' => $estado,
-            'created_by'=>$user_id
+            'created_by'=>$user_id,
+            'attention_deadline' => Carbon::now()->addHours(2) // Lógica para calcular el SLA 
             ]);
+          
+          
+    
 
-        //registro historial
-        $title = $ticket->title;
-        $stateName = $ticket->state->name;
-        $description = $ticket->description;
-        $category =$ticket->element->category->name;
-        $element =$ticket->element->name;
-        $message = "Ticket creado: 
-                                título: $title , 
-                                Estado: $stateName , 
-                                Categoria: $category/$element, 
-                                descripción: $description";
-        HistoryController::logAction($ticket->id, auth::id(), $message);
+        // Calcular el SLA actual
+        $slaTime = $ticket->getSlaAttention(); // Suponiendo que este método ya está definido
+
+        HistoryController::logAction($ticket, true, auth::id(), "Ticket creado: '{$ticket->description}'",$slaTime);
 
 
 
@@ -231,19 +184,7 @@ class TicketController extends Controller
         
        $ticket->update($validated);
 
-                                        
-       //registro historial
-       $title = $ticket->title;
-       $stateName = $ticket->state->name;
-       $description = $ticket->description;
-       $category =$ticket->element->category->name;
-       $element =$ticket->element->name;
-       $message = "Ticket actualizado: 
-                               título: $title , 
-                               Estado: $stateName , 
-                               Categoria: $category/$element, 
-                               descripción: $description";
-       HistoryController::logAction($ticket->id, auth::id(), $message);
+       HistoryController::logAction($ticket,false, auth::id(), 'El ticket fue actualizado por el usuario con ID '. auth::id().' sin cambiar su estado', $slaTime);
 
          // Obtener la URL de la última vista desde la sesión
         $lastView = $request->session()->get('last_view', route('tickets.index'));
@@ -263,9 +204,10 @@ class TicketController extends Controller
         $user =Auth::user()->name;
         $stateName = $ticket->state->name;
         $message = "Ticket Eliminado: por  $user, Estado: $stateName ";
-        HistoryController::logAction($ticket->id, auth::id(), $message);
 
-        //$ticket->delete();
+         // Calcular el SLA actual
+         $slaTime = $ticket->getSlaAttention(); // Suponiendo que este método ya está definido
+        HistoryController::logAction($ticket,true ,auth::id(), $message,  $slaTime);
 
          // Obtener la URL de la última vista desde la sesión
          $lastView = $request->session()->get('last_view', route('tickets.index'));
@@ -273,7 +215,6 @@ class TicketController extends Controller
          // Redirigir a la última vista
         return redirect($lastView)->with('message', 'Ticket eliminado con exito');
 
-        //return redirect()->route('tickets.my')->with('message', 'Ticket eliminado con exito');
     }
 /** para vista de comenzar proceso */
 public function showProcessForm(Ticket $ticket):View
@@ -298,6 +239,10 @@ public function process(Request $request, Ticket $ticket)
         'state_ticket' => $ticket->state->name,
     ]);
 
+     // Calcular el SLA actual
+     $slaTime = $ticket->getSlaAttention(); // Suponiendo que este método ya está definido
+    // registro historial
+    HistoryController::logAction($ticket, true, auth::id(), "El estado del ticket cambió a 'En Progreso' por el usuario con ID ".auth::id(),  $slaTime);
 
      return redirect()->route('tickets.show', compact('ticket') )->with('message', 'ticket  en proceso.');
 
@@ -329,7 +274,9 @@ public function process(Request $request, Ticket $ticket)
         // Actualizar el estado del ticket
         $ticket->update(['state_id' => 4,'solved_at'=>Carbon::now()]); /* 4 ID del estado "Solucionado" */
     
-
+         // Calcular el SLA actual
+         $slaTime = $ticket->getSlaAttention(); // Suponiendo que este método ya está definido
+        HistoryController::logAction($ticket, true, auth::id(), "El estado del ticket cambió a 'Solucionado' por el usuario con ID ".auth::id(), $slaTime);
          // Obtener la URL de la última vista desde la sesión
          $lastView = $request->session()->get('last_view', route('tickets.index'));
 
@@ -360,6 +307,10 @@ public function reopen(Request $request, Ticket $ticket)
 
     $ticket->update(['state_id' => 5,]); /* 5 ID del estado "Reabierto" */
 
+     // Calcular el SLA actual
+     $slaTime = $ticket->getSlaAttention(); // Suponiendo que este método ya está definido
+    HistoryController::logAction($ticket, true, auth::id(), "El ticket fue reabierto por el usuario con ID ".auth::id(), $slaTime);
+
     // Obtener la URL de la última vista desde la sesión
     $lastView = $request->session()->get('last_view', route('tickets.index'));
 
@@ -377,38 +328,57 @@ public function showDeriveForm(Ticket $ticket):View
 // Procesar la derivación del ticket
 public function derive(Request $request, Ticket $ticket)
 {
-    $validated = $request->validate(['content' => 'required|string',]);
-    $userId=$request->user_id;
+    // Validar la solicitud
+    $validated = $request->validate([
+        'content' => 'required|string',
+        'user_id' => 'required|exists:users,id', // Validar el user_id
+    ]);
 
+    $userId = $validated['user_id']; // Obtiene el user_id de los datos validados
     $comment = $validated['content'];
-    
-    
+
+    // Obtener el usuario asignado
+    $userAssign = $ticket->assignedUsers()->where('is_active', true)->first();
+
+    // Verificar si el ticket ya está asignado al mismo usuario
+    if ($userAssign && $userAssign->id == $userId) {
+        return redirect()->route('tickets.derive', compact('ticket'))
+            ->with('message', 'El ticket ya está asignado a este usuario.')
+            ->withInput(); // Mantener los datos del formulario
+    }
+
+    // Crear el comentario
     $ticket->comment()->create([
         'content' => $comment,
         'user_id' => auth::id(),
         'ticket_id' => $ticket->id,
         'state_ticket' => 'Derivado',
     ]);
-    
-    $ticket->update(['state_id' => 6,]); /* 6 ID del estado "derivado" */
+
+    // Actualizar el estado del ticket
+    $ticket->update(['state_id' => 6]); // ID del estado "derivado"
 
     // Desactivar asignaciones anteriores
     TicketAssignment::where('ticket_id', $ticket->id)->update(['is_active' => false]);
 
-    $details = "Usuario derivado por " . Auth::user()->name . " (ID: " . Auth::id() . ")";
     // Crear una nueva asignación
     TicketAssignment::create([
         'ticket_id' => $ticket->id,
         'user_id' => $userId,
-        'details' => $details,
+        'details' => "Usuario derivado por " . Auth::user()->name . " (ID: " . Auth::id() . ")",
         'is_active' => true,
     ]);
+     // Calcular el SLA actual
+     $slaTime = $ticket->getSlaAttention(); // Suponiendo que este método ya está definido
+
+    // Registrar la acción en el historial
+    HistoryController::logAction($ticket, true, auth::id(), "El ticket fue derivado al usuario con ID $userId por el usuario con ID " . auth::id(),$slaTime);
 
     // Obtener la URL de la última vista desde la sesión
     $lastView = $request->session()->get('last_view', route('tickets.index'));
 
     // Redirigir a la última vista
-    return redirect($lastView)->with('message', 'Ticket derivado .');
+    return redirect($lastView)->with('message', 'Ticket derivado.');
 }
 
 // Procesar el cierre del ticket
@@ -425,6 +395,11 @@ public function close( Request $request,Ticket $ticket)
     ]);
 
     $ticket->update(['state_id' => 7,]); /* 7 ID del estado "Cerrado" */
+
+     // Calcular el SLA actual
+     $slaTime = $ticket->getSlaAttention(); // Suponiendo que este método ya está definido
+    HistoryController::logAction($ticket, true, auth::id(), "El ticket fue cerrado por el usuario con ID ".auth::id(),$slaTime);
+
 
     // Obtener la URL de la última vista desde la sesión
     $lastView = $request->session()->get('last_view', route('tickets.index'));
@@ -457,6 +432,11 @@ public function cancel(Request $request, Ticket $ticket)
     ]);
 
     $ticket->update(['state_id' => 8,'solved_at'=>Carbon::now()]); /* 8 ID del estado "Cancelado" */
+
+     // Calcular el SLA actual
+     $slaTime = $ticket->getSlaAttention(); // Suponiendo que este método ya está definido
+    HistoryController::logAction($ticket, true, auth::id(), "El ticket fue cancelado por el usuario con ID ".auth::id(),$slaTime);
+
 
     // Obtener la URL de la última vista desde la sesión
     $lastView = $request->session()->get('last_view', route('tickets.index'));

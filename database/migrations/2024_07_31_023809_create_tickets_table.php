@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('description');
-            $table->enum('priority', ['low', 'medium', 'high'])->default('low');
+            $table->enum('priority', ['low', 'medium', 'high','critical'])->default('low');
             $table->foreignId('created_by')->constrained('users');
             $table->foreignId('element_id')->constrained();
             $table->foreignId('state_id')->nullable()->constrained('ticket_states');

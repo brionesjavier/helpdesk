@@ -21,7 +21,7 @@ Route::get('/', function () {
 /* Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard'); */
-Route::get('/dashboard',[TicketController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard',[ReportController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -128,8 +128,8 @@ Route::get('/tickets-assigned', [TicketAssignmentController::class, 'assigned'])
 
 //reporte
 
-Route::get('/reports/tickets', [ReportController::class, 'ticketsReport'])->name('reports.tickets')->middleware('can:reports.tickets');;
-
+Route::get('/reports/tickets', [ReportController::class, 'ticketsReport'])->name('reports.tickets')->middleware('can:reports.tickets');
+Route::get('/reports/{ticket}/tickets', [ReportController::class, 'sla'])->name('reports.sla')->middleware('can:reports.sla');
 Route::get('/reports/summary', [ReportController::class, 'ticketsSummaryReport'])->name('reports.summary')->middleware('can:reports.summary');;
 
 
