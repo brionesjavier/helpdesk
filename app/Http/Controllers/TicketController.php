@@ -183,6 +183,8 @@ class TicketController extends Controller
                                         ]);
         
        $ticket->update($validated);
+        // Calcular el SLA actual
+        $slaTime = $ticket->getSlaAttention(); // Suponiendo que este método ya está definido
 
        HistoryController::logAction($ticket,false, auth::id(), 'El ticket fue actualizado por el usuario con ID '. auth::id().' sin cambiar su estado', $slaTime);
 
