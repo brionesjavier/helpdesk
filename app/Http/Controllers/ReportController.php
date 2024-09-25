@@ -60,6 +60,7 @@ class ReportController extends Controller
     {
 
         $histories = History::where('ticket_id', $ticket->id)
+            ->where('change_state', true)
             ->get();
 
         return view('reports.sla', compact('ticket', 'histories'));
@@ -191,12 +192,25 @@ class ReportController extends Controller
         // Contar el número total de tickets
         $totalTickets = Ticket::count();
 
+        // Contar el número de tickets pendiente
+        $ticketsPendientes = Ticket::where('state_id', 1)->count();
+        // Contar el número de tickets solucionado o finalizado
+        $ticketsSolucionados = Ticket::whereIn('state_id', [4, 7])->count();
+        // Contar el número de tickets en proceso  esto pueden ser asignado ,derivado en proceso
+        $ticketsEnProceso = Ticket::whereIn('state_id', [2, 3, 6])->count();
+        // Contar el número de tickets objetados
+        $ticketsObjetados = Ticket::where('state_id', 5)->count();
+        // Contar el número de tickets cancelados
+        $ticketsCancelados = Ticket::where('state_id', 8)->count();
+
+
         // Calcular el SLA de atención promedio por usuario
         $slaAttentionByUser = User::select('users.id', 'users.first_name', 'users.last_name')
-            ->selectRaw('AVG(TIMESTAMPDIFF(MINUTE, ticket_assigns.created_at, tickets.created_at)) as avg_attention_time')
-            ->selectRaw('COUNT(ticket_assigns.id) as total')
+            ->selectRaw('AVG(TIMESTAMPDIFF(MINUTE, tickets.created_at, tickets.sla_assigned_start_time)) AS avg_attention_time')
+            ->selectRaw('COUNT(ticket_assigns.id) AS total')
             ->join('ticket_assigns', 'users.id', '=', 'ticket_assigns.user_id')
             ->join('tickets', 'ticket_assigns.ticket_id', '=', 'tickets.id')
+            ->where('ticket_assigns.is_active', 1)  // Filtra solo las asignaciones activas
             ->groupBy('users.id', 'users.first_name', 'users.last_name')
             ->orderBy('total', 'desc')
             ->get();
@@ -205,18 +219,19 @@ class ReportController extends Controller
 
 
         // Calcular el SLA de resolución promedio por usuario
-        $slaResolutionByUser = User::select('users.id', 'users.first_name', 'users.last_name')
-            ->selectRaw('AVG(TIMESTAMPDIFF(MINUTE, tickets.sla_assigned_start_time, tickets.solved_at)) as avg_resolution_time')
-            ->selectRaw('COUNT(ticket_assigns.id) as total')
+        $slaResolutionByUser = User::select(
+            'users.id',
+            'users.first_name',
+            'users.last_name',
+            DB::raw('AVG(TIMESTAMPDIFF(MINUTE, tickets.sla_assigned_start_time, tickets.solved_at)) AS avg_resolution_time'),
+            DB::raw('COUNT(ticket_assigns.id) AS total')
+        )
             ->join('ticket_assigns', 'users.id', '=', 'ticket_assigns.user_id')
             ->join('tickets', 'ticket_assigns.ticket_id', '=', 'tickets.id')
             ->whereNotNull('tickets.solved_at')
-            ->where(function ($query) {
-                $query->where('tickets.state_id', 4)
-                    ->orWhere('tickets.state_id', 7);
-            })
+            ->whereIn('tickets.state_id', [4, 7])  // Utiliza whereIn para los estados
+            ->where('ticket_assigns.is_active', 1)  // Solo asignaciones activas
             ->groupBy('users.id', 'users.first_name', 'users.last_name')
-            ->orderBy('tickets.is_active', 'desc')
             ->get();
 
 
@@ -265,6 +280,12 @@ class ReportController extends Controller
             ->groupBy('users.id', 'users.first_name', 'users.last_name')
             ->get();
 
+        //contar ticket reasignados
+        $ticketsMultipleAssignments = DB::table('ticket_assigns')
+        ->select('ticket_id', DB::raw('COUNT(id) as total_assignments'))
+        ->groupBy('ticket_id')
+        ->having('total_assignments', '>', 1)
+        ->get();
 
 
 
@@ -272,10 +293,16 @@ class ReportController extends Controller
         // Retornar la vista con los datos del resumen
         return view('reports.summary', compact(
             'totalTickets',
+            'ticketsPendientes',
+            'ticketsSolucionados',
+            'ticketsEnProceso',
+            'ticketsObjetados',
+            'ticketsCancelados',
             'ticketsByCategory',
             'ticketsByElement',
             'ticketsByPriority',
             'ticketsByUser',
+            'ticketsMultipleAssignments',
             'slaAttentionByUser',
             'slaResolutionByUser',
             'avgAttentionTime',

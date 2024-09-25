@@ -177,7 +177,7 @@
                                         date Assigned Users</th>
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                        SLA Atencion</th>
+                                        SLA Asignacion</th>
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                         Status</th>
@@ -252,7 +252,7 @@
                                             @if ($ticket->assignedUsers->count() > 0)
                                                 {{ $ticket->sla }} minutos
                                             @else
-                                                {{ $ticket->getSlaInMinutesAttribute() }} minutos
+                                                Sin asignar {{ $ticket->getSlaInMinutesAttribute() }} minutos
                                             @endif
 
                                         </td>
