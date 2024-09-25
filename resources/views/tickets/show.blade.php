@@ -31,7 +31,13 @@
                     <p class="mb-2"><strong>Título:</strong> {{ $ticket->title }}</p>
                     <p class="mb-2"><strong>Creado por:</strong> {{ $ticket->user->first_name }} {{ $ticket->user->last_name }}</p>
                     <p class="mb-2"><strong>Proceso:</strong> {{ $ticket->state->name }}</p>
-                    
+                    <p class="mb-2"><strong>Asignado:</strong> 
+                        @if($assignments)
+                        {{ $assignments->first_name }} {{ $assignments->last_name }}
+                    @else
+                        No asignado
+                    @endif
+                    </p>
                     @if ($ticket->solved_at)
                         <p class="mb-2"><strong>Fecha de Solución:</strong> {{ $ticket->solved_at->format('d/m/Y H:i') }}</p>
                     @endif
@@ -77,7 +83,7 @@
                         @endif
 
                         {{-- Botón de derivar --}}
-                        @if ($ticket->state->id == 2 || $ticket->state->id == 3)
+                        @if ( $ticket->state->id == 3)
                             @can('tickets.derive')
                                 <a href="{{ route('tickets.derive', $ticket) }}" 
                                    class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
@@ -87,7 +93,7 @@
                         @endif
 
                         {{-- Botón de solucionar --}}
-                        @if ($ticket->state->id == 2 || $ticket->state->id == 3 || $ticket->state->id == 5)
+                        @if ( $ticket->state->id == 3 || $ticket->state->id == 5)
                             @can('tickets.solve')
                                 <a href="{{ route('tickets.solve', $ticket) }}" 
                                    class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
