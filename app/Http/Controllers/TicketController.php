@@ -151,11 +151,9 @@ class TicketController extends Controller
           
           
     
+        
 
-        // Calcular el SLA actual
-        $slaTime = $ticket->getSlaAttention(); // Suponiendo que este método ya está definido
-
-        HistoryController::logAction($ticket, true, auth::id(), "Ticket creado: '{$ticket->description}'",$slaTime);
+        HistoryController::logAction($ticket, true, auth::id(), "Ticket creado: '{$ticket->description}'");
 
 
 
@@ -183,10 +181,9 @@ class TicketController extends Controller
                                         ]);
         
        $ticket->update($validated);
-        // Calcular el SLA actual
-        $slaTime = $ticket->getSlaAttention(); // Suponiendo que este método ya está definido
+      
 
-       HistoryController::logAction($ticket,false, auth::id(), 'El ticket fue actualizado por el usuario con ID '. auth::id().' sin cambiar su estado', $slaTime);
+       HistoryController::logAction($ticket,false, auth::id(), 'El ticket fue actualizado por el usuario con ID '. auth::id().' sin cambiar su estado');
 
          // Obtener la URL de la última vista desde la sesión
         $lastView = $request->session()->get('last_view', route('tickets.index'));
@@ -203,13 +200,12 @@ class TicketController extends Controller
         $ticket->update(['is_active'=>false]);
 
         //registro historial
-        $user =Auth::user()->name;
+       /*  $user =Auth::user()->first_name .' '.auth::user()->last_name;
         $stateName = $ticket->state->name;
         $message = "Ticket Eliminado: por  $user, Estado: $stateName ";
 
-         // Calcular el SLA actual
-         $slaTime = $ticket->getSlaAttention(); // Suponiendo que este método ya está definido
-        HistoryController::logAction($ticket,true ,auth::id(), $message,  $slaTime);
+      
+        HistoryController::logAction($ticket,true ,auth::id(), $message,  ); */
 
          // Obtener la URL de la última vista desde la sesión
          $lastView = $request->session()->get('last_view', route('tickets.index'));
@@ -241,10 +237,9 @@ public function process(Request $request, Ticket $ticket)
         'state_ticket' => $ticket->state->name,
     ]);
 
-     // Calcular el SLA actual
-     $slaTime = $ticket->getSlaAttention(); // Suponiendo que este método ya está definido
+
     // registro historial
-    HistoryController::logAction($ticket, true, auth::id(), "El estado del ticket cambió a 'En Progreso' por el usuario con ID ".auth::id(),  $slaTime);
+    HistoryController::logAction($ticket, true, auth::id(), "El estado del ticket cambió a 'En Progreso' por el usuario con ID ".auth::id());
 
      return redirect()->route('tickets.show', compact('ticket') )->with('message', 'ticket  en proceso.');
 
@@ -276,9 +271,8 @@ public function process(Request $request, Ticket $ticket)
         // Actualizar el estado del ticket
         $ticket->update(['state_id' => 4,'solved_at'=>Carbon::now()]); /* 4 ID del estado "Solucionado" */
     
-         // Calcular el SLA actual
-         $slaTime = $ticket->getSlaAttention(); // Suponiendo que este método ya está definido
-        HistoryController::logAction($ticket, true, auth::id(), "El estado del ticket cambió a 'Solucionado' por el usuario con ID ".auth::id(), $slaTime);
+
+        HistoryController::logAction($ticket, true, auth::id(), "El estado del ticket cambió a 'Solucionado' por el usuario con ID ".auth::id());
          // Obtener la URL de la última vista desde la sesión
          $lastView = $request->session()->get('last_view', route('tickets.index'));
 
@@ -309,9 +303,7 @@ public function reopen(Request $request, Ticket $ticket)
 
     $ticket->update(['state_id' => 5,]); /* 5 ID del estado "Reabierto" */
 
-     // Calcular el SLA actual
-     $slaTime = $ticket->getSlaAttention(); // Suponiendo que este método ya está definido
-    HistoryController::logAction($ticket, true, auth::id(), "El ticket fue reabierto por el usuario con ID ".auth::id(), $slaTime);
+    HistoryController::logAction($ticket, true, auth::id(), "El ticket fue reabierto por el usuario con ID ".auth::id());
 
     // Obtener la URL de la última vista desde la sesión
     $lastView = $request->session()->get('last_view', route('tickets.index'));
@@ -370,11 +362,9 @@ public function derive(Request $request, Ticket $ticket)
         'details' => "Usuario derivado por " . Auth::user()->name . " (ID: " . Auth::id() . ")",
         'is_active' => true,
     ]);
-     // Calcular el SLA actual
-     $slaTime = $ticket->getSlaAttention(); // Suponiendo que este método ya está definido
 
     // Registrar la acción en el historial
-    HistoryController::logAction($ticket, true, auth::id(), "El ticket fue derivado al usuario con ID $userId por el usuario con ID " . auth::id(),$slaTime);
+    HistoryController::logAction($ticket, true, auth::id(), "El ticket fue derivado al usuario con ID $userId por el usuario con ID " . auth::id());
 
     // Obtener la URL de la última vista desde la sesión
     $lastView = $request->session()->get('last_view', route('tickets.index'));
@@ -398,9 +388,8 @@ public function close( Request $request,Ticket $ticket)
 
     $ticket->update(['state_id' => 7,]); /* 7 ID del estado "Cerrado" */
 
-     // Calcular el SLA actual
-     $slaTime = $ticket->getSlaAttention(); // Suponiendo que este método ya está definido
-    HistoryController::logAction($ticket, true, auth::id(), "El ticket fue cerrado por el usuario con ID ".auth::id(),$slaTime);
+
+    HistoryController::logAction($ticket, true, auth::id(), "El ticket fue cerrado por el usuario con ID ".auth::id());
 
 
     // Obtener la URL de la última vista desde la sesión
@@ -435,9 +424,7 @@ public function cancel(Request $request, Ticket $ticket)
 
     $ticket->update(['state_id' => 8,'solved_at'=>Carbon::now()]); /* 8 ID del estado "Cancelado" */
 
-     // Calcular el SLA actual
-     $slaTime = $ticket->getSlaAttention(); // Suponiendo que este método ya está definido
-    HistoryController::logAction($ticket, true, auth::id(), "El ticket fue cancelado por el usuario con ID ".auth::id(),$slaTime);
+    HistoryController::logAction($ticket, true, auth::id(), "El ticket fue cancelado por el usuario con ID ".auth::id());
 
 
     // Obtener la URL de la última vista desde la sesión

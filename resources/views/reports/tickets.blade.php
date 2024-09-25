@@ -280,7 +280,8 @@
                                         </td>
                                         <td
                                             class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                            {{ $ticket->getSlaSolutionInMinutesAttribute() ? $ticket->getSlaSolutionInMinutesAttribute() . ' minutos' : 'N/A' }}
+                                            {{--  $ticket->getSlaSolutionInMinutesAttribute() ? $ticket->getSlaSolutionInMinutesAttribute() . ' minutos' : 'N/A'  --}}
+                                              <a href="{{ route('reports.sla',$ticket) }}"> {{  $ticket->getTotalSlaTime() }}</a>
                                         </td>
                                     </tr>
                                 @endforeach

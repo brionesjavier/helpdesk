@@ -13,7 +13,6 @@ return new class extends Migration
 {
     Schema::table('tickets', function (Blueprint $table) {
         $table->timestamp('solved_at')->nullable()->after('updated_at');
-        $table->timestamp('sla_unassigned_start_time')->nullable(); // Fecha de creación
         $table->timestamp('attention_deadline')->nullable(); //fecha limite del sla de asignacion
         $table->timestamp('sla_assigned_start_time')->nullable(); // Fecha de asignación
         $table->timestamp('sla_due_time')->nullable(); // Fecha límite del SLA de proceso

@@ -21,11 +21,11 @@
                     <p>{{ $totalTickets }}</p>
                 </div>
                 <div class="mb-4">
-                    <h2 class="text-xl font-semibold">SLA de Atención Promedio General</h2>
+                    <h2 class="text-xl font-semibold">Tiempo Promedio de Asignación</h2>
                     <p>{{ round(abs($avgAttentionTime), 2) }} minutos</p>
                 </div>
                 <div class="mb-4">
-                    <h2 class="text-xl font-semibold">SLA de Solución Promedio General</h2>
+                    <h2 class="text-xl font-semibold">Tiempo Promedio de Solución (sin incluir el tiempo de Asignación)</h2>
                     <p>{{ round(abs($avgResolutionTime), 2) }} minutos</p>
                 </div>
             </div>
@@ -100,7 +100,10 @@
                     <thead>
                         <tr>
                             <th class="py-2 px-4 border-b">Usuario</th>
-                            <th class="py-2 px-4 border-b">Cantidad</th>
+                            <th class="py-2 px-4 border-b">total de Tickets Asignados</th>
+                            <th class="py-2 px-4 border-b">Tickets Activos</th>
+                            <th class="py-2 px-4 border-b">Tickets Reasignados</th>
+
                         </tr>
                     </thead>
                     <tbody>
@@ -108,6 +111,8 @@
                             <tr>
                                 <td class="py-2 px-4 border-b">{{ $item->first_name }} {{ $item->last_name }}</td>
                                 <td class="py-2 px-4 border-b">{{ abs($item->total) }}</td>
+                                <td class="py-2 px-4 border-b">{{ abs($item->finalizado) }}</td>
+                                <td class="py-2 px-4 border-b">{{ abs($item->total-$item->finalizado)}}</td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -116,12 +121,12 @@
 
             <!-- SLA de Atención por Usuario -->
             <div class="bg-white shadow-sm sm:rounded-lg p-6 mb-6">
-                <h2 class="text-xl font-semibold">SLA de Atención Promedio por Usuario</h2>
+                <h2 class="text-xl font-semibold">SLA de Asignacion Promedio por Usuario</h2>
                 <table class="min-w-full bg-white border border-gray-200">
                     <thead>
                         <tr>
                             <th class="py-2 px-4 border-b">Usuario</th>
-                            <th class="py-2 px-4 border-b">Promedio Atención (minutos)</th>
+                            <th class="py-2 px-4 border-b">Promedio Asignacion (minutos)</th>
                             <th class="py-2 px-4 border-b">Cantidad de Tickets</th>
                         </tr>
                     </thead>

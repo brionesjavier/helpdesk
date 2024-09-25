@@ -15,4 +15,6 @@ class State extends Model
     public function ticket(){
         return $this->hasMany(Ticket::class);
     }
+
+   
 }

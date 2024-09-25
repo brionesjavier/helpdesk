@@ -22,4 +22,11 @@ class History extends Model
         return $this->belongsTo(Ticket::class);
     }
 
+    public function state(){
+        return $this->belongsTo(State::class);
+    
+    }
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
 }

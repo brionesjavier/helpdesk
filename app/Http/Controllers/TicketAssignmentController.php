@@ -181,9 +181,8 @@ class TicketAssignmentController extends Controller
             'sla_due_time' => $this->calculateDueTime($priority), // Asignar la fecha límite del SLA
         ]);
 
-         // Calcular el SLA actual
-         $slaTime = $ticket->getSlaAttention(); // Suponiendo que este método ya está definido
-        HistoryController::logAction($ticket, true, auth::id(), "El ticket fue asignado al usuario con ID $userId  por el usuario con ID ".auth::id() ,$slaTime);
+        
+        HistoryController::logAction($ticket, true, auth::id(), "El ticket fue asignado al usuario con ID $userId  por el usuario con ID ".auth::id() );
 
         // Obtener la URL de la última vista desde la sesión
         $lastView = $request->session()->get('last_view', route('tickets.my'));
