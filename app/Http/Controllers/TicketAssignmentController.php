@@ -128,10 +128,11 @@ class TicketAssignmentController extends Controller
         // Obtener los tickets asignados al usuario
         $tickets = $user->assignedTickets()->wherePivot('is_active', true)
             ->whereNotIn('state_id', [4, 7, 8])
+            ->orderBy('priority', 'desc')
             ->paginate();
 
-        $states = State::all();
-        //->get();
+            $states = State::whereNotIn('id', [4, 7, 8]) // Asegúrate de que 'id' es la columna correcta.
+            ->get();
 
         // Retornar la vista con los tickets asignados
         return view('support.assigned', compact('tickets', 'priorities', 'states'));
@@ -174,13 +175,28 @@ class TicketAssignmentController extends Controller
         ]);
 
         // Actualizar el estado del ticket
-        $ticket->update([
+       /*  $ticket->update([
             'state_id' => 2,
             'priority' => $priority,
             'sla_assigned_start_time' => Carbon::now(),
             'sla_due_time' => $this->calculateDueTime($priority), // Asignar la fecha límite del SLA
         ]);
+ */
 
+          // Actualizar el estado del ticket
+        $ticketData = [
+            'state_id' => 2,
+            'priority' => $priority,
+            'sla_due_time' => $this->calculateDueTime($priority), // Asignar la fecha límite del SLA
+        ];
+
+        // Solo establecer 'sla_assigned_start_time' si aún no tiene valor
+        if (is_null($ticket->sla_assigned_start_time)) {
+            $ticketData['sla_assigned_start_time'] = Carbon::now();
+        }
+
+        // Actualizar los datos del ticket
+        $ticket->update($ticketData);
         
         HistoryController::logAction($ticket, true, auth::id(), "El ticket fue asignado al usuario con ID $userId  por el usuario con ID ".auth::id() );
 

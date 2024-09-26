@@ -13,17 +13,15 @@ class HistoryController extends Controller
 {
     public static function logAction(Ticket $ticket, $change = false, $userId, $action)
     {
-        // Obtener el último cambio de estado del ticket
-        $lastHistory = History::where('ticket_id', $ticket->id)
+        // Obtener el último cambio de estado del ticket y calcular el tiempo de SLA en una sola consulta
+        $lastHistory = History::selectRaw('id, TIMESTAMPDIFF(MINUTE, created_at, NOW()) as sla_time')
+            ->where('ticket_id', $ticket->id)
             ->where('change_state', true)
             ->orderBy('created_at', 'desc')
             ->first();
 
-        // Calcular el tiempo de SLA si existe un historial previo
-        $slaTime = 0;
-        if ($lastHistory) {
-            $slaTime = Carbon::parse($lastHistory->created_at)->diffInMinutes(Carbon::now());
-        }
+        // Si existe un historial previo, obtenemos el tiempo de SLA calculado, si no, es 0
+        $slaTime = $lastHistory ? $lastHistory->sla_time : 0;
 
         // Crear un nuevo registro en el historial con el SLA calculado
 

@@ -23,10 +23,9 @@ class CommentController extends Controller
             'content' => $request->input('content'),
 
         ]);
-         // Calcular el SLA actual
-         $slaTime = $ticket->getSlaAttention(); // Suponiendo que este método ya está definido
+
         
-        HistoryController::logAction($ticket, false, auth::id(), "Comentario agregado: $request->content", $slaTime);
+        HistoryController::logAction($ticket, false, auth::id(), "Comentario agregado: $request->content");
         //return redirect()->back()->with('success', 'Comentario añadido con éxito.');
         return redirect()->route('tickets.show',$ticket)->with('message', 'Comentario añadido con éxito.');
     }

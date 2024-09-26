@@ -102,6 +102,9 @@ class ReportController extends Controller
 
         // Construir la consulta para los tickets con filtros dinámicos
         $tickets = Ticket::with(['assignedUsers', 'state', 'element.category']) // Relaciones necesarias
+            ->selectRaw('*, 
+                TIMESTAMPDIFF(MINUTE, created_at, sla_assigned_start_time) as sla_assigned,
+                TIMESTAMPDIFF(MINUTE, sla_assigned_start_time, solved_at) as sla_solved')
             ->when($search, function ($query, $search) {
                 $query->where(function ($query) use ($search) {
                     $query->where('title', 'like', "%{$search}%")
@@ -137,20 +140,7 @@ class ReportController extends Controller
             ->orderBy($orderBy, $direction) // Ordenar por ID en desc
             ->paginate(10); // Paginación de resultados
 
-        // Agregar el SLA en minutos a los tickets
-        $tickets->map(function ($ticket) {
-            $ticket->sla_in_minutes = $ticket->sla_in_minutes; // Atributo SLA
-            return $ticket;
-        });
 
-        // Calcular el SLA para cada ticket
-        foreach ($tickets as $ticket) {
-            $ticket->sla = null;
-            if ($ticket->assignedUsers->count() > 0) {
-                $firstAssignment = $ticket->assignedUsers->first()->pivot->created_at;
-                $ticket->sla = round(abs($firstAssignment->diffInMinutes($ticket->created_at))); // Diferencia en minutos
-            }
-        }
 
         // Mantener los parámetros de búsqueda en la paginación
         $tickets->appends([
@@ -212,7 +202,7 @@ class ReportController extends Controller
         $ticketsCancelados = Ticket::where('state_id', 8)->whereBetween('created_at', [$startDate, $endDate])->count();
 
 
-        // Calcular el SLA de atención promedio por usuario
+        // Calcular el SLA de asignacion promedio por usuario
         $slaAttentionByUser = User::select('users.id', 'users.first_name', 'users.last_name')
             ->selectRaw('AVG(TIMESTAMPDIFF(MINUTE, tickets.created_at, tickets.sla_assigned_start_time)) AS avg_attention_time')
             ->selectRaw('COUNT(ticket_assigns.id) AS total')

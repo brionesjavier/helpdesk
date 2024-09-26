@@ -138,12 +138,18 @@
                         </tr>
                     </thead>
                     <tbody>
+                        @if ($ticketsByCategory->isEmpty())
+                        <tr>
+                            <td colspan="2" class="py-2 px-6 text-center">No hay datos disponibles para mostrar.</td>
+                        </tr>
+                    @else
                         @foreach ($ticketsByCategory as $item)
                             <tr>
                                 <td class="py-2 px-4 border-b">{{ $item->name }}</td>
                                 <td class="py-2 px-4 border-b">{{ $item->total }}</td>
                             </tr>
                         @endforeach
+                        @endif
                     </tbody>
                 </table>
             </div>
@@ -159,12 +165,18 @@
                         </tr>
                     </thead>
                     <tbody>
+                        @if ($ticketsByElement->isEmpty())
+                        <tr>
+                            <td colspan="2" class="py-2 px-6 text-center">No hay datos disponibles para mostrar.</td>
+                        </tr>
+                    @else
                         @foreach ($ticketsByElement as $item)
                             <tr>
                                 <td class="py-2 px-4 border-b">{{ $item->element }}</td>
                                 <td class="py-2 px-4 border-b">{{ $item->total }}</td>
                             </tr>
                         @endforeach
+                        @endif
                     </tbody>
                 </table>
             </div>
@@ -180,12 +192,18 @@
                         </tr>
                     </thead>
                     <tbody>
+                        @if ($ticketsByPriority->isEmpty())
+                        <tr>
+                            <td colspan="2" class="py-2 px-6 text-center">No hay datos disponibles para mostrar.</td>
+                        </tr>
+                    @else
                         @foreach ($ticketsByPriority as $item)
                             <tr>
                                 <td class="py-2 px-4 border-b">{{ $item->priority }}</td>
                                 <td class="py-2 px-4 border-b">{{ $item->total }}</td>
                             </tr>
                         @endforeach
+                        @endif
                     </tbody>
                 </table>
             </div>
@@ -198,11 +216,16 @@
                         <tr>
                             <th class="py-2 px-4 border-b text-left">Usuario</th>
                             <th class="py-2 px-4 border-b text-left">Total de Tickets Asignados</th>
-                            <th class="py-2 px-4 border-b text-left">Tickets Activos</th>
+                            <th class="py-2 px-4 border-b text-left">Tickets Activos Asignados</th>
                             <th class="py-2 px-4 border-b text-left">Tickets Reasignados</th>
                         </tr>
                     </thead>
                     <tbody>
+                        @if ($ticketsByUser->isEmpty())
+                        <tr>
+                            <td colspan="4" class="py-2 px-6 text-center">No hay datos disponibles para mostrar.</td>
+                        </tr>
+                    @else
                         @foreach ($ticketsByUser as $item)
                             <tr>
                                 <td class="py-2 px-4 border-b">{{ $item->first_name }} {{ $item->last_name }}</td>
@@ -211,34 +234,41 @@
                                 <td class="py-2 px-4 border-b">{{ abs($item->total - $item->finalizado) }}</td>
                             </tr>
                         @endforeach
+                        @endif
                     </tbody>
                 </table>
             </div>
 
     <!-- Tickets reasignados -->
 <div class="bg-white shadow-sm sm:rounded-lg p-6 mb-6">
-    <h2 class="text-xl font-semibold mb-4">Tickets Reasignados</h2>
+    <h2 class="text-xl font-semibold mb-4">Tickets Reasignados (Más de Una Vez)</h2>
     <table class="min-w-full bg-white border border-gray-200">
         <thead>
             <tr>
                 <th class="py-2 px-6 border-b text-left w-1/3">Folio</th>
-                <th class="py-2 px-6 border-b text-left w-1/3">Tickets Reasignados</th>
+                <th class="py-2 px-6 border-b text-left w-1/3">Cantidad de Reasignaciones</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($ticketsMultipleAssignments as $item)
-                <tr>
-                    <td class="py-2 px-6 border-b"><a href="{{ route('reports.sla', $item->ticket_id) }}"> {{ $item->ticket_id }} </a></td>
-                    <td class="py-2 px-6 border-b">{{ $item->total_assignments - 1 }}</td>
-                </tr>
-            @endforeach
-        </tbody>
+    @if ($ticketsMultipleAssignments->isEmpty())
+        <tr>
+            <td colspan="2" class="py-2 px-6 text-center">No hay datos disponibles para mostrar.</td>
+        </tr>
+    @else
+        @foreach ($ticketsMultipleAssignments as $item)
+            <tr>
+                <td class="py-2 px-6 border-b"><a href="{{ route('reports.sla', $item->ticket_id) }}"> {{ $item->ticket_id }} </a></td>
+                <td class="py-2 px-6 border-b">{{ $item->total_assignments - 1 }}</td>
+            </tr>
+        @endforeach
+    @endif
+</tbody>
     </table>
 </div>
 
 
             <!-- Tickets En Proceso -->
-            <div class="bg-white shadow-sm sm:rounded-lg p-6 mb-6">
+            <<div class="bg-white shadow-sm sm:rounded-lg p-6 mb-6">
                 <h2 class="text-xl font-semibold mb-4">Tickets En Proceso y Objetado</h2>
                 <table class="min-w-full bg-white border border-gray-200">
                     <thead>
@@ -248,22 +278,28 @@
                             <th class="py-2 px-4 border-b text-left">Tickets en Proceso</th>
                             <th class="py-2 px-4 border-b text-left">Tickets Objetados</th>
                             <th class="py-2 px-4 border-b text-left">Total de Tickets</th>
-                            
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($supportTickets as $item)
+                        @if ($supportTickets->isEmpty())
                             <tr>
-                                <td class="py-2 px-4 border-b">{{ $item->id }}</td>
-                                <td class="py-2 px-4 border-b">{{ $item->first_name }} {{ $item->last_name }}</td>
-                                <td class="py-2 px-4 border-b">{{ $item->process_tickets }}</td>
-                                <td class="py-2 px-4 border-b">{{ $item->obj_tickets }}</td>
-                                <td class="py-2 px-4 border-b">{{ $item->total_tickets }}</td>
+                                <td colspan="5" class="py-2 px-6 text-center">No hay datos disponibles para mostrar.</td>
                             </tr>
-                        @endforeach
+                        @else
+                            @foreach ($supportTickets as $item)
+                                <tr>
+                                    <td class="py-2 px-4 border-b">{{ $item->id }}</td>
+                                    <td class="py-2 px-4 border-b">{{ $item->first_name }} {{ $item->last_name }}</td>
+                                    <td class="py-2 px-4 border-b">{{ $item->process_tickets }}</td>
+                                    <td class="py-2 px-4 border-b">{{ $item->obj_tickets }}</td>
+                                    <td class="py-2 px-4 border-b">{{ $item->total_tickets }}</td>
+                                </tr>
+                            @endforeach
+                        @endif
                     </tbody>
                 </table>
             </div>
+            
 
 
             
@@ -280,6 +316,11 @@
                         </tr>
                     </thead>
                     <tbody>
+                        @if ($slaAttentionByUser->isEmpty())
+                            <tr>
+                                <td colspan="3" class="py-2 px-6 text-center">No hay datos disponibles para mostrar.</td>
+                            </tr>
+                        @else
                         @foreach ($slaAttentionByUser as $user)
                             <tr @class([
                                 'bg-green-100' => abs($user->avg_attention_time) <= 20,
@@ -291,6 +332,7 @@
                                 <td class="py-2 px-4 border-b">{{ abs($user->total) }}</td>
                             </tr>
                         @endforeach
+                        @endif
                     </tbody>
                 </table>
             </div>
@@ -307,20 +349,27 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($slaResolutionByUser as $user)
-                            <tr @class([
-                                'bg-green-100' => abs($user->avg_resolution_time) <= 20,
-                                'bg-yellow-100' => abs($user->avg_resolution_time) > 20 && $user->avg_resolution_time <= 30,
-                                'bg-red-100' => abs($user->avg_resolution_time) > 30,
-                            ])>
-                                <td class="py-2 px-4 border-b">{{ $user->first_name }} {{ $user->last_name }}</td>
-                                <td class="py-2 px-4 border-b">{{ round(abs($user->avg_resolution_time), 2) }}</td>
-                                <td class="py-2 px-4 border-b">{{ abs($user->total) }}</td>
+                        @if ($slaResolutionByUser->isEmpty())
+                            <tr>
+                                <td colspan="3" class="py-2 px-6 text-center">No hay datos disponibles para mostrar.</td>
                             </tr>
-                        @endforeach
+                        @else
+                            @foreach ($slaResolutionByUser as $user)
+                                <tr @class([
+                                    'bg-green-100' => abs($user->avg_resolution_time) <= 20,
+                                    'bg-yellow-100' => abs($user->avg_resolution_time) > 20 && $user->avg_resolution_time <= 30,
+                                    'bg-red-100' => abs($user->avg_resolution_time) > 30,
+                                ])>
+                                    <td class="py-2 px-4 border-b">{{ $user->first_name }} {{ $user->last_name }}</td>
+                                    <td class="py-2 px-4 border-b">{{ round(abs($user->avg_resolution_time), 2) }}</td>
+                                    <td class="py-2 px-4 border-b">{{ abs($user->total) }}</td>
+                                </tr>
+                            @endforeach
+                        @endif
                     </tbody>
                 </table>
             </div>
+            
 
         </div>
     </div>

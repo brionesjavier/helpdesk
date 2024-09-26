@@ -200,6 +200,9 @@
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                         SLA solucion At</th>
+                                        <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                        tiempo total SLA </th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
@@ -250,7 +253,7 @@
 
 
                                             @if ($ticket->assignedUsers->count() > 0)
-                                                {{ $ticket->sla }} minutos
+                                                {{ $ticket->sla_assigned }} minutos
                                             @else
                                                 Sin asignar {{ $ticket->getSlaInMinutesAttribute() }} minutos
                                             @endif
@@ -281,6 +284,11 @@
                                         <td
                                             class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                             {{--  $ticket->getSlaSolutionInMinutesAttribute() ? $ticket->getSlaSolutionInMinutesAttribute() . ' minutos' : 'N/A'  --}}
+
+                                              <a href="{{ route('reports.sla',$ticket) }}"> {{  $ticket->sla_solved ??'N/A' }}</a>
+                                        </td>
+                                        <td
+                                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                               <a href="{{ route('reports.sla',$ticket) }}"> {{  $ticket->getTotalSlaTime() }}</a>
                                         </td>
                                     </tr>

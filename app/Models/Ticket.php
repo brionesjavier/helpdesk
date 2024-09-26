@@ -86,7 +86,7 @@ class Ticket extends Model
         if ($this->assignedUsers->isNotEmpty() && $this->solved_at) {
             $assignedAt = Carbon::parse($this->assignedUsers->first()->pivot->created_at);
             $solvedAt = Carbon::parse($this->solved_at);
-            return round(abs($assignedAt->diffInMinutes($solvedAt)));
+            return abs($assignedAt->diffInMinutes($solvedAt));
         }
 
         return $this->getSLAInMinutesOnCancellation();
@@ -98,7 +98,7 @@ class Ticket extends Model
         if ($this->assignedUsers->isEmpty() && $this->solved_at) {
             $assignedAt = Carbon::parse($this->created_at);
             $solvedAt = Carbon::parse($this->solved_at);
-            return round(abs($assignedAt->diffInMinutes($solvedAt)));
+            return abs($assignedAt->diffInMinutes($solvedAt));
         }
         return null;
     }
@@ -108,15 +108,15 @@ class Ticket extends Model
      *
      * @return int|null Devuelve la diferencia en minutos, o null si no es aplicable.
      */
-    public function getSlaAttention()
+/*     public function getSlaAttention()
     {
         
         if ($this->created_at && $this->sla_assigned_start_time) {
             $attention = Carbon::parse($this->created_at)->diffInMinutes($this->sla_assigned_start_time);
-            return abs(round($attention));
+            return abs($attention);
         }
         return null; // O considera return 0 si prefieres manejar 0 minutos en lugar de null.
-    }
+    } */
 
     public function getSlaResolutionTime()
     {
