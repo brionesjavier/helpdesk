@@ -23,7 +23,7 @@ return new class extends Migration
 public function down()
 {
     Schema::table('tickets', function (Blueprint $table) {
-        $table->dropColumn(['solved_at','sla_unassigned_start_time', 'sla_assigned_start_time', 'sla_due_time']);
+        $table->dropColumn(['solved_at', 'attention_deadline','sla_assigned_start_time', 'sla_due_time']);
     });
 }
 
