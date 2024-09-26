@@ -15,9 +15,51 @@
 
             <!-- Fecha y Hora Actual -->
             <div class="bg-white shadow-sm sm:rounded-lg p-6 mb-6">
-                <h1 class="text-lg font-semibold mb-2">Fecha y Hora Actual</h1>
-                <p>{{ now()->format('d/m/Y H:i:s') }}</p>
+                
+                <div class="flex justify-between items-center">
+                    <!-- Mostrar fecha buscada o fecha actual al lado izquierdo -->
+                    
+                    <div class="text-lg font-semibold text-gray-700">
+                        <h1 class="text-lg font-semibold mb-2">Resumen del Rango de Fechas</h1>
+                        {{ request('start_date') ? \Carbon\Carbon::parse(request('start_date'))->format('d/m/Y') : \Carbon\Carbon::now()->format('d/m/Y') }}
+                        -
+                        {{ request('end_date') ? \Carbon\Carbon::parse(request('end_date'))->format('d/m/Y') : \Carbon\Carbon::now()->format('d/m/Y') }}
+                    </div>
+                    
+                    <!-- Formulario de búsqueda al lado derecho -->
+                    <form action="{{ route('reports.summary') }}" method="GET" class="flex gap-4">
+                        <!-- Filtro de fecha de inicio -->
+                        <div>
+                            <label for="start_date" class="block text-sm font-medium text-gray-700">Fecha de Inicio</label>
+                            <input type="date" name="start_date" id="start_date" 
+                                value="{{ request('start_date') ?? \Carbon\Carbon::now()->toDateString() }}"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-400 dark:text-white">
+                        </div>
+            
+                        <!-- Filtro de fecha de fin -->
+                        <div>
+                            <label for="end_date" class="block text-sm font-medium text-gray-700">Fecha de Fin</label>
+                            <input type="date" name="end_date" id="end_date" 
+                                value="{{ request('end_date') ?? \Carbon\Carbon::now()->toDateString() }}"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-400 dark:text-white">
+                        </div>
+            
+                        <!-- Botones de acción -->
+                        <div class="flex items-end gap-2">
+                            <button type="submit"
+                                class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Aplicar Filtros
+                            </button>
+                            <a href="{{ route('reports.summary') }}"
+                                class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Limpiar
+                            </a>
+                        </div>
+                    </form>
+                </div>
             </div>
+            
+            
 
             <!-- Resumen General -->
             <div class="bg-white shadow-sm sm:rounded-lg p-6 mb-6">
@@ -173,28 +215,58 @@
                 </table>
             </div>
 
-            <!-- Tickets reasignados -->
+    <!-- Tickets reasignados -->
+<div class="bg-white shadow-sm sm:rounded-lg p-6 mb-6">
+    <h2 class="text-xl font-semibold mb-4">Tickets Reasignados</h2>
+    <table class="min-w-full bg-white border border-gray-200">
+        <thead>
+            <tr>
+                <th class="py-2 px-6 border-b text-left w-1/3">Folio</th>
+                <th class="py-2 px-6 border-b text-left w-1/3">Tickets Reasignados</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($ticketsMultipleAssignments as $item)
+                <tr>
+                    <td class="py-2 px-6 border-b"><a href="{{ route('reports.sla', $item->ticket_id) }}"> {{ $item->ticket_id }} </a></td>
+                    <td class="py-2 px-6 border-b">{{ $item->total_assignments - 1 }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
+
+
+            <!-- Tickets En Proceso -->
             <div class="bg-white shadow-sm sm:rounded-lg p-6 mb-6">
-                <h2 class="text-xl font-semibold mb-4">Tickets Reasignados</h2>
+                <h2 class="text-xl font-semibold mb-4">Tickets En Proceso y Objetado</h2>
                 <table class="min-w-full bg-white border border-gray-200">
                     <thead>
                         <tr>
-                            <th class="py-2 px-4 border-b text-left">Folio</th>
-                            <th class="py-2 px-4 border-b text-left">Cantidad Reasignados</th>
+                            <th class="py-2 px-4 border-b text-left">ID</th>
+                            <th class="py-2 px-4 border-b text-left">Usuario</th>
+                            <th class="py-2 px-4 border-b text-left">Tickets en Proceso</th>
+                            <th class="py-2 px-4 border-b text-left">Tickets Objetados</th>
+                            <th class="py-2 px-4 border-b text-left">Total de Tickets</th>
+                            
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($ticketsMultipleAssignments as $item)
+                        @foreach ($supportTickets as $item)
                             <tr>
-                                
-                                <td class="py-2 px-4 border-b"><a href="{{ route('reports.sla',$item->ticket_id) }}">{{ $item->ticket_id }}</a></td>
-                                <td class="py-2 px-4 border-b">{{ $item->total_assignments-1}}</td>
-                            
+                                <td class="py-2 px-4 border-b">{{ $item->id }}</td>
+                                <td class="py-2 px-4 border-b">{{ $item->first_name }} {{ $item->last_name }}</td>
+                                <td class="py-2 px-4 border-b">{{ $item->process_tickets }}</td>
+                                <td class="py-2 px-4 border-b">{{ $item->obj_tickets }}</td>
+                                <td class="py-2 px-4 border-b">{{ $item->total_tickets }}</td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
+
+
+            
 
             <!-- SLA de Atención por Usuario -->
             <div class="bg-white shadow-sm sm:rounded-lg p-6 mb-6">

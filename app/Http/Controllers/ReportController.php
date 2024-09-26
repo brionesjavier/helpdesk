@@ -93,7 +93,7 @@ class ReportController extends Controller
         $search = $validated['search'] ?? null;
         $status = $validated['status'] ?? 'all';
         $priority = $validated['priority'] ?? 'all';
-        $startDate = isset($validated['start_date']) ? Carbon::parse($validated['start_date'])->startOfDay() : null;
+        $startDate = isset($validated['start_date']) ? Carbon::parse($validated['start_date'])->startOfDay() : Carbon::now()->startOfDay();
         $endDate = isset($validated['end_date']) ? Carbon::parse($validated['end_date'])->endOfDay() : Carbon::now()->endOfDay();
         $user = $validated['user'] ?? 'all';
         $category = $validated['category'] ?? 'all';
@@ -187,21 +187,29 @@ class ReportController extends Controller
     /**
      * Muestra el resumen del reporte de tickets
      */
-    public function ticketsSummaryReport()
+    public function ticketsSummaryReport(Request $request)
     {
+        $validated = $request->validate([
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+        ]);
+
+        $startDate = isset($validated['start_date']) ? Carbon::parse($validated['start_date'])->startOfDay() : Carbon::now()->startOfDay();
+        $endDate = isset($validated['end_date']) ? Carbon::parse($validated['end_date'])->endOfDay() : Carbon::now()->endOfDay();
+
         // Contar el número total de tickets
-        $totalTickets = Ticket::count();
+        $totalTickets = Ticket::whereBetween('created_at', [$startDate, $endDate])->count();
 
         // Contar el número de tickets pendiente
-        $ticketsPendientes = Ticket::where('state_id', 1)->count();
+        $ticketsPendientes = Ticket::where('state_id', 1)->whereBetween('created_at', [$startDate, $endDate])->count();
         // Contar el número de tickets solucionado o finalizado
-        $ticketsSolucionados = Ticket::whereIn('state_id', [4, 7])->count();
+        $ticketsSolucionados = Ticket::whereIn('state_id', [4, 7])->whereBetween('created_at', [$startDate, $endDate])->count();
         // Contar el número de tickets en proceso  esto pueden ser asignado ,derivado en proceso
-        $ticketsEnProceso = Ticket::whereIn('state_id', [2, 3, 6])->count();
+        $ticketsEnProceso = Ticket::whereIn('state_id', [2, 3, 6])->whereBetween('created_at', [$startDate, $endDate])->count();
         // Contar el número de tickets objetados
-        $ticketsObjetados = Ticket::where('state_id', 5)->count();
+        $ticketsObjetados = Ticket::where('state_id', 5)->whereBetween('created_at', [$startDate, $endDate])->count();
         // Contar el número de tickets cancelados
-        $ticketsCancelados = Ticket::where('state_id', 8)->count();
+        $ticketsCancelados = Ticket::where('state_id', 8)->whereBetween('created_at', [$startDate, $endDate])->count();
 
 
         // Calcular el SLA de atención promedio por usuario
@@ -211,6 +219,7 @@ class ReportController extends Controller
             ->join('ticket_assigns', 'users.id', '=', 'ticket_assigns.user_id')
             ->join('tickets', 'ticket_assigns.ticket_id', '=', 'tickets.id')
             ->where('ticket_assigns.is_active', 1)  // Filtra solo las asignaciones activas
+            ->whereBetween('tickets.created_at', [$startDate, $endDate])
             ->groupBy('users.id', 'users.first_name', 'users.last_name')
             ->orderBy('total', 'desc')
             ->get();
@@ -231,6 +240,23 @@ class ReportController extends Controller
             ->whereNotNull('tickets.solved_at')
             ->whereIn('tickets.state_id', [4, 7])  // Utiliza whereIn para los estados
             ->where('ticket_assigns.is_active', 1)  // Solo asignaciones activas
+            ->whereBetween('tickets.created_at', [$startDate, $endDate])
+            ->groupBy('users.id', 'users.first_name', 'users.last_name')
+            ->get();
+
+            $supportTickets = User::select(
+                'users.id',
+                'users.first_name',
+                'users.last_name',
+                DB::raw('COUNT(CASE WHEN tickets.state_id IN (2, 3, 6) THEN tickets.id END) AS process_tickets'),  // Total de tickets en estados 2, 3 y 6
+                DB::raw('SUM(CASE WHEN tickets.state_id = 5 THEN 1 ELSE 0 END) AS obj_tickets'),  // Conteo de tickets en estado 5
+                DB::raw('COUNT(tickets.id) AS total_tickets')  // Total de tickets en estados 2, 3, 5 y 6
+            )
+            ->leftJoin('ticket_assigns', 'users.id', '=', 'ticket_assigns.user_id')
+            ->leftJoin('tickets', 'ticket_assigns.ticket_id', '=', 'tickets.id')
+            ->whereIn('tickets.state_id', [2, 3, 5, 6])  // Utiliza whereIn para múltiples valores
+            ->where('ticket_assigns.is_active', 1)  // Solo asignaciones activas
+            ->whereBetween('tickets.created_at', [$startDate, $endDate])
             ->groupBy('users.id', 'users.first_name', 'users.last_name')
             ->get();
 
@@ -238,6 +264,7 @@ class ReportController extends Controller
         // Calcular el SLA de atención promedio general
         $avgAttentionTime = Ticket::selectRaw('AVG(TIMESTAMPDIFF(MINUTE,  tickets.created_at,tickets.sla_assigned_start_time)) as avg_attention_time')
             ->whereNotNull('tickets.sla_assigned_start_time')
+            ->whereBetween('tickets.created_at', [$startDate, $endDate])
             ->value('avg_attention_time');
 
         // Calcular el SLA de solución promedio general
@@ -246,6 +273,7 @@ class ReportController extends Controller
                 $query->where('state_id', 4)
                     ->orWhere('state_id', 7);
             })
+            ->whereBetween('created_at', [$startDate, $endDate])
             ->selectRaw('AVG(TIMESTAMPDIFF(MINUTE, sla_assigned_start_time, solved_at)) as avg_resolution_time')
             ->value('avg_resolution_time');
 
@@ -254,17 +282,20 @@ class ReportController extends Controller
             ->selectRaw('COUNT(tickets.id) as total')
             ->join('elements', 'categories.id', '=', 'elements.category_id')
             ->join('tickets', 'elements.id', '=', 'tickets.element_id')
+            ->whereBetween('tickets.created_at', [$startDate, $endDate])
             ->groupBy('categories.name')
             ->get();
 
         // Contar tickets por elemento
         $ticketsByElement = Ticket::select('elements.name as element', DB::raw('count(tickets.id) as total'))
             ->join('elements', 'tickets.element_id', '=', 'elements.id')
+            ->whereBetween('tickets.created_at', [$startDate, $endDate])
             ->groupBy('elements.name')
             ->get();
 
         // Contar tickets por prioridad
         $ticketsByPriority = Ticket::select('priority', DB::raw('count(id) as total'))
+        ->whereBetween('created_at', [$startDate, $endDate])
             ->groupBy('priority')
             ->get();
 
@@ -277,15 +308,17 @@ class ReportController extends Controller
             DB::raw('COUNT(CASE WHEN ticket_assigns.is_active = true THEN 1 END) as finalizado')
         )
             ->Join('ticket_assigns', 'users.id', '=', 'ticket_assigns.user_id') // Usar LEFT JOIN si deseas incluir usuarios sin tickets
+            ->whereBetween('ticket_assigns.created_at', [$startDate, $endDate])
             ->groupBy('users.id', 'users.first_name', 'users.last_name')
             ->get();
 
         //contar ticket reasignados
         $ticketsMultipleAssignments = DB::table('ticket_assigns')
-        ->select('ticket_id', DB::raw('COUNT(id) as total_assignments'))
-        ->groupBy('ticket_id')
-        ->having('total_assignments', '>', 1)
-        ->get();
+            ->select('ticket_id', DB::raw('COUNT(id) as total_assignments'))
+            ->whereBetween('ticket_assigns.created_at', [$startDate, $endDate])
+            ->groupBy('ticket_id')
+            ->having('total_assignments', '>', 1)
+            ->get();
 
 
 
@@ -302,6 +335,7 @@ class ReportController extends Controller
             'ticketsByElement',
             'ticketsByPriority',
             'ticketsByUser',
+            'supportTickets',
             'ticketsMultipleAssignments',
             'slaAttentionByUser',
             'slaResolutionByUser',
