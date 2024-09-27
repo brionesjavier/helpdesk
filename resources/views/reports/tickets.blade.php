@@ -12,7 +12,14 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-
+            <div class="text-lg font-semibold text-gray-700 dark:text-gray-200">
+                <span class="font-medium">
+                    Rango de Datos: 
+                    {{ request('start_date') ? \Carbon\Carbon::parse(request('start_date'))->format('d/m/Y') : \Carbon\Carbon::now()->format('d/m/Y') }} 
+                    -
+                    {{ request('end_date') ? \Carbon\Carbon::parse(request('end_date'))->format('d/m/Y') : \Carbon\Carbon::now()->format('d/m/Y') }}
+                </span>
+            </div>
             <!-- Buscador y filtros -->
             <div class="mb-4">
                 <form action="{{ route('reports.tickets') }}" method="GET">
