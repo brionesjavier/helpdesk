@@ -160,8 +160,8 @@
                 <table class="min-w-full bg-white border border-gray-200">
                     <thead>
                         <tr>
-                            <th class="py-2 px-4 border-b text-left">Elemento</th>
-                            <th class="py-2 px-4 border-b text-left">Cantidad</th>
+                            <th class="py-2 px-4 border-b text-left w-1/3">Elemento</th>
+                            <th class="py-2 px-4 border-b text-left w-1/3">Cantidad</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -267,7 +267,7 @@
 </div>
 
 
-            <!-- Tickets En Proceso -->
+            <!-- Tickets En Proceso y Objetado -->
             <<div class="bg-white shadow-sm sm:rounded-lg p-6 mb-6">
                 <h2 class="text-xl font-semibold mb-4">Tickets En Proceso y Objetado</h2>
                 <table class="min-w-full bg-white border border-gray-200">
@@ -299,12 +299,41 @@
                     </tbody>
                 </table>
             </div>
+
+             <!-- Tickets  Objetado -->
+             <<div class="bg-white shadow-sm sm:rounded-lg p-6 mb-6">
+                <h2 class="text-xl font-semibold mb-4">Tickets Objetado (Más de Una Vez)</h2>
+                <table class="min-w-full bg-white border border-gray-200">
+                    <thead>
+                        <tr>
+                            <th class="py-2 px-4 border-b text-left w-1/3">Folio</th>
+                            <th class="py-2 px-4 border-b text-left w-1/3">Total de objeciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if ($ticketsObjetadosCount->isEmpty())
+                            <tr>
+                                <td colspan="2" class="py-2 px-6 text-center">No hay datos disponibles para mostrar.</td>
+                            </tr>
+                        @else
+                            @foreach ($ticketsObjetadosCount as $item)
+                                <tr>
+                                    <td class="py-2 px-4 border-b"><a href="{{ route('reports.sla', $item->ticket_id) }}"> {{ $item->ticket_id }} </a></td>
+                                    <td class="py-2 px-4 border-b">{{ $item->total_objeciones }}</td>
+                                    
+                                </tr>
+                            @endforeach
+                        @endif
+                    </tbody>
+                </table>
+            </div>
+            
             
 
 
             
 
-            <!-- SLA de Atención por Usuario -->
+            <!-- SLA de Atención por Usuario incluy-->
             <div class="bg-white shadow-sm sm:rounded-lg p-6 mb-6">
                 <h2 class="text-xl font-semibold mb-4">SLA de Asignación Promedio por Usuario</h2>
                 <table class="min-w-full bg-white border border-gray-200">
@@ -339,7 +368,7 @@
 
             <!-- SLA de Solución por Usuario -->
             <div class="bg-white shadow-sm sm:rounded-lg p-6 mb-6">
-                <h2 class="text-xl font-semibold mb-4">SLA de Solución Promedio por Usuario</h2>
+                <h2 class="text-xl font-semibold mb-4">Promedio de SLA por Usuario para Resolución (Incluye Todo el Proceso, Excluyendo la Primera Asignación)</h2>
                 <table class="min-w-full bg-white border border-gray-200">
                     <thead>
                         <tr>
@@ -362,6 +391,39 @@
                                 ])>
                                     <td class="py-2 px-4 border-b">{{ $user->first_name }} {{ $user->last_name }}</td>
                                     <td class="py-2 px-4 border-b">{{ round(abs($user->avg_resolution_time), 2) }}</td>
+                                    <td class="py-2 px-4 border-b">{{ abs($user->total) }}</td>
+                                </tr>
+                            @endforeach
+                        @endif
+                    </tbody>
+                </table>
+            </div>
+
+             <!-- SLA de Solución por Usuario -->
+             <div class="bg-white shadow-sm sm:rounded-lg p-6 mb-6">
+                <h2 class="text-xl font-semibold mb-4">SLA de Solución Promedio por Usuario</h2>
+                <table class="min-w-full bg-white border border-gray-200">
+                    <thead>
+                        <tr>
+                            <th class="py-2 px-4 border-b text-left">Usuario</th>
+                            <th class="py-2 px-4 border-b text-left">Promedio Solución (minutos)</th>
+                            <th class="py-2 px-4 border-b text-left">Cantidad de Tickets</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if ($slaResolutionByUser->isEmpty())
+                            <tr>
+                                <td colspan="3" class="py-2 px-6 text-center">No hay datos disponibles para mostrar.</td>
+                            </tr>
+                        @else
+                            @foreach ($TimesSolvedByUser as $user)
+                                <tr @class([
+                                    'bg-green-100' => abs($user->avg_resolution_time) <= 20,
+                                    'bg-yellow-100' => abs($user->avg_resolution_time) > 20 && $user->avg_resolution_time <= 30,
+                                    'bg-red-100' => abs($user->avg_resolution_time) > 30,
+                                ])>
+                                    <td class="py-2 px-4 border-b">{{ $user->first_name }} {{ $user->last_name }}</td>
+                                    <td class="py-2 px-4 border-b">{{ round(abs($user->avgSolutionByUser), 2) }}</td>
                                     <td class="py-2 px-4 border-b">{{ abs($user->total) }}</td>
                                 </tr>
                             @endforeach
