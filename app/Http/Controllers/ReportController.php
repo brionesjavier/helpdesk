@@ -336,9 +336,6 @@ class ReportController extends Controller
             ->orderBy('total', 'desc')
             ->get();
 
-
-
-
         // Calcular el SLA de resolución promedio por usuario
         $slaResolutionByUser = User::select(
             'users.id',
@@ -486,9 +483,12 @@ class ReportController extends Controller
                 GROUP BY ticket_id
             ) AS latest_assignment'), 'tickets.id', '=', 'latest_assignment.ticket_id')
             ->leftJoin(DB::raw('(
-                SELECT ticket_id, MAX(created_at) AS latest_solution_date
+                SELECT 
+                    ticket_id, 
+                    MAX(histories.created_at) AS latest_solution_date
                 FROM histories
-                WHERE state_id = 4 -- Estado de solución
+                JOIN tickets ON histories.ticket_id = tickets.id
+                WHERE histories.state_id = 4 AND (tickets.state_id = 4 OR tickets.state_id = 7)
                 GROUP BY ticket_id
             ) AS latest_solution'), 'tickets.id', '=', 'latest_solution.ticket_id')
             ->where('ticket_assigns.is_active', 1)

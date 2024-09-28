@@ -6,13 +6,16 @@ use App\Models\Comment;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 
 
 class CommentController extends Controller
 {
+    use AuthorizesRequests;  
     public function store(Request $request, Ticket $ticket)
     {
+        $this->authorize('manageOrCreateByUser', $ticket);
         $request->validate([
             'content' => 'required',
         ]);

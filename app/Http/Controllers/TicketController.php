@@ -12,10 +12,12 @@ use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 
 class TicketController extends Controller
 {
+    use AuthorizesRequests;  
     // mostrar Todos los tickets
     public function index(Request $request)
     {
@@ -101,7 +103,7 @@ class TicketController extends Controller
         $tickets = $query->paginate(10);
 
         // Obtener los estados
-        $states = State::all();
+        $states = State::whereNotIn('id',[7])->get();
 
         // Guardar la URL actual en la sesión
         $request->session()->put('last_view', url()->current());
@@ -131,6 +133,7 @@ class TicketController extends Controller
     //TODO:guardar ticket  todo los usuario
     public function store(Request $request)
     {
+        
         $request->validate([
             'title' => 'required',
             'description' => 'required',
@@ -150,14 +153,7 @@ class TicketController extends Controller
             'attention_deadline' => Carbon::now()->addHours(2) // Lógica para calcular el SLA 
         ]);
 
-
-
-
-
         HistoryController::logAction($ticket, true, auth::id(), "Ticket creado: '{$ticket->description}'");
-
-
-
 
         return redirect()->route('tickets.my')->with('message', 'Ticket creado con exito');
     }
@@ -165,6 +161,7 @@ class TicketController extends Controller
     //editar datos
     public function edit(Ticket $ticket)
     {
+        $this->authorize('manageOrCreateByUser', $ticket);
         $categories = Category::get();
 
         return view('tickets.edit', compact('ticket', 'categories'));
@@ -174,6 +171,7 @@ class TicketController extends Controller
     //TODO: actualizar ticket todo los usuarios
     public function update(Request $request, Ticket $ticket)
     {
+        $this->authorize('manageOrCreateByUser', $ticket);
         $validated = $request->validate([
             'title' => 'required',
             'description' => 'required',
@@ -198,6 +196,7 @@ class TicketController extends Controller
     //eliminar datos
     public function destroy(Request $request, Ticket $ticket)
     {
+        $this->authorize('createByUser', $ticket);
         $ticket->update(['is_active' => false]);
 
         //registro historial
@@ -217,12 +216,14 @@ class TicketController extends Controller
     /** para vista de comenzar proceso */
     public function showProcessForm(Ticket $ticket): View
     {
+        $this->authorize('manage', $ticket);
         return view('tickets.process', compact('ticket'));
     }
 
     public function process(Request $request, Ticket $ticket)
     {
 
+        $this->authorize('manage', $ticket);
         $validated = $request->validate([
             'content' => 'required|string',
         ]);
@@ -248,12 +249,13 @@ class TicketController extends Controller
     /** para vista de solucion */
     public function showSolveForm(Ticket $ticket): View
     {
+        $this->authorize('manage', $ticket);
         return view('tickets.solve', compact('ticket'));
     }
 
     public function solve(Request $request, Ticket $ticket)
     {
-
+        $this->authorize('manage', $ticket);
         $validated = $request->validate([
             'content' => 'required|string',
         ]);
@@ -282,12 +284,15 @@ class TicketController extends Controller
     // Mostrar el formulario para reabrir el ticket
     public function showReopenForm(Ticket $ticket)
     {
+        $this->authorize('CreateByUser', $ticket);
         return view('tickets.reopen', compact('ticket'));
     }
 
     // Procesar la reapertura del ticket
     public function reopen(Request $request, Ticket $ticket)
     {
+
+        $this->authorize('CreateByUser', $ticket);
         $validated = $request->validate(['content' => 'required|string',]);
         $comment = $validated['content'];
 
@@ -316,6 +321,7 @@ class TicketController extends Controller
     // Mostrar el formulario para derivar el ticket
     public function showDeriveForm(Ticket $ticket): View
     {
+        $this->authorize('manage', $ticket);
         $users = User::where('assignable', true)->get();
         return view('tickets.derive', compact('ticket', 'users'));
     }
@@ -323,6 +329,7 @@ class TicketController extends Controller
     // Procesar la derivación del ticket
     public function derive(Request $request, Ticket $ticket)
     {
+        $this->authorize('manage', $ticket);
         // Validar la solicitud
         $validated = $request->validate([
             'content' => 'required|string',
@@ -403,12 +410,14 @@ class TicketController extends Controller
     // Mostrar el formulario para cancelar el ticket
     public function showCancelForm(Ticket $ticket): View
     {
+        $this->authorize('manageOrCreateByUser', $ticket);
         return view('tickets.cancel', compact('ticket'));
     }
 
     // Procesar la cancelación del ticket
     public function cancel(Request $request, Ticket $ticket)
     {
+        $this->authorize('manageOrCreateByUser', $ticket);
         $validated = $request->validate([
             'content' => 'required|string',
         ]);
@@ -423,7 +432,7 @@ class TicketController extends Controller
             'state_ticket' => 'Cancelado',
         ]);
 
-        $ticket->update(['state_id' => 8, 'solved_at' => Carbon::now()]); /* 8 ID del estado "Cancelado" */
+        $ticket->update(['state_id' => 8]); /* 8 ID del estado "Cancelado" */
 
         HistoryController::logAction($ticket, true, auth::id(), "El ticket fue cancelado por el usuario con ID " . auth::id());
 
