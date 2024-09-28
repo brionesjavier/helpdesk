@@ -115,29 +115,30 @@ class ReportController extends Controller
 
         $totalTicketsPendientesDelDia = Ticket::where('state_id', 1)
             ->where('solved_at', null)
-            ->whereDate('created_at', $today)
+            ->whereDate('updated_at', $today)
             ->count();
 
         $totalTicketsEnGestionDelDia = Ticket::whereIn('state_id', [2, 6])
-            ->whereDate('created_at', $today)
+            ->whereDate('updated_at', $today)
             ->count();
 
         $totalTicketsEnProcesoDelDia = Ticket::where('state_id', 3)
             ->where('solved_at', null)
+            ->whereDate('updated_at', $today)
             ->count();
 
         $totalTicketsSolucionadosDelDia = Ticket::whereIn('state_id', [4, 7])
             ->whereNotNull('solved_at')
-            ->whereDate('created_at', $today)
+            ->whereDate('updated_at', $today)
             ->count();
 
         $totalTicketsObjetadoDelDia = Ticket::where('state_id', 5)
             ->where('solved_at', null)
-            ->whereDate('created_at', $today)
+            ->whereDate('updated_at', $today)
             ->count();
 
         $totalTicketsCanceladosDelDia = Ticket::where('state_id', 8)
-            ->whereDate('created_at', $today)
+            ->whereDate('updated_at', $today)
             ->count();
 
         $totalTicketsDelDia = Ticket::whereDate('created_at', $today) // Contar solo tickets del día
@@ -172,15 +173,7 @@ class ReportController extends Controller
             'totalTicketsEnProcesoDelDia',
             'totalTicketsSolucionadosDelDia',
             'totalTicketsObjetadoDelDia',
-            'totalTicketsCanceladosDelDia',
-            'totalTicketsDelDia'
-                        
-
-
-
-
-
-
+            'totalTicketsCanceladosDelDia'
         ));
     }
 

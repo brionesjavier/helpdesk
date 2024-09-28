@@ -22,11 +22,7 @@ class UserController extends Controller
         // Aplicar búsqueda por nombre, apellido, email, teléfono e id
         if ($search) {
             $query->where(function ($q) use ($search) {
-                // Verifica si es un número de teléfono válido
-                if (is_numeric($search) && strlen($search) >= 6) {
-                    $q->orWhere('phone', 'like', "%$search%");
-                }
-    
+
                 // Verifica si es un correo electrónico con al menos 4 caracteres
                 if (filter_var($search, FILTER_VALIDATE_EMAIL) && strlen($search) >= 4) {
                     $q->orWhere('email', 'like', "%$search%");
