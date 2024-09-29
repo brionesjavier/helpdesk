@@ -125,7 +125,7 @@ class TicketController extends Controller
     //TODO:crear ticket  todo los usuario
     public function create()
     {
-        $categories = Category::get();
+        $categories = Category::where('is_active',1)->get();
         return view('tickets.create', ['categories' => $categories]);
     }
 
@@ -162,7 +162,7 @@ class TicketController extends Controller
     public function edit(Ticket $ticket)
     {
         $this->authorize('manageOrCreateByUser', $ticket);
-        $categories = Category::get();
+        $categories = Category::where('is_active',1)->get();
 
         return view('tickets.edit', compact('ticket', 'categories'));
     }
@@ -198,14 +198,6 @@ class TicketController extends Controller
     {
         $this->authorize('createByUser', $ticket);
         $ticket->update(['is_active' => false]);
-
-        //registro historial
-        /*  $user =Auth::user()->first_name .' '.auth::user()->last_name;
-        $stateName = $ticket->state->name;
-        $message = "Ticket Eliminado: por  $user, Estado: $stateName ";
-
-      
-        HistoryController::logAction($ticket,true ,auth::id(), $message,  ); */
 
         // Obtener la URL de la última vista desde la sesión
         $lastView = $request->session()->get('last_view', route('tickets.index'));
@@ -250,7 +242,8 @@ class TicketController extends Controller
     public function showSolveForm(Ticket $ticket): View
     {
         $this->authorize('manage', $ticket);
-        return view('tickets.solve', compact('ticket'));
+        $categories = Category::where('is_active',1)->get();
+        return view('tickets.solve', compact('ticket','categories'));
     }
 
     public function solve(Request $request, Ticket $ticket)
@@ -258,7 +251,10 @@ class TicketController extends Controller
         $this->authorize('manage', $ticket);
         $validated = $request->validate([
             'content' => 'required|string',
+            'element_id' =>'required'
         ]);
+
+        $elementId = $validated['element_id'];
 
         $comment = $validated['content'];
 
@@ -270,7 +266,7 @@ class TicketController extends Controller
         ]);
 
         // Actualizar el estado del ticket
-        $ticket->update(['state_id' => 4, 'solved_at' => Carbon::now()]); /* 4 ID del estado "Solucionado" */
+        $ticket->update(['state_id' => 4,'element_id' => $elementId, 'solved_at' => Carbon::now()]); /* 4 ID del estado "Solucionado" */
 
 
         HistoryController::logAction($ticket, true, auth::id(), "El estado del ticket cambió a 'Solucionado' por el usuario con ID " . auth::id());

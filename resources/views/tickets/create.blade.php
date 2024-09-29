@@ -12,7 +12,7 @@
                         <x-input-error :messages="$errors->get('title')" class="mt-2" />
 
                            
-                        <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-300">categoria</label>
+                        <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Categoría</label>
                         <select name="category"  id="" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full">
                             <option value="" selected>Seleccione una categoría</option>
                             @foreach ($categories as $key => $category)
@@ -26,8 +26,6 @@
                             <!-- Opciones de elementos se llenarán dinámicamente -->
                             <option value="">Selecciona un elemento</option>
                         </select>
-
-
                         <x-input-error :messages="$errors->get('element_id')" class="mt-2" />
 
                         <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Descripcion</label>

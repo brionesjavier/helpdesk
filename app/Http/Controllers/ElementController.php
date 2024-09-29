@@ -32,7 +32,7 @@ class ElementController extends Controller
             ->paginate();
             //->get();
 
-        $categories = Category::all(); // Para el filtro de categorías
+        $categories = Category::where('is_active',1)->get(); // Para el filtro de categorías
 
         return view('elements.index', [
             'elements' => $elements,

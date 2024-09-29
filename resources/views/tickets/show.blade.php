@@ -64,7 +64,7 @@
 
                         {{-- Botón de comenzar proceso --}}
                         @if ($ticket->state->id == 2 || $ticket->state->id == 5 || $ticket->state->id == 6)
-                            @can('tickets.process')
+                            @can('manage',$ticket)
                                 <a href="{{ route('tickets.process', $ticket) }}" 
                                    class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                                     {{ __('Comenzar Proceso') }}
@@ -74,7 +74,7 @@
 
                         {{-- Botón de comentar --}}
                         @if ($ticket->state->id == 1 || $ticket->state->id == 2 || $ticket->state->id == 3 || $ticket->state->id == 5 || $ticket->state->id == 6)
-                            @can('comments.index')
+                            @can('manageOrCreateByUser',$ticket)
                                 <a href="{{ route('comments.index', $ticket) }}" 
                                    class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                     {{ __('Comentar') }}
@@ -84,7 +84,7 @@
 
                         {{-- Botón de derivar --}}
                         @if ( $ticket->state->id == 3)
-                            @can('tickets.derive')
+                        @can('manage',$ticket)
                                 <a href="{{ route('tickets.derive', $ticket) }}" 
                                    class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
                                     {{ __('Derivar') }}
@@ -94,7 +94,7 @@
 
                         {{-- Botón de solucionar --}}
                         @if ( $ticket->state->id == 3 || $ticket->state->id == 5)
-                            @can('tickets.solve')
+                        @can('manage',$ticket)
                                 <a href="{{ route('tickets.solve', $ticket) }}" 
                                    class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
                                     {{ __('Solucionar') }}
@@ -104,7 +104,7 @@
 
                         {{-- Botón de cancelar/anular --}}
                         @if ($ticket->state->id != 4 && $ticket->state->id != 7 && $ticket->state->id != 8)
-                            @can('tickets.cancel')
+                        @can('manageOrCreateByUser',$ticket)
                                 <a href="{{ route('tickets.cancel', $ticket) }}" 
                                    class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
                                     {{ __('Cancelar/Anular') }}
@@ -114,7 +114,7 @@
 
                         {{-- Botón de reabrir --}}
                         @if ($ticket->state->id == 4)
-                            @can('tickets.reopen')
+                        @can('CreateByUser',$ticket)
                                 <a href="{{ route('tickets.reopen', $ticket) }}" 
                                    class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
                                     {{ __('Reabrir') }}

@@ -16,7 +16,7 @@ class CategoryController extends Controller
     {
 
         //$categories = Category::get();
-        $categories = Category::paginate(10);
+        $categories = Category::where('is_active',1)->paginate(10);
 
         return view('categories.index', compact('categories'));
         //
@@ -101,24 +101,20 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
+        $category->update(['is_active' => 0]);
+        /* $category->delete(); */
 
-        $category->delete();
         return redirect()->route('categories.index') ->with('message', ' Categoria eliminada correctamente!');
 
     }
 
-/*     public function getElements( Category $category)
-    {
-        
-        $elements = Element::where('category_id', $category->id)->get();
-        return response()->json($elements);
-    } */
+
 
     //chatgpt
     public function getElements($categoryId)
     {
         $elements = Element::where('category_id', $categoryId)
-        ->where('is_active',true)
+        ->where('is_active',1)
         ->get();
         return response()->json($elements);
     }

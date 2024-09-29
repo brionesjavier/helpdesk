@@ -35,9 +35,11 @@ class CommentController extends Controller
 
     public function index($ticketId)
     {
+        
         // Recupera el ticket para asegurarte de que existe
         $ticket = Ticket::findOrFail($ticketId);
 
+        $this->authorize('manageOrCreateByUser', $ticket);
         $comments = Comment::where('ticket_id', $ticketId)->orderBy('created_at', 'desc')//asc or desc
         ->get();
         
