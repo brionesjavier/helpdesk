@@ -198,7 +198,7 @@ class TicketAssignmentController extends Controller
         // Actualizar los datos del ticket
         $ticket->update($ticketData);
         
-        HistoryController::logAction($ticket, true, auth::id(), "El ticket fue asignado al usuario con ID $userId  por el usuario con ID ".auth::id() );
+        HistoryController::logAction($ticket, true, Auth::id(), "El ticket fue asignado al usuario con ID $userId  por el usuario con ID ".Auth::id() );
 
         // Obtener la URL de la última vista desde la sesión
         $lastView = $request->session()->get('last_view', route('tickets.my'));

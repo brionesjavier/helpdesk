@@ -21,14 +21,14 @@ class CommentController extends Controller
         ]);
         Comment::create([
             'ticket_id' => $ticket->id,
-            'user_id' => auth::id(),
+            'user_id' => Auth::id(),
             'state_ticket' => $ticket->state->name,
             'content' => $request->input('content'),
 
         ]);
 
         
-        HistoryController::logAction($ticket, false, auth::id(), "Comentario agregado: $request->content");
+        HistoryController::logAction($ticket, false, Auth::id(), "Comentario agregado: $request->content");
         //return redirect()->back()->with('success', 'Comentario añadido con éxito.');
         return redirect()->route('tickets.show',$ticket)->with('message', 'Comentario añadido con éxito.');
     }

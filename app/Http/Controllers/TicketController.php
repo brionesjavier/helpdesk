@@ -153,7 +153,7 @@ class TicketController extends Controller
             'attention_deadline' => Carbon::now()->addHours(2) // Lógica para calcular el SLA 
         ]);
 
-        HistoryController::logAction($ticket, true, auth::id(), "Ticket creado: '{$ticket->description}'");
+        HistoryController::logAction($ticket, true, Auth::id(), "Ticket creado: '{$ticket->description}'");
 
         return redirect()->route('tickets.my')->with('message', 'Ticket creado con exito');
     }
@@ -182,7 +182,7 @@ class TicketController extends Controller
         $ticket->update($validated);
 
 
-        HistoryController::logAction($ticket, false, auth::id(), 'El ticket fue actualizado por el usuario con ID ' . auth::id() . ' sin cambiar su estado');
+        HistoryController::logAction($ticket, false, Auth::id(), 'El ticket fue actualizado por el usuario con ID ' . Auth::id() . ' sin cambiar su estado');
 
         // Obtener la URL de la última vista desde la sesión
         $lastView = $request->session()->get('last_view', route('tickets.index'));
@@ -225,14 +225,14 @@ class TicketController extends Controller
         $ticket->update(['state_id' => 3,]); /* 3 ID del estado "En proceso" */
         $ticket->comment()->create([
             'content' => $comment,
-            'user_id' => auth::id(),
+            'user_id' => Auth::id(),
             'ticket_id' => $ticket->id,
             'state_ticket' => $ticket->state->name,
         ]);
 
 
         // registro historial
-        HistoryController::logAction($ticket, true, auth::id(), "El estado del ticket cambió a 'En Progreso' por el usuario con ID " . auth::id());
+        HistoryController::logAction($ticket, true, Auth::id(), "El estado del ticket cambió a 'En Progreso' por el usuario con ID " . Auth::id());
 
         return redirect()->route('tickets.show', compact('ticket'))->with('message', 'ticket  en proceso.');
     }
@@ -260,7 +260,7 @@ class TicketController extends Controller
 
         $ticket->comment()->create([
             'content' => $comment,
-            'user_id' => auth::id(),
+            'user_id' => Auth::id(),
             'ticket_id' => $ticket->id,
             'state_ticket' => 'Solucionado',
         ]);
@@ -269,7 +269,7 @@ class TicketController extends Controller
         $ticket->update(['state_id' => 4,'element_id' => $elementId, 'solved_at' => Carbon::now()]); /* 4 ID del estado "Solucionado" */
 
 
-        HistoryController::logAction($ticket, true, auth::id(), "El estado del ticket cambió a 'Solucionado' por el usuario con ID " . auth::id());
+        HistoryController::logAction($ticket, true, Auth::id(), "El estado del ticket cambió a 'Solucionado' por el usuario con ID " . Auth::id());
         // Obtener la URL de la última vista desde la sesión
         $lastView = $request->session()->get('last_view', route('tickets.index'));
 
@@ -295,7 +295,7 @@ class TicketController extends Controller
 
         $ticket->comment()->create([
             'content' => $comment,
-            'user_id' => auth::id(),
+            'user_id' => Auth::id(),
             'ticket_id' => $ticket->id,
             'state_ticket' => 'Objetado',
         ]);
@@ -305,7 +305,7 @@ class TicketController extends Controller
             'solved_at' => null, // Eliminar la fecha de solución al objetar
         ]); 
 
-        HistoryController::logAction($ticket, true, auth::id(), "El ticket fue reabierto por el usuario con ID " . auth::id());
+        HistoryController::logAction($ticket, true, Auth::id(), "El ticket fue reabierto por el usuario con ID " . Auth::id());
 
         // Obtener la URL de la última vista desde la sesión
         $lastView = $request->session()->get('last_view', route('tickets.index'));
@@ -348,7 +348,7 @@ class TicketController extends Controller
         // Crear el comentario
         $ticket->comment()->create([
             'content' => $comment,
-            'user_id' => auth::id(),
+            'user_id' => Auth::id(),
             'ticket_id' => $ticket->id,
             'state_ticket' => 'Derivado',
         ]);
@@ -368,7 +368,7 @@ class TicketController extends Controller
         ]);
 
         // Registrar la acción en el historial
-        HistoryController::logAction($ticket, true, auth::id(), "El ticket fue derivado al usuario con ID $userId por el usuario con ID " . auth::id());
+        HistoryController::logAction($ticket, true, Auth::id(), "El ticket fue derivado al usuario con ID $userId por el usuario con ID " . Auth::id());
 
         // Obtener la URL de la última vista desde la sesión
         $lastView = $request->session()->get('last_view', route('tickets.index'));
@@ -385,7 +385,7 @@ class TicketController extends Controller
         $ticket->update(['state_id' => 7,]); /* 7 ID del estado "Cerrado" */
         $ticket->comment()->create([
             'content' => $comment,
-            'user_id' => auth::id(),
+            'user_id' => Auth::id(),
             'ticket_id' => $ticket->id,
             'state_ticket' => 'Finalizado',
         ]);
@@ -393,7 +393,7 @@ class TicketController extends Controller
         $ticket->update(['state_id' => 7,]); /* 7 ID del estado "Cerrado" */
 
 
-        HistoryController::logAction($ticket, true, auth::id(), "El ticket fue cerrado por el usuario con ID " . auth::id());
+        HistoryController::logAction($ticket, true, Auth::id(), "El ticket fue cerrado por el usuario con ID " . Auth::id());
 
 
         // Obtener la URL de la última vista desde la sesión
@@ -430,7 +430,7 @@ class TicketController extends Controller
 
         $ticket->update(['state_id' => 8]); /* 8 ID del estado "Cancelado" */
 
-        HistoryController::logAction($ticket, true, auth::id(), "El ticket fue cancelado por el usuario con ID " . auth::id());
+        HistoryController::logAction($ticket, true, Auth::id(), "El ticket fue cancelado por el usuario con ID " . Auth::id());
 
 
         // Obtener la URL de la última vista desde la sesión

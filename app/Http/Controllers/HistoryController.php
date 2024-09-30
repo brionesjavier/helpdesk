@@ -12,27 +12,30 @@ use Illuminate\Support\Facades\Auth;
 class HistoryController extends Controller
 {
     public static function logAction(Ticket $ticket, $change = false, $userId, $action)
-    {
-        // Obtener el último cambio de estado del ticket y calcular el tiempo de SLA en minutos
-        $lastHistory = History::selectRaw('id, EXTRACT(EPOCH FROM (NOW() - created_at)) / 60 as sla_time')
-            ->where('ticket_id', $ticket->id)
-            ->where('change_state', true)
-            ->orderBy('created_at', 'desc')
-            ->first();
-    
-        // Si existe un historial previo, obtenemos el tiempo de SLA calculado, si no, es 0
-        $slaTime = $lastHistory ? $lastHistory->sla_time : 0;
-    
-        // Crear un nuevo registro en el historial con el SLA calculado
-        History::create([
-            'ticket_id' => $ticket->id,
-            'state_id' => $ticket->state_id,
-            'change_state' => $change,
-            'user_id' => $userId,
-            'action' => $action,
-            'sla_time' => $slaTime,
-        ]);
-    }
+{
+    // Obtener el último cambio de estado del ticket
+    $lastHistory = History::where('ticket_id', $ticket->id)
+        ->where('change_state', true)
+        ->orderBy('created_at', 'desc')
+        ->first(['id', 'created_at']);
+
+    // Calcular el tiempo de SLA usando AGE()
+    $slaTime = $lastHistory 
+        ? History::selectRaw('AGE(NOW(), created_at) AS sla_time')
+                    ->where('id', $lastHistory->id)
+                    ->value('sla_time') 
+        : '0 days';
+
+    // Crear un nuevo registro en el historial con el SLA calculado
+    History::create([
+        'ticket_id' => $ticket->id,
+        'state_id' => $ticket->state_id,
+        'change_state' => $change,
+        'user_id' => $userId,
+        'action' => $action,
+        'sla_time' => $slaTime,
+    ]);
+}
     
 
     public function index(Request $request, $ticketId)
