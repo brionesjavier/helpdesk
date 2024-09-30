@@ -13,18 +13,17 @@ class HistoryController extends Controller
 {
     public static function logAction(Ticket $ticket, $change = false, $userId, $action)
     {
-        // Obtener el último cambio de estado del ticket y calcular el tiempo de SLA en una sola consulta
-        $lastHistory = History::selectRaw('id, TIMESTAMPDIFF(MINUTE, created_at, NOW()) as sla_time')
+        // Obtener el último cambio de estado del ticket y calcular el tiempo de SLA en minutos
+        $lastHistory = History::selectRaw('id, EXTRACT(EPOCH FROM (NOW() - created_at)) / 60 as sla_time')
             ->where('ticket_id', $ticket->id)
             ->where('change_state', true)
             ->orderBy('created_at', 'desc')
             ->first();
-
+    
         // Si existe un historial previo, obtenemos el tiempo de SLA calculado, si no, es 0
         $slaTime = $lastHistory ? $lastHistory->sla_time : 0;
-
+    
         // Crear un nuevo registro en el historial con el SLA calculado
-
         History::create([
             'ticket_id' => $ticket->id,
             'state_id' => $ticket->state_id,
@@ -34,6 +33,7 @@ class HistoryController extends Controller
             'sla_time' => $slaTime,
         ]);
     }
+    
 
     public function index(Request $request, $ticketId)
     {
