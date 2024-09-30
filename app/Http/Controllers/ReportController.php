@@ -183,9 +183,7 @@ class ReportController extends Controller
     public function sla(Ticket $ticket)
     {
 
-        $histories = History::select('*')
-            ->selectRaw("make_interval(secs => sla_time) AS sla_time_interval")
-            ->where('ticket_id', $ticket->id)
+        $histories = History::where('ticket_id', $ticket->id)
             ->where('change_state', true)
             ->get();
 

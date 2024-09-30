@@ -20,9 +20,9 @@ class History extends Model
         'sla_time'
     ];
 
-    public function getFormattedSla()
+    public function getFormattedSla($segunds)
     {
-        return $this->getSlaTimeFormattedAttribute($this->sla_time_interval);
+        return $this->getSlaTimeFormattedAttribute($segunds);
     }
 
     public function ticket(){
