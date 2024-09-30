@@ -260,7 +260,7 @@
 
 
                                             @if ($ticket->assignedUsers->count() > 0)
-                                                {{ $ticket->sla_assigned }} minutos
+                                                {{ $ticket->getFormattedSla($ticket->sla_assigned) }}
                                             @else
                                                 Sin asignar {{ $ticket->getSlaInMinutesAttribute() }} minutos
                                             @endif
@@ -290,9 +290,9 @@
                                         </td>
                                         <td
                                             class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                            {{--  $ticket->getSlaSolutionInMinutesAttribute() ? $ticket->getSlaSolutionInMinutesAttribute() . ' minutos' : 'N/A'  --}}
+                                            
 
-                                              <a href="{{ route('reports.sla',$ticket) }}"> {{  $ticket->sla_solved ??'N/A' }}</a>
+                                              <a href="{{ route('reports.sla',$ticket) }}"> {{  $ticket->getFormattedSla($ticket->sla_solved) ??'N/A' }}</a>
                                         </td>
                                         <td
                                             class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">

@@ -8,9 +8,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
+use App\SlaTimeFormatter;
 
 class User extends Authenticatable
 {
+    use SlaTimeFormatter;
     use HasFactory, Notifiable;
     use HasRoles;
     /**
@@ -51,6 +53,11 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function getFormattedSla($seconds)
+    {
+        return $this->getSlaTimeFormattedAttribute($seconds);
     }
 
     public function assignedTickets():BelongsToMany

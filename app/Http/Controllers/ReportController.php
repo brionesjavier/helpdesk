@@ -11,9 +11,11 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\SlaTimeFormatter;
 
 class ReportController extends Controller
 {
+    use SlaTimeFormatter;
 
     public function dashboard()
     {
@@ -181,7 +183,9 @@ class ReportController extends Controller
     public function sla(Ticket $ticket)
     {
 
-        $histories = History::where('ticket_id', $ticket->id)
+        $histories = History::select('*')
+            ->selectRaw("make_interval(secs => sla_time) AS sla_time_interval")
+            ->where('ticket_id', $ticket->id)
             ->where('change_state', true)
             ->get();
 
@@ -224,9 +228,9 @@ class ReportController extends Controller
 
         // Construir la consulta para los tickets con filtros dinámicos
         $tickets = Ticket::with(['assignedUsers', 'state', 'element.category']) // Relaciones necesarias
-            ->selectRaw('*, 
-                TIMESTAMPDIFF(MINUTE, created_at, sla_assigned_start_time) as sla_assigned,
-                TIMESTAMPDIFF(MINUTE, sla_assigned_start_time, solved_at) as sla_solved')
+            ->selectRaw('*, EXTRACT(EPOCH FROM sla_assigned_start_time - created_at)  as sla_assigned,
+                            EXTRACT(EPOCH FROM solved_at - sla_assigned_start_time )  as sla_solved')
+
             ->when($search, function ($query, $search) {
                 $query->where(function ($query) use ($search) {
                     $query->where('title', 'like', "%{$search}%")
@@ -326,7 +330,7 @@ class ReportController extends Controller
 
         // Calcular el SLA de asignacion promedio por usuario
         $slaAttentionByUser = User::select('users.id', 'users.first_name', 'users.last_name')
-            ->selectRaw('AVG(TIMESTAMPDIFF(MINUTE, tickets.created_at, tickets.sla_assigned_start_time)) AS avg_attention_time')
+            ->selectRaw('AVG(EXTRACT(EPOCH FROM tickets.sla_assigned_start_time - tickets.created_at))  as avg_attention_time') //TODO:EN REVISION
             ->selectRaw('COUNT(ticket_assigns.id) AS total')
             ->join('ticket_assigns', 'users.id', '=', 'ticket_assigns.user_id')
             ->join('tickets', 'ticket_assigns.ticket_id', '=', 'tickets.id')
@@ -341,7 +345,7 @@ class ReportController extends Controller
             'users.id',
             'users.first_name',
             'users.last_name',
-            DB::raw('AVG(TIMESTAMPDIFF(MINUTE, tickets.sla_assigned_start_time, tickets.solved_at)) AS avg_resolution_time'),
+            DB::raw('AVG(EXTRACT(EPOCH FROM  tickets.solved_at - tickets.sla_assigned_start_time))  as avg_resolution_time'), //TODO:EN REVISION
             DB::raw('COUNT(ticket_assigns.id) AS total')
         )
             ->join('ticket_assigns', 'users.id', '=', 'ticket_assigns.user_id')
@@ -371,20 +375,26 @@ class ReportController extends Controller
 
 
         // Calcular el SLA de atención promedio general
-        $avgAttentionTime = Ticket::selectRaw('AVG(TIMESTAMPDIFF(MINUTE,  tickets.created_at,tickets.sla_assigned_start_time)) as avg_attention_time')
+        $avgAttentionTime = Ticket::selectRaw('AVG(EXTRACT(EPOCH FROM  tickets.sla_assigned_start_time - tickets.created_at ))  as avg_attention_time') //TODO:EN REVISION
             ->whereNotNull('tickets.sla_assigned_start_time')
             ->whereBetween('tickets.created_at', [$startDate, $endDate])
             ->value('avg_attention_time');
 
         // Calcular el SLA de solución promedio general
-        $avgResolutionTime = Ticket::whereNotNull(['solved_at', 'sla_assigned_start_time']) // Combinando ambos campos en una sola línea
+        $avgResolutionTime = Ticket::selectRaw('AVG(EXTRACT(EPOCH FROM solved_at - sla_assigned_start_time ))  as avg_resolution_time')
             ->where(function ($query) {
                 $query->where('state_id', 4)
                     ->orWhere('state_id', 7);
             })
             ->whereBetween('created_at', [$startDate, $endDate])
-            ->selectRaw('AVG(TIMESTAMPDIFF(MINUTE, sla_assigned_start_time, solved_at)) as avg_resolution_time')
+            ->whereNotNull(['solved_at', 'sla_assigned_start_time']) // Combinando ambos campos en una sola línea
             ->value('avg_resolution_time');
+
+            $ticket = new Ticket();
+
+        // Formatear los tiempos antes de pasarlos a la vista
+        $formattedAvgAttentionTime =$ticket->getFormattedSla($avgAttentionTime);
+        $formattedAvgResolutionTime =$ticket->getFormattedSla($avgResolutionTime);
 
         // Contar tickets por categoría
         $ticketsByCategory = Category::select('categories.name')
@@ -423,20 +433,19 @@ class ReportController extends Controller
 
         //contar ticket reasignados
         $ticketsMultipleAssignments = DB::table('ticket_assigns')
-            ->select('ticket_id', DB::raw('COUNT(id) as total_assignments'))
-            ->whereBetween('ticket_assigns.created_at', [$startDate, $endDate])
-            ->groupBy('ticket_id')
-            ->having('total_assignments', '>', 1)
-            ->get();
+    ->select('ticket_id', DB::raw('COUNT(id) as total_assignments'))
+    ->whereBetween('ticket_assigns.created_at', [$startDate, $endDate])
+    ->groupBy('ticket_id')
+    ->having(DB::raw('COUNT(id)'), '>', 1)
+    ->get();
 
         // Obtener tickets objetados más de una vez
-        $ticketsObjetadosCount = History::select('ticket_id')
-            ->selectRaw('COUNT(*) AS total_objeciones')
+        $ticketsObjetadosCount = History::selectRaw('ticket_id,COUNT(*) AS total_objeciones')
             ->where('state_id', '=', 4) // Estado "Objetado"
             ->where('change_state', 1) // Solo cambios de estado
             ->whereBetween('created_at', [$startDate, $endDate]) // Filtra por rango de fechas
             ->groupBy('ticket_id')
-            ->having('total_objeciones', '>', 1)
+            ->having(DB::raw('COUNT(id)'), '>', 1)
             ->get(); // Podrías usar paginate() si esperas muchos resultados
 
 
@@ -461,6 +470,8 @@ class ReportController extends Controller
             'slaResolutionByUser',
             'avgAttentionTime',
             'avgResolutionTime',
+            'formattedAvgAttentionTime',
+            'formattedAvgResolutionTime',
             'TimesSolvedByUser'
         ));
     }
@@ -472,32 +483,35 @@ class ReportController extends Controller
             'users.first_name',
             'users.last_name'
         )
-            ->selectRaw('AVG(TIMESTAMPDIFF(MINUTE, latest_assignment.latest_assignment_date, latest_solution.latest_solution_date)) AS avgSolutionByUser')
-            ->selectRaw('COUNT(tickets.id) AS total')
-            ->join('ticket_assigns', 'users.id', '=', 'ticket_assigns.user_id')
-            ->join('tickets', 'ticket_assigns.ticket_id', '=', 'tickets.id')
-            ->leftJoin(DB::raw('(
-                SELECT ticket_id, MAX(created_at) AS latest_assignment_date
-                FROM histories
-                WHERE state_id IN (2, 6) -- Estado de derivación o asignación
-                GROUP BY ticket_id
-            ) AS latest_assignment'), 'tickets.id', '=', 'latest_assignment.ticket_id')
-            ->leftJoin(DB::raw('(
-                SELECT 
-                    ticket_id, 
-                    MAX(histories.created_at) AS latest_solution_date
-                FROM histories
-                JOIN tickets ON histories.ticket_id = tickets.id
-                WHERE histories.state_id = 4 AND (tickets.state_id = 4 OR tickets.state_id = 7)
-                GROUP BY ticket_id
-            ) AS latest_solution'), 'tickets.id', '=', 'latest_solution.ticket_id')
-            ->where('ticket_assigns.is_active', 1)
-            ->whereBetween('tickets.created_at', [$startDate, $endDate])
-            ->whereNotNull('latest_solution.latest_solution_date')
-            ->groupBy('users.id', 'users.first_name', 'users.last_name')
-            ->orderBy('avgSolutionByUser', 'ASC')
-            ->get();
-
+        ->selectRaw('AVG(EXTRACT(EPOCH FROM latest_assignment.latest_assignment_date - latest_solution.latest_solution_date )) as avgSolutionByUser')
+        ->selectRaw('COUNT(tickets.id) AS total')
+        ->join('ticket_assigns', 'users.id', '=', 'ticket_assigns.user_id')
+        ->join('tickets', 'ticket_assigns.ticket_id', '=', 'tickets.id')
+        ->leftJoin(DB::raw('(
+            SELECT 
+                ticket_id, 
+                MAX(created_at) AS latest_assignment_date 
+            FROM histories 
+            WHERE state_id IN (2, 6) -- Estado de derivación o asignación
+            GROUP BY ticket_id
+        ) AS latest_assignment'), 'tickets.id', '=', 'latest_assignment.ticket_id')
+        ->leftJoin(DB::raw('(
+            SELECT 
+                ticket_id, 
+                MAX(histories.created_at) AS latest_solution_date 
+            FROM histories 
+            JOIN tickets ON histories.ticket_id = tickets.id 
+            WHERE histories.state_id = 4 AND (tickets.state_id = 4 OR tickets.state_id = 7)
+            GROUP BY ticket_id
+        ) AS latest_solution'), 'tickets.id', '=', 'latest_solution.ticket_id')
+        ->where('ticket_assigns.is_active', 1)
+        ->whereBetween('tickets.created_at', [$startDate, $endDate])
+        ->whereNotNull('latest_solution.latest_solution_date')
+        ->groupBy('users.id', 'users.first_name', 'users.last_name')
+        ->orderByRaw('AVG(EXTRACT(EPOCH FROM  latest_assignment.latest_assignment_date - latest_solution.latest_solution_date )) ASC')
+        ->get();
+    
         return $TimesSolvedByUser;
     }
+    
 }

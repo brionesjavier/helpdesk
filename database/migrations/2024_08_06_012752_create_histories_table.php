@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('state_id')->nullable()->constrained('ticket_states');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->boolean('change_state')->default(false);
-            $table->integer('sla_time')->nullable(); // Tiempo de SLA en minutos
+            $table->float('sla_time')->nullable(); // Tiempo de SLA en minutos
             $table->string('action');
             $table->timestamps();
         });

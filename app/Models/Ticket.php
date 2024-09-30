@@ -6,10 +6,11 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-
+use App\SlaTimeFormatter;
 class Ticket extends Model
 {
     use HasFactory;
+    use SlaTimeFormatter;
 
     protected $table = 'tickets';
 
@@ -80,17 +81,6 @@ class Ticket extends Model
         return $sla !== null ? $sla : round($minutes);
     }
 
-    public function getSlaSolutionInMinutesAttribute()
-    {
-        // Verifica si hay al menos un usuario asignado
-        if ($this->assignedUsers->isNotEmpty() && $this->solved_at) {
-            $assignedAt = Carbon::parse($this->assignedUsers->first()->pivot->created_at);
-            $solvedAt = Carbon::parse($this->solved_at);
-            return abs($assignedAt->diffInMinutes($solvedAt));
-        }
-
-        return $this->getSLAInMinutesOnCancellation();
-    }
 
     public function getSLAInMinutesOnCancellation()
     {
@@ -101,37 +91,31 @@ class Ticket extends Model
             return abs($assignedAt->diffInMinutes($solvedAt));
         }
         return null;
-    }
+    } 
 
-    /**
-     * Calcula el tiempo en minutos entre la creación del ticket y la asignación.
-     *
-     * @return int|null Devuelve la diferencia en minutos, o null si no es aplicable.
-     */
-/*     public function getSlaAttention()
-    {
-        
-        if ($this->created_at && $this->sla_assigned_start_time) {
-            $attention = Carbon::parse($this->created_at)->diffInMinutes($this->sla_assigned_start_time);
-            return abs($attention);
-        }
-        return null; // O considera return 0 si prefieres manejar 0 minutos en lugar de null.
-    } */
+    
 
-    public function getSlaResolutionTime()
-    {
-        if ($this->sla_assigned_start_time && $this->solved_at) {
-            return Carbon::parse($this->sla_assigned_start_time)
-                ->diffInMinutes($this->solved_at);
-        }
-        return null;
-    }
+
+
+
+   // Otros métodos y propiedades del modelo
+
+   public function getFormattedSla($seconds)
+   {
+       return $this->getSlaTimeFormattedAttribute($seconds);
+   }
+
+   
+
 
     public function getTotalSlaTime()
-{
-    // Filtrar el historial donde change_state es true y sumar el tiempo de SLA
-    return $this->history()
-        ->where('change_state', true)
-        ->sum('sla_time'); // 'sla_time' debe ser el nombre de la columna en tu tabla de historias
-}
+    {
+        // Filtrar el historial donde change_state es true y sumar el tiempo de SLA
+        $totalSlaSeconds = $this->history()
+            ->where('change_state', true)
+            ->sum('sla_time'); // 'sla_time' debe ser el nombre de la columna en tu tabla de historias
+
+
+        return $this->getSlaTimeFormattedAttribute($totalSlaSeconds);
+    }
 }

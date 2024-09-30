@@ -16,7 +16,7 @@
                     @else
                         <!-- Muestra el tiempo total de SLA -->
                         <div class="mb-6">
-                            <p class="font-bold text-lg">Tiempo total de SLA: <span class="text-blue-600 dark:text-blue-400">{{ $ticket->getTotalSlaTime() }} minutos</span></p>
+                            <p class="font-bold text-lg">Tiempo total de SLA: <span class="text-blue-600 dark:text-blue-400">{{ $ticket->getTotalSlaTime() }} </span></p>
                         </div>
 
                         <div class="overflow-x-auto">
@@ -38,7 +38,7 @@
                                             <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100 whitespace-pre-line">{{ $history->user->first_name }} {{ $history->user->last_name }}</td>
                                             <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $history->created_at->format('Y-m-d H:i:s') }}</td>
                                             <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                                                {{ $history->change_state ? ($history->sla_time ?? 'Pendiente') : 'N/A' }}
+                                                {{ $history->change_state ? ($history->getFormattedSla() ?? 'Pendiente') : 'N/A' }}
                                                 
                                             </td>
                                         </tr>

@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\SlaTimeFormatter;
 
 class History extends Model
 {
     use HasFactory;
+    use SlaTimeFormatter;
     // Define los campos que pueden ser asignados masivamente
     protected $fillable = [
         'ticket_id',
@@ -17,6 +19,11 @@ class History extends Model
         'action',
         'sla_time'
     ];
+
+    public function getFormattedSla()
+    {
+        return $this->getSlaTimeFormattedAttribute($this->sla_time_interval);
+    }
 
     public function ticket(){
         return $this->belongsTo(Ticket::class);
@@ -29,4 +36,6 @@ class History extends Model
     public function user(){
         return $this->belongsTo(User::class);
     }
+
+
 }
