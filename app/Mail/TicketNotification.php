@@ -13,19 +13,20 @@ class TicketNotification extends Mailable
     use Queueable, SerializesModels;
 
     public $ticket;
-    public $message;
-    public $user ;
+    public $customMessage; // Renombrar de $message a $customMessage
+    public $user;
 
     /**
      * Create a new message instance.
      *
      * @param Ticket $ticket
-     * @param string $message
+     * @param string $customMessage
+     * @param User $user
      */
-    public function __construct(Ticket $ticket, string $message, User $user)
+    public function __construct(Ticket $ticket, string $customMessage, User $user)
     {
         $this->ticket = $ticket;
-        $this->message = $message;
+        $this->customMessage = $customMessage; // Renombrar de $message a $customMessage
         $this->user = $user;
     }
 
@@ -34,12 +35,7 @@ class TicketNotification extends Mailable
         return $this->subject('Notificación de Ticket: #' . $this->ticket->id)
                     ->view('emails.ticket_notification');
     }
-    
-    /**
-     * Get the attachments for the message.
-     *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
-     */
+
     public function attachments(): array
     {
         return [];

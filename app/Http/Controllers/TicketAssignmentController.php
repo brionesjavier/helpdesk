@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AssignTicketRequest;
+use App\Mail\TicketAlert;
 use App\Models\State;
 use App\Models\Ticket;
 use App\Models\TicketAssignment;
@@ -199,7 +200,7 @@ class TicketAssignmentController extends Controller
         $ticket->load('state', 'user', 'assignedUsers', 'element');
 
         // Enviar correo notificando el cambio de estado
-        Mail::to($user->email)->send(new TicketStatusChanged($ticket));
+        Mail::to($user->email)->send(new TicketAlert($ticket));
         Mail::to($ticket->user->email)->send(new TicketStatusChanged($ticket));
 
         // Obtener la URL de la última vista desde la sesión

@@ -10,7 +10,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class TicketStatusChanged extends Mailable
+class TicketAlert extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -34,24 +34,23 @@ class TicketStatusChanged extends Mailable
     {
         // Determina la vista y el asunto en función del estado del ticket
         switch ($this->ticket->state->id) {
-     
+            case '2':
+                $view = 'emails.ticket_assigned';
+                $this->subject = 'Acción Requerida: Ticket #' . $this->ticket->id; // Ticket asignado
+                break;
             case '4':
                 $view = 'emails.ticket_resolved';
                 $this->subject = 'Notificación del Ticket#' . $this->ticket->id; // Ticket resuelto
                 break;
-            case '1':
-                $view = 'emails.ticket_created';
-                $this->subject = 'Detalles del Ticket #' . $this->ticket->id; // Ticket creado
-                break;
-            case '7':
-                $view = 'emails.ticket_closed';
-                $this->subject = 'Notificación del Ticket #' . $this->ticket->id; // Ticket cerrado
-                break;
+        
             case '5':
                 $view = 'emails.ticket_reopened';
                 $this->subject = 'Notificación del Ticket #' . $this->ticket->id; // Ticket reabierto
                 break;
-           
+            case '6':
+                $view = 'emails.ticket_assigned';
+                $this->subject = 'Acción Requerida: Ticket #' . $this->ticket->id; // Requiere acción
+                break;
             default:
                 $view = 'emails.ticket_status_changed';
                 $this->subject = 'Notificación  sobre el Ticket #' . $this->ticket->id; // Estado cambiado

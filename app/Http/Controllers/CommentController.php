@@ -18,27 +18,44 @@ class CommentController extends Controller
     public function store(Request $request, Ticket $ticket)
     {
         $this->authorize('manageOrCreateByUser', $ticket);
+        
         $request->validate([
             'content' => 'required',
         ]);
+    
+        // Crear el comentario
         Comment::create([
             'ticket_id' => $ticket->id,
             'user_id' => Auth::id(),
             'state_ticket' => $ticket->state->name,
             'content' => $request->input('content'),
-
         ]);
-
-        
-        HistoryController::logAction($ticket, false, Auth::id(), "Comentario agregado: $request->content");
-        // Cargar relaciones
+    
+        // Registrar la acción en el historial
+        HistoryController::logAction($ticket, false, Auth::id(), "Comentario agregado: " . $request->input('content'));
+    
+        // Cargar relaciones solo si es necesario
         $ticket->load('state', 'user', 'assignedUsers', 'element');
+    
+        // Obtener el usuario autenticado
         $user = Auth::user();
-        // Enviar correo notificando el cambio de estado
-        Mail::to($ticket->user->email)->send(new TicketNotification($ticket, $request->input('content'),$user));
+    
+        // Enviar el correo con notificación
+        try {
+            Mail::to($ticket->user->email)->send(new TicketNotification($ticket, $request->input('content'), $user));
+            if($ticket->created_by ==$user->id){
+                $userAssign = $ticket->assignedUsers()->where('is_active', true)->first();
+                Mail::to($userAssign->email)->send(new TicketNotification($ticket, $request->input('content'), $user));
+            }
 
-        return redirect()->route('tickets.show',$ticket)->with('message', 'Comentario añadido con éxito.');
+        } catch (\Exception $e) {
+            return redirect()->route('tickets.show', $ticket)->with('message', 'Error al enviar la notificación por correo.');
+        }
+    
+        // Redirigir con un mensaje de éxito
+        return redirect()->route('tickets.show', $ticket)->with('message', 'Comentario añadido con éxito.');
     }
+    
 
     public function index($ticketId)
     {
