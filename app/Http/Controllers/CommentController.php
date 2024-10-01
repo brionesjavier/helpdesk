@@ -35,7 +35,8 @@ class CommentController extends Controller
         $ticket->load('state', 'user', 'assignedUsers', 'element');
         $user = Auth::user();
         // Enviar correo notificando el cambio de estado
-        Mail::to($ticket->user->email)->send(new TicketNotification($ticket, $request->input('content' ,$user )));
+        Mail::to($ticket->user->email)->send(new TicketNotification($ticket, $request->input('content'),$user));
+
         return redirect()->route('tickets.show',$ticket)->with('message', 'Comentario añadido con éxito.');
     }
 
