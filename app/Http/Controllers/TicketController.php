@@ -13,6 +13,8 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Mail\TicketStatusChanged;
+use Illuminate\Support\Facades\Mail;
 
 
 class TicketController extends Controller
@@ -154,6 +156,12 @@ class TicketController extends Controller
         ]);
 
         HistoryController::logAction($ticket, true, Auth::id(), "Ticket creado: '{$ticket->description}'");
+        
+            // Cargar relaciones
+        $ticket->load('state', 'user', 'assignedUsers', 'element');
+
+        // Enviar correo notificando el cambio de estado
+        Mail::to($ticket->user->email)->send(new TicketStatusChanged($ticket));
 
         return redirect()->route('tickets.my')->with('message', 'Ticket creado con exito');
     }
@@ -183,6 +191,11 @@ class TicketController extends Controller
 
 
         HistoryController::logAction($ticket, false, Auth::id(), 'El ticket fue actualizado por el usuario con ID ' . Auth::id() . ' sin cambiar su estado');
+        $ticket->load('state', 'user', 'assignedUsers', 'element');
+
+        // Enviar correo notificando el cambio de estado
+        Mail::to($ticket->user->email)->send(new TicketStatusChanged($ticket));
+            
 
         // Obtener la URL de la última vista desde la sesión
         $lastView = $request->session()->get('last_view', route('tickets.index'));
@@ -198,6 +211,11 @@ class TicketController extends Controller
     {
         $this->authorize('createByUser', $ticket);
         $ticket->update(['is_active' => false]);
+
+        $ticket->load('state', 'user', 'assignedUsers', 'element');
+
+        // Enviar correo notificando el cambio de estado
+        Mail::to($ticket->user->email)->send(new TicketStatusChanged($ticket));
 
         // Obtener la URL de la última vista desde la sesión
         $lastView = $request->session()->get('last_view', route('tickets.index'));
@@ -230,9 +248,15 @@ class TicketController extends Controller
             'state_ticket' => $ticket->state->name,
         ]);
 
+        
 
         // registro historial
         HistoryController::logAction($ticket, true, Auth::id(), "El estado del ticket cambió a 'En Progreso' por el usuario con ID " . Auth::id());
+            // Cargar relaciones
+            $ticket->load('state', 'user', 'assignedUsers', 'element');
+
+            // Enviar correo notificando el cambio de estado
+        Mail::to($ticket->user->email)->send(new TicketStatusChanged($ticket));
 
         return redirect()->route('tickets.show', compact('ticket'))->with('message', 'ticket  en proceso.');
     }
@@ -270,6 +294,11 @@ class TicketController extends Controller
 
 
         HistoryController::logAction($ticket, true, Auth::id(), "El estado del ticket cambió a 'Solucionado' por el usuario con ID " . Auth::id());
+        // Cargar relaciones
+        $ticket->load('state', 'user', 'assignedUsers', 'element');
+
+        // Enviar correo notificando el cambio de estado
+        Mail::to($ticket->user->email)->send(new TicketStatusChanged($ticket));
         // Obtener la URL de la última vista desde la sesión
         $lastView = $request->session()->get('last_view', route('tickets.index'));
 
@@ -306,6 +335,7 @@ class TicketController extends Controller
         ]); 
 
         HistoryController::logAction($ticket, true, Auth::id(), "El ticket fue reabierto por el usuario con ID " . Auth::id());
+        Mail::to($ticket->user->email)->send(new TicketStatusChanged($ticket));
 
         // Obtener la URL de la última vista desde la sesión
         $lastView = $request->session()->get('last_view', route('tickets.index'));
@@ -369,6 +399,11 @@ class TicketController extends Controller
 
         // Registrar la acción en el historial
         HistoryController::logAction($ticket, true, Auth::id(), "El ticket fue derivado al usuario con ID $userId por el usuario con ID " . Auth::id());
+            // Cargar relaciones
+            $ticket->load('state', 'user', 'assignedUsers', 'element');
+
+            // Enviar correo notificando el cambio de estado
+            Mail::to($ticket->user->email)->send(new TicketStatusChanged($ticket));
 
         // Obtener la URL de la última vista desde la sesión
         $lastView = $request->session()->get('last_view', route('tickets.index'));
@@ -394,7 +429,11 @@ class TicketController extends Controller
 
 
         HistoryController::logAction($ticket, true, Auth::id(), "El ticket fue cerrado por el usuario con ID " . Auth::id());
+            // Cargar relaciones
+            $ticket->load('state', 'user', 'assignedUsers', 'element');
 
+            // Enviar correo notificando el cambio de estado
+            Mail::to($ticket->user->email)->send(new TicketStatusChanged($ticket));
 
         // Obtener la URL de la última vista desde la sesión
         $lastView = $request->session()->get('last_view', route('tickets.index'));
@@ -431,7 +470,11 @@ class TicketController extends Controller
         $ticket->update(['state_id' => 8]); /* 8 ID del estado "Cancelado" */
 
         HistoryController::logAction($ticket, true, Auth::id(), "El ticket fue cancelado por el usuario con ID " . Auth::id());
+            // Cargar relaciones
+            $ticket->load('state', 'user', 'assignedUsers', 'element');
 
+            // Enviar correo notificando el cambio de estado
+            Mail::to($ticket->user->email)->send(new TicketStatusChanged($ticket));
 
         // Obtener la URL de la última vista desde la sesión
         $lastView = $request->session()->get('last_view', route('tickets.index'));

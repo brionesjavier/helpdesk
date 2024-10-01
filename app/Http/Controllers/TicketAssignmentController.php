@@ -11,6 +11,8 @@ use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\TicketStatusChanged;
 
 class TicketAssignmentController extends Controller
 {
@@ -26,33 +28,33 @@ class TicketAssignmentController extends Controller
         $assignment = $request->input('assignment'); // Nuevo parámetro para asignación
         $sortBy = $request->input('sort_by', 'created_at');
         $sortDirection = $request->input('sort_direction', 'desc');
-    
+
         // Construir la consulta base
         $query = Ticket::query();
-    
+
         // Aplicar búsqueda por título o folio
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%$search%")
-                  ->orWhere('id', 'like', "%$search%");
+                    ->orWhere('id', 'like', "%$search%");
             });
         }
-    
+
         // Aplicar búsqueda por usuario
         if ($user && $user != 'all') {
             $query->whereHas('assignedUsers', function ($q) use ($user) {
                 $q->where('user_id', $user)
-                  ->where('is_active', true);
+                    ->where('is_active', true);
             });
         }
         //filtrar por estado ticket
-        $query->whereNotIn('state_id', [4, 7, 8]);// 4= solucionado , 7 = Finalizado, 8 = Cancelado
+        $query->whereNotIn('state_id', [4, 7, 8]); // 4= solucionado , 7 = Finalizado, 8 = Cancelado
         // Filtrar por estado
         if ($state && $state != 'all') {
             $query->where('state_id', $state);
         }
-        
-    
+
+
         // Filtrar por asignación
         if ($assignment && $assignment == 'has_assignment') {
             $query->whereHas('assignedUsers', function ($q) {
@@ -61,27 +63,28 @@ class TicketAssignmentController extends Controller
         } elseif ($assignment && $assignment == 'no_assignment') {
             $query->doesntHave('assignedUsers');
         }
-    
+
         // Ordenar los resultados
         $query->orderBy($sortBy, $sortDirection);
-    
+
         // Paginación
         $tickets = $query->paginate(10)->appends($request->except('page'));
-    
+
         // Obtener todos los estados para el filtro
         //$states = State::all();
         $states = State::whereNotIn('id', [4, 7, 8])->get();
-    
+
         // Obtener todos los usuarios para el filtro de asignación
         $users = User::where('assignable', true)->get();
 
-        
-    
+
+
         return view('support.index', compact('tickets', 'states', 'users'));
     }
 
 
-    public function center(Request $request) {
+    public function center(Request $request)
+    {
 
         // Guardar la URL actual en la sesión
         $request->session()->put('last_view', url()->current());
@@ -90,25 +93,25 @@ class TicketAssignmentController extends Controller
         $query = Ticket::query();
 
         //filtrar por estado ticket
-        $query->whereNotIn('state_id', [4, 7, 8]);// 4= solucionado , 7 = Finalizado, 8 = Cancelado
-    
+        $query->whereNotIn('state_id', [4, 7, 8]); // 4= solucionado , 7 = Finalizado, 8 = Cancelado
+
         // Filtrar por tickets no asignados
         $query->doesntHave('assignedUsers');
-    
+
         // Ordenar los resultados
         $sortBy = $request->input('sort_by', 'created_at');
         $sortDirection = $request->input('sort_direction', 'desc');
         $query->orderBy($sortBy, $sortDirection);
-    
+
         // Paginación
         $tickets = $query->paginate(10)->appends($request->except('page'));
-    
+
         return view('support.center', compact('tickets'));
     }
-    
-    
-    
-    
+
+
+
+
 
     //TODO: bandeja soporte
     public function assigned(Request $request): View
@@ -131,7 +134,7 @@ class TicketAssignmentController extends Controller
             ->orderBy('priority', 'desc')
             ->paginate();
 
-            $states = State::whereNotIn('id', [4, 7, 8]) // Asegúrate de que 'id' es la columna correcta.
+        $states = State::whereNotIn('id', [4, 7, 8]) // Asegúrate de que 'id' es la columna correcta.
             ->get();
 
         // Retornar la vista con los tickets asignados
@@ -175,15 +178,6 @@ class TicketAssignmentController extends Controller
         ]);
 
         // Actualizar el estado del ticket
-       /*  $ticket->update([
-            'state_id' => 2,
-            'priority' => $priority,
-            'sla_assigned_start_time' => Carbon::now(),
-            'sla_due_time' => $this->calculateDueTime($priority), // Asignar la fecha límite del SLA
-        ]);
- */
-
-          // Actualizar el estado del ticket
         $ticketData = [
             'state_id' => 2,
             'priority' => $priority,
@@ -197,8 +191,16 @@ class TicketAssignmentController extends Controller
 
         // Actualizar los datos del ticket
         $ticket->update($ticketData);
-        
-        HistoryController::logAction($ticket, true, Auth::id(), "El ticket fue asignado al usuario con ID $userId  por el usuario con ID ".Auth::id() );
+
+        HistoryController::logAction($ticket, true, Auth::id(), "El ticket fue asignado al usuario con ID $userId  por el usuario con ID " . Auth::id());
+
+        $user = User::find($userId);
+        // Cargar relaciones
+        $ticket->load('state', 'user', 'assignedUsers', 'element');
+
+        // Enviar correo notificando el cambio de estado
+        Mail::to($user->email)->send(new TicketStatusChanged($ticket));
+        Mail::to($ticket->user->email)->send(new TicketStatusChanged($ticket));
 
         // Obtener la URL de la última vista desde la sesión
         $lastView = $request->session()->get('last_view', route('tickets.my'));
@@ -226,5 +228,4 @@ class TicketAssignmentController extends Controller
                 return null; // O manejar el caso de prioridad no definida
         }
     }
-    
 }
