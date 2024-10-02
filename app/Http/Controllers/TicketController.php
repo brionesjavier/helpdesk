@@ -206,7 +206,7 @@ class TicketController extends Controller
         $ticket->update($validated);
 
 
-        HistoryController::logAction($ticket, false, Auth::id(), 'El ticket fue actualizado por el usuario con ID ' . Auth::id() . ' sin cambiar su estado');
+        HistoryController::logAction($ticket, false, Auth::id(), "El ticket fue actualizado por por el usuario " . Auth::user()->first_name . " " . Auth::user()->last_name . " (ID: " . Auth::id() . "). sin cambiar su estado");
         $ticket->load('state', 'user', 'assignedUsers', 'element');
         // Obtener la URL de la última vista desde la sesión
         $lastView = $request->session()->get('last_view', route('tickets.index'));
@@ -284,7 +284,7 @@ class TicketController extends Controller
 
 
         // registro historial
-        HistoryController::logAction($ticket, true, Auth::id(), "El estado del ticket cambió a 'En Progreso' por el usuario con ID " . Auth::id());
+        HistoryController::logAction($ticket, true, Auth::id(), "El estado del ticket cambió a 'En Progreso' por el usuario " . Auth::user()->first_name . " " . Auth::user()->last_name . " (ID: " . Auth::id() . ").");
         // Cargar relaciones
         $ticket->load('state', 'user', 'assignedUsers', 'element');
 
@@ -329,7 +329,7 @@ class TicketController extends Controller
         $ticket->update(['state_id' => 4, 'element_id' => $elementId, 'solved_at' => Carbon::now()]); /* 4 ID del estado "Solucionado" */
 
 
-        HistoryController::logAction($ticket, true, Auth::id(), "El estado del ticket cambió a 'Solucionado' por el usuario con ID " . Auth::id());
+        HistoryController::logAction($ticket, true, Auth::id(), "El estado del ticket cambió a 'Solucionado' por el usuario " . Auth::user()->first_name . " " . Auth::user()->last_name . " (ID: " . Auth::id() . ").");
 
         // Cargar relaciones
         $ticket->load('state', 'user', 'assignedUsers', 'element');
@@ -374,7 +374,7 @@ class TicketController extends Controller
             'solved_at' => null, // Eliminar la fecha de solución al objetar
         ]);
 
-        HistoryController::logAction($ticket, true, Auth::id(), "El ticket fue reabierto por el usuario con ID " . Auth::id());
+        HistoryController::logAction($ticket, true, Auth::id(), "El ticket fue objetado por el usuario " . Auth::user()->first_name . " " . Auth::user()->last_name . " (ID: " . Auth::id() . ").");
         // Cargar relaciones
         $ticket->load('state', 'user', 'assignedUsers', 'element');
         $lastView = $request->session()->get('last_view', route('tickets.index'));
@@ -443,9 +443,9 @@ class TicketController extends Controller
             'details' => "Usuario derivado por " . Auth::user()->name . " (ID: " . Auth::id() . ")",
             'is_active' => true,
         ]);
-
+        $user = User::find($userId);
         // Registrar la acción en el historial
-        HistoryController::logAction($ticket, true, Auth::id(), "El ticket fue derivado al usuario con ID $userId por el usuario con ID " . Auth::id());
+        HistoryController::logAction($ticket, true, Auth::id(), "El ticket fue derivado al usuario  $user->first_name $user->last_name (ID: $user->id) por el usuario " . Auth::user()->first_name . " " . Auth::user()->last_name . " (ID: " . Auth::id() . ").");
         // Cargar relaciones
         $ticket->load('state', 'user', 'assignedUsers', 'element');
 
@@ -483,7 +483,7 @@ class TicketController extends Controller
         $ticket->update(['state_id' => 7,]); /* 7 ID del estado "Cerrado" */
 
 
-        HistoryController::logAction($ticket, true, Auth::id(), "El ticket fue cerrado por el usuario con ID " . Auth::id());
+        HistoryController::logAction($ticket, true, Auth::id(), "El ticket fue cerrado por el usuario " . Auth::user()->first_name . " " . Auth::user()->last_name . " (ID: " . Auth::id() . ").");
         // Cargar relaciones
         $ticket->load('state', 'user', 'assignedUsers', 'element');
 
@@ -529,7 +529,7 @@ class TicketController extends Controller
 
         $ticket->update(['state_id' => 8]); /* 8 ID del estado "Cancelado" */
 
-        HistoryController::logAction($ticket, true, Auth::id(), "El ticket fue cancelado por el usuario con ID " . Auth::id());
+        HistoryController::logAction($ticket, true, Auth::id(), "El ticket fue cancelado por el usuario " . Auth::user()->first_name . " " . Auth::user()->last_name . " (ID: " . Auth::id() . ").");
         // Cargar relaciones
         $ticket->load('state', 'user', 'assignedUsers', 'element');
 

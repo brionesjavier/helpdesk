@@ -62,7 +62,7 @@ class CommentController extends Controller
         // Redirigir con un mensaje de éxito
         return redirect()->route('tickets.show', $ticket)->with('message', 'Comentario añadido con éxito.');
     }
-    //'Ticket actualizado con éxito, pero hubo un problema al enviar la notificación por correo.'
+    //'El ticket fue cancelado, pero hubo un problema al enviar la notificación por correo.'
 
     public function index($ticketId)
     {

@@ -192,19 +192,23 @@ class TicketAssignmentController extends Controller
 
         // Actualizar los datos del ticket
         $ticket->update($ticketData);
-
-        HistoryController::logAction($ticket, true, Auth::id(), "El ticket fue asignado al usuario con ID $userId  por el usuario con ID " . Auth::id());
-
         $user = User::find($userId);
+
+     
+        HistoryController::logAction($ticket, true, Auth::id(), "El ticket fue asignado al usuario  $user->first_name $user->last_name (ID: $user->id) por el usuario " . Auth::user()->first_name . " " . Auth::user()->last_name . " (ID: " . Auth::id() . ").");
+
         // Cargar relaciones
         $ticket->load('state', 'user', 'assignedUsers', 'element');
 
-        // Enviar correo notificando el cambio de estado
-        Mail::to($user->email)->send(new TicketAlert($ticket));
-        Mail::to($ticket->user->email)->send(new TicketStatusChanged($ticket));
-
         // Obtener la URL de la última vista desde la sesión
         $lastView = $request->session()->get('last_view', route('tickets.my'));
+        try {
+            // Enviar correo notificando el cambio de estado
+            Mail::to($user->email)->send(new TicketAlert($ticket));
+            Mail::to($ticket->user->email)->send(new TicketStatusChanged($ticket));
+        } catch (\Exception $e) {
+            return redirect($lastView)->with('message', 'Ticket  fue asignado/reasignado correctamente, pero hubo un problema al enviar la notificación por correo.');
+        }
 
         // Redirigir a la última vista
         return redirect($lastView)->with('message', 'Ticket asignado/reasignado correctamente.');
