@@ -481,7 +481,7 @@ class ReportController extends Controller
             'users.first_name',
             'users.last_name'
         )
-        ->selectRaw('AVG(EXTRACT(EPOCH FROM latest_assignment.latest_assignment_date - latest_solution.latest_solution_date )) as avgSolutionByUser')
+        ->selectRaw('AVG(EXTRACT(EPOCH FROM  latest_solution.latest_solution_date -latest_assignment.latest_assignment_date  )) as avgSolutionByUser')
         ->selectRaw('COUNT(tickets.id) AS total')
         ->join('ticket_assigns', 'users.id', '=', 'ticket_assigns.user_id')
         ->join('tickets', 'ticket_assigns.ticket_id', '=', 'tickets.id')

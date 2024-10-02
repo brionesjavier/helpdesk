@@ -78,11 +78,11 @@
 
                     <div>
                         <h2 class="text-xl font-semibold">Tiempo Promedio de Asignación</h2>
-                        <p>{{ $formattedAvgAttentionTime }} minutos</p>
+                        <p>{{ $formattedAvgAttentionTime }} </p>
                     </div>
                     <div>
                         <h2 class="text-xl font-semibold">Tiempo Promedio de Solución</h2>
-                        <p>{{ $formattedAvgResolutionTime }} minutos</p>
+                        <p>{{ $formattedAvgResolutionTime }} </p>
                     </div>
                 </div>
             </div>
@@ -445,7 +445,7 @@
                             'bg-red-100' => abs($user->avg_resolution_time) > 30,
                         ])>
                             <td class="py-2 px-4 border-b">{{ $user->first_name }} {{ $user->last_name }}</td>
-                            <td class="py-2 px-4 border-b">{{ $user->getFormattedSla($user->avgSolutionByUser) }}</td>
+                            <td class="py-2 px-4 border-b">{{$user->getFormattedSla( $user->avgsolutionbyuser) }}</td>
                             <td class="py-2 px-4 border-b">{{ $user->total }}</td>
                         </tr>
                     @endforeach

@@ -42,14 +42,20 @@ class CommentController extends Controller
     
         // Enviar el correo con notificación
         try {
+            // Enviar correo al creador del ticket
             Mail::to($ticket->user->email)->send(new TicketNotification($ticket, $request->input('content'), $user));
+            
+            // Obtener el usuario asignado activo
             $userAssign = $ticket->assignedUsers()->where('is_active', true)->first();
-            if($ticket->created_by ==$user->id && $userAssign){
-                
+        
+            // Verificar que el ticket fue creado por el usuario y que hay un usuario asignado
+            if ($ticket->created_by == $user->id && $userAssign) {
+                // Enviar correo al usuario asignado
                 Mail::to($userAssign->email)->send(new TicketNotification($ticket, $request->input('content'), $user));
             }
-
+        
         } catch (\Exception $e) {
+            // Manejar el error al enviar el correo
             return redirect()->route('tickets.show', $ticket)->with('message', 'Error al enviar la notificación por correo.');
         }
     

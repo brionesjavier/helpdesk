@@ -131,6 +131,6 @@ Route::get('/tickets-assigned', [TicketAssignmentController::class, 'assigned'])
 Route::get('/reports/tickets', [ReportController::class, 'ticketsReport'])->name('reports.tickets')->middleware('can:reports.tickets');
 Route::get('/reports/{ticket}/tickets', [ReportController::class, 'sla'])->name('reports.sla')->middleware('can:reports.sla');
 Route::get('/reports/summary', [ReportController::class, 'ticketsSummaryReport'])->name('reports.summary')->middleware('can:reports.summary');
-
+Route::get('test', [TicketController::class, 'test'])->name('test');
 
 require __DIR__.'/auth.php';

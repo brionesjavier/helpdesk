@@ -3,11 +3,42 @@
         <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
             {{ __('Profile Information') }}
         </h2>
-
+    
         <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
             {{ __("Update your account's profile information and email address.") }}
         </p>
+    
+        {{-- @if (session('status') === 'profile-updated')
+            <div class="mt-2 text-sm text-green-600 dark:text-green-400">
+                {{ __('Perfil actualizado con éxito.') }}
+            </div>
+        @endif --}}
+        @if (session('status') === 'profile-updated')
+    <div
+        x-data="{ show: true }"
+        x-show="show"
+        x-transition
+        x-init="setTimeout(() => show = false, 5000)"
+        class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
+        role="alert"
+    >
+        <strong class="font-bold">{{ __('Success!') }}</strong>
+        <span class="block sm:inline">{{ __('Perfil actualizado con éxito.') }}</span>
+        <span
+            @click="show = false"
+            class="absolute top-0 bottom-0 right-0 px-4 py-3"
+            title="Close"
+        >
+            <svg class="fill-current h-6 w-6 text-green-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                <title>Close</title>
+                <path d="M10 9l-6 6a1 1 0 0 0 1.415 1.415L10 11.415l6 6A1 1 0 0 0 17.414 15l-6-6 6-6A1 1 0 0 0 15 2.586l-6 6z"/>
+            </svg>
+        </span>
+    </div>
+@endif
+
     </header>
+    
 
     <form id="send-verification" method="post" action="{{ route('verification.send') }}">
         @csrf

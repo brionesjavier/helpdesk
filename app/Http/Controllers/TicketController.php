@@ -22,6 +22,20 @@ class TicketController extends Controller
 {
     use AuthorizesRequests;
     // mostrar Todos los tickets
+
+    public function test(){
+        $ticket = Ticket::find(2);
+
+    // Filtra usuarios asignados activos desde la tabla pivote
+    $userAssign = $ticket->assignedUsers()->wherePivot('is_active', true)->first();
+
+    // Verifica si hay un usuario asignado activo y obtiene el email
+    $email = $userAssign ? $userAssign->email : 'No hay usuario asignado activo';
+        return view('test', compact('userAssign','ticket','email'));
+    }
+
+
+
     public function index(Request $request)
     {
         // Obtener los parámetros de la solicitud
@@ -412,7 +426,7 @@ class TicketController extends Controller
 
         
         // Enviar correo notificando el cambio de estado
-        Mail::to($$userAssign->email)->send(new TicketAlert($ticket));
+        Mail::to($userAssign->email)->send(new TicketAlert($ticket));
         Mail::to($ticket->user->email)->send(new TicketStatusChanged($ticket));
        
 
@@ -490,7 +504,7 @@ class TicketController extends Controller
          $userAssign = $ticket->assignedUsers()->where('is_active', true)->first();
 
         // Enviar correo notificando el cambio de estado
-        Mail::to($$userAssign->email)->send(new TicketAlert($ticket));
+        Mail::to($userAssign->email)->send(new TicketAlert($ticket));
         Mail::to($ticket->user->email)->send(new TicketStatusChanged($ticket));
 
         // Obtener la URL de la última vista desde la sesión
