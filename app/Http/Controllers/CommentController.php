@@ -49,7 +49,7 @@ class CommentController extends Controller
             $userAssign = $ticket->assignedUsers()->where('is_active', true)->first();
         
             // Verificar que el ticket fue creado por el usuario y que hay un usuario asignado
-            if ($ticket->created_by == $user->id && $userAssign) {
+            if ($userAssign) {
                 // Enviar correo al usuario asignado
                 Mail::to($userAssign->email)->send(new TicketNotification($ticket, $request->input('content'), $user));
             }
@@ -62,7 +62,7 @@ class CommentController extends Controller
         // Redirigir con un mensaje de éxito
         return redirect()->route('tickets.show', $ticket)->with('message', 'Comentario añadido con éxito.');
     }
-    
+    //'Ticket actualizado con éxito, pero hubo un problema al enviar la notificación por correo.'
 
     public function index($ticketId)
     {

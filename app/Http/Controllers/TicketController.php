@@ -23,15 +23,16 @@ class TicketController extends Controller
     use AuthorizesRequests;
     // mostrar Todos los tickets
 
-    public function test(){
+    public function test()
+    {
         $ticket = Ticket::find(2);
 
-    // Filtra usuarios asignados activos desde la tabla pivote
-    $userAssign = $ticket->assignedUsers()->wherePivot('is_active', true)->first();
+        // Filtra usuarios asignados activos desde la tabla pivote
+        $userAssign = $ticket->assignedUsers()->wherePivot('is_active', true)->first();
 
-    // Verifica si hay un usuario asignado activo y obtiene el email
-    $email = $userAssign ? $userAssign->email : 'No hay usuario asignado activo';
-        return view('test', compact('userAssign','ticket','email'));
+        // Verifica si hay un usuario asignado activo y obtiene el email
+        $email = $userAssign ? $userAssign->email : 'No hay usuario asignado activo';
+        return view('test', compact('userAssign', 'ticket', 'email'));
     }
 
 
@@ -207,16 +208,21 @@ class TicketController extends Controller
 
         HistoryController::logAction($ticket, false, Auth::id(), 'El ticket fue actualizado por el usuario con ID ' . Auth::id() . ' sin cambiar su estado');
         $ticket->load('state', 'user', 'assignedUsers', 'element');
-
-        // Enviar correo notificando el cambio de estado
-        Mail::to($ticket->user->email)->send(new TicketStatusChanged($ticket));
-
+        // Obtener la URL de la última vista desde la sesión
+        $lastView = $request->session()->get('last_view', route('tickets.index'));
+        try {
+            // Enviar correo notificando el cambio de estado
+            Mail::to($ticket->user->email)->send(new TicketStatusChanged($ticket));
+        } catch (\Exception $e) {
+            //TODO: manejar excepción
+            return redirect($lastView)->with('message', 'Ticket actualizado con éxito, pero hubo un problema al enviar la notificación por correo.');
+        }
 
         // Obtener la URL de la última vista desde la sesión
         $lastView = $request->session()->get('last_view', route('tickets.index'));
 
         // Redirigir a la última vista
-        return redirect($lastView)->with('message', 'Ticket actualizado con exito');
+        return redirect($lastView)->with('message', 'Ticket actualizado con éxito.');
 
         //return redirect()->route('tickets.my')->with('message', 'Ticket actualizado con exito');
     }
@@ -229,21 +235,27 @@ class TicketController extends Controller
 
         $ticket->load('state', 'user', 'assignedUsers', 'element');
 
-        $currentAssignee = $ticket->assignedUsers()->where('is_active', true)->first();
-        if ($currentAssignee) {
-            $user = User::find($currentAssignee->user_id);
-            Mail::to($user->email)->send(new TicketAlert($ticket));
+        // Enviar el correo con notificación
+        try {
+            $currentAssignee = $ticket->assignedUsers()->where('is_active', true)->first();
+            if ($currentAssignee) {
+                $user = User::find($currentAssignee->user_id);
+                Mail::to($user->email)->send(new TicketAlert($ticket));
+            }
+
+            // Enviar correo notificando el cambio de estado
+            Mail::to($ticket->user->email)->send(new TicketStatusChanged($ticket));
+
+            // Obtener la URL de la última vista desde la sesión
+            $lastView = $request->session()->get('last_view', route('tickets.index'));
+        } catch (\Exception $e) {
+            //TODO: manejar excepción
+            return redirect($lastView)->with('message', 'Ticket eliminado con éxito, pero hubo un problema al enviar la notificación por correo.');
         }
-
-        // Enviar correo notificando el cambio de estado
-        Mail::to($ticket->user->email)->send(new TicketStatusChanged($ticket));
-
-        // Obtener la URL de la última vista desde la sesión
-        $lastView = $request->session()->get('last_view', route('tickets.index'));
-
         // Redirigir a la última vista
         return redirect($lastView)->with('message', 'Ticket eliminado con exito');
     }
+
     /** para vista de comenzar proceso */
     public function showProcessForm(Ticket $ticket): View
     {
@@ -276,10 +288,13 @@ class TicketController extends Controller
         // Cargar relaciones
         $ticket->load('state', 'user', 'assignedUsers', 'element');
 
-        // Enviar correo notificando el cambio de estado
-        Mail::to($ticket->user->email)->send(new TicketStatusChanged($ticket));
-
-        return redirect()->route('tickets.show', compact('ticket'))->with('message', 'ticket  en proceso.');
+        try {
+            // Enviar correo notificando el cambio de estado
+            Mail::to($ticket->user->email)->send(new TicketStatusChanged($ticket));
+        } catch (\Exception $e) {
+            return redirect()->route('tickets.show', compact('ticket'))->with('message', 'El estado del ticket se actualizó a En Proceso, pero no se pudo enviar la notificación por correo.');
+        }
+        return redirect()->route('tickets.show', compact('ticket'))->with('message', 'El estado del ticket se actualizó a En Proceso.');
     }
 
 
@@ -319,13 +334,16 @@ class TicketController extends Controller
         // Cargar relaciones
         $ticket->load('state', 'user', 'assignedUsers', 'element');
 
-        // Enviar correo notificando el cambio de estado
-        Mail::to($ticket->user->email)->send(new TicketStatusChanged($ticket));
-        // Obtener la URL de la última vista desde la sesión
         $lastView = $request->session()->get('last_view', route('tickets.index'));
-
+        try {
+            // Enviar correo notificando el cambio de estado
+            Mail::to($ticket->user->email)->send(new TicketStatusChanged($ticket));
+            // Obtener la URL de la última vista desde la sesión
+        } catch (\Exception $e) {
+            return redirect($lastView)->with('message', ' El estado del ticket se cambió a Solucionado, pero hubo un problema al enviar la notificación por correo.');
+        }
         // Redirigir a la última vista
-        return redirect($lastView)->with('message', ' ticket solucionado.');
+        return redirect($lastView)->with('message', ' El estado del ticket se cambió a Solucionado.');
     }
 
     // Mostrar el formulario para reabrir el ticket
@@ -357,13 +375,20 @@ class TicketController extends Controller
         ]);
 
         HistoryController::logAction($ticket, true, Auth::id(), "El ticket fue reabierto por el usuario con ID " . Auth::id());
-        Mail::to($ticket->user->email)->send(new TicketStatusChanged($ticket));
+        // Cargar relaciones
+        $ticket->load('state', 'user', 'assignedUsers', 'element');
+        $lastView = $request->session()->get('last_view', route('tickets.index'));
+        try {
+            Mail::to($ticket->user->email)->send(new TicketStatusChanged($ticket));
+        } catch (\Exception $e) {
+            return redirect($lastView)->with('message', ' El ticket fue objetado. Sin embargo, hubo un problema al enviar la notificación por correo.');
+        }
 
         // Obtener la URL de la última vista desde la sesión
         $lastView = $request->session()->get('last_view', route('tickets.index'));
 
         // Redirigir a la última vista
-        return redirect($lastView)->with('message', 'Ticket reabierto.');
+        return redirect($lastView)->with('message', 'El ticket fue objetado.');
     }
 
     // Mostrar el formulario para derivar el ticket
@@ -424,17 +449,22 @@ class TicketController extends Controller
         // Cargar relaciones
         $ticket->load('state', 'user', 'assignedUsers', 'element');
 
-        
-        // Enviar correo notificando el cambio de estado
-        Mail::to($userAssign->email)->send(new TicketAlert($ticket));
-        Mail::to($ticket->user->email)->send(new TicketStatusChanged($ticket));
-       
-
         // Obtener la URL de la última vista desde la sesión
         $lastView = $request->session()->get('last_view', route('tickets.index'));
 
+        try {
+            // Enviar correo notificando el cambio de estado
+            Mail::to($userAssign->email)->send(new TicketAlert($ticket));
+            Mail::to($ticket->user->email)->send(new TicketStatusChanged($ticket));
+        } catch (\Exception $e) {
+            // Manejar la excepción de envío de correo
+            return redirect($lastView)->with('message', 'El ticket fue derivado con éxito, pero hubo un problema al enviar la notificación por correo.');
+        }
+
+
+
         // Redirigir a la última vista
-        return redirect($lastView)->with('message', 'Ticket derivado.');
+        return redirect($lastView)->with('message', 'El ticket fue derivado con éxito.');
     }
 
     // Procesar el cierre del ticket
@@ -456,17 +486,20 @@ class TicketController extends Controller
         HistoryController::logAction($ticket, true, Auth::id(), "El ticket fue cerrado por el usuario con ID " . Auth::id());
         // Cargar relaciones
         $ticket->load('state', 'user', 'assignedUsers', 'element');
-        
-     
-
-        // Enviar correo notificando el cambio de estado
-        Mail::to($ticket->user->email)->send(new TicketStatusChanged($ticket));
 
         // Obtener la URL de la última vista desde la sesión
         $lastView = $request->session()->get('last_view', route('tickets.index'));
 
+        try {
+            // Enviar correo notificando el cambio de estado
+            Mail::to($ticket->user->email)->send(new TicketStatusChanged($ticket));
+        } catch (\Exception $e) {
+
+            return redirect($lastView)->with('message', 'El ticket fue cerrado con éxito,pero hubo un problema al enviar la notificación por correo.');
+        }
+
         // Redirigir a la última vista
-        return redirect($lastView)->with('message', 'Ticket cerrado con comentario agregado.');
+        return redirect($lastView)->with('message', 'El ticket fue cerrado con éxito');
     }
 
     // Mostrar el formulario para cancelar el ticket
@@ -500,18 +533,26 @@ class TicketController extends Controller
         // Cargar relaciones
         $ticket->load('state', 'user', 'assignedUsers', 'element');
 
-         // Obtener el usuario asignado
-         $userAssign = $ticket->assignedUsers()->where('is_active', true)->first();
-
-        // Enviar correo notificando el cambio de estado
-        Mail::to($userAssign->email)->send(new TicketAlert($ticket));
-        Mail::to($ticket->user->email)->send(new TicketStatusChanged($ticket));
-
         // Obtener la URL de la última vista desde la sesión
         $lastView = $request->session()->get('last_view', route('tickets.index'));
 
+        //Enviar el correo con notificación
+        try {
+            // Enviar correo al creador del ticket
+            Mail::to($ticket->user->email)->send(new TicketStatusChanged($ticket));
+
+            // // Obtener el usuario asignado activo
+            $userAssign = $ticket->assignedUsers()->where('is_active', true)->first();
+            if ($userAssign) {
+                // Enviar correo notificando el cambio de estado
+                Mail::to($userAssign->email)->send(new TicketAlert($ticket));
+            }
+        } catch (\Exception $e) {
+            // Manejar el error al enviar el correo
+            return redirect()->route('tickets.show', $ticket)->with('message', 'El ticket fue cancelado, pero hubo un problema al enviar la notificación por correo.');
+        }
 
         // Redirigir a la última vista
-        return redirect($lastView)->with('message', 'Ticket cancelado ');
+        return redirect($lastView)->with('message', 'El ticket fue cancelado ');
     }
 }
