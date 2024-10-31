@@ -10,7 +10,7 @@
         @can('tickets.create')
             <div class="flex items-center justify-between mb-4">
                 <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                    Listado de Tickets
+                    Listado de Tickets Soporte 
                 </h2>
             </div>
         @endcan
@@ -38,7 +38,7 @@
 
                                     <!-- Usuario -->
                                     <div class="flex-1">
-                                        <x-input-label for="user" :value="__('Usuario')" />
+                                        <x-input-label for="user" :value="__('Usuario soporte')" />
                                         <select id="user" name="user"
                                             class="block mt-1 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-indigo-300 dark:focus:border-indigo-500 focus:ring focus:ring-indigo-200 dark:focus:ring-indigo-700 focus:ring-opacity-50">
                                             <option value="all" {{ request('user') == 'all' ? 'selected' : '' }}>Todos
@@ -154,10 +154,10 @@
                                         Estado</th>
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                        Usuario</th>
+                                        Creado por</th>
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                        Creado</th>
+                                        Fecha Creado</th>
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                         Asignación</th>

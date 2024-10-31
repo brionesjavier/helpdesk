@@ -131,7 +131,7 @@
                             
                             @can('support.index')
                             <x-dropdown-link :href="route('support.index')">
-                                {{ __('Asingnar tickets') }}
+                                {{ __('Panel Tickets Soporte ') }}
                             </x-dropdown-link>
                             @endcan
                             @can('roles.index')

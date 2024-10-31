@@ -133,6 +133,15 @@ class TicketController extends Controller
     //TODO:ver ticket por id todo los usuario
     public function show(Request $request, Ticket $ticket)
     {
+        
+        $assignments = $ticket->assignedUsers()->orderBy('ticket_assigns.created_at', 'desc')->first();
+        $comments = Comment::where('ticket_id', $ticket->id)->orderBy('created_at', 'desc')->get();
+        return view('tickets.show', compact('comments', 'ticket', 'assignments'));
+    }
+
+    public function myshow(Request $request, Ticket $ticket)
+    {
+        $this->authorize('CreateByUser', $ticket);
         $assignments = $ticket->assignedUsers()->orderBy('ticket_assigns.created_at', 'desc')->first();
         $comments = Comment::where('ticket_id', $ticket->id)->orderBy('created_at', 'desc')->get();
         return view('tickets.show', compact('comments', 'ticket', 'assignments'));

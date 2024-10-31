@@ -123,7 +123,7 @@
                                         <td class="px-6 py-3 text-sm border-b border-gray-300 dark:border-gray-700">
                                             {{ $ticket->id }}</td>
                                         <td class="px-6 py-3 text-sm border-b border-gray-300 dark:border-gray-700">
-                                            <a href="{{ route('tickets.show', $ticket) }}"
+                                            <a href="{{ route('tickets.myshow', $ticket) }}"
                                                 class="text-blue-600 dark:text-blue-400 hover:underline">
                                                 {{ $ticket->title }}
                                             </a>
@@ -136,7 +136,7 @@
                                             {{ $ticket->updated_at->format('Y-m-d H:i') }}</td>
                                         <td class="px-6 py-3 text-sm dark:border-gray-700 flex space-x-2 my-4">
                                             @can('tickets.show')
-                                                <a href="{{ route('tickets.show', $ticket) }}"
+                                                <a href="{{ route('tickets.myshow', $ticket) }}"
                                                     class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md shadow-sm transition duration-300 ease-in-out">Ver</a>
                                             @endcan
                                             @can('tickets.destroy')

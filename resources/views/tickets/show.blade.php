@@ -104,21 +104,27 @@
 
                         {{-- Botón de cancelar/anular --}}
                         @if ($ticket->state->id != 4 && $ticket->state->id != 7 && $ticket->state->id != 8)
+                        @can('tickets.cancel')
                         @can('manageOrCreateByUser',$ticket)
                                 <a href="{{ route('tickets.cancel', $ticket) }}" 
                                    class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
                                     {{ __('Cancelar/Anular') }}
                                 </a>
                             @endcan
+                            @endcan
                         @endif
 
                         {{-- Botón de reabrir --}}
                         @if ($ticket->state->id == 4)
+                        @can('tickets.reopen')
+                            
+                        
                         @can('CreateByUser',$ticket)
                                 <a href="{{ route('tickets.reopen', $ticket) }}" 
                                    class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
                                     {{ __('Reabrir') }}
                                 </a>
+                            @endcan
                             @endcan
                         @endif
 
