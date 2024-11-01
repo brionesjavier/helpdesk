@@ -79,10 +79,12 @@ Route::get('tickets',[TicketController::class, 'index'])->name('tickets.index')-
 Route::get('tickets/create',[TicketController::class, 'create'])->name('tickets.create')->middleware('can:tickets.create');
 Route::post('tickets/create',[TicketController::class, 'store'])->name('tickets.store')->middleware('can:tickets.store');
 Route::get('tickets/{ticket}',[TicketController::class, 'show'])->name('tickets.show')->middleware('can:tickets.show');
-Route::get('my-tickets/{ticket}',[TicketController::class, 'myshow'])->name('tickets.myshow')->where('ticket', '[0-9]+')->middleware('can:tickets.show');
+
 Route::get('tickets/{ticket}/edit', [TicketController::class, 'edit'])->name('tickets.edit')->middleware('can:tickets.edit');
 Route::put('tickets/{ticket}', [TicketController::class, 'update'])->name('tickets.update')->middleware('can:tickets.update');
 Route::delete('tickets/{ticket}', [TicketController::class, 'destroy'])->name('tickets.destroy')->middleware('can:tickets.destroy');
+
+Route::get('my-tickets/{ticket}',[TicketController::class, 'myshow'])->name('tickets.myshow')->where('ticket', '[0-9]+')->middleware('can:tickets.show');
 
 // Rutas de Comentarios
 Route::post('/tickets/{ticket}/comments', [CommentController::class, 'store'])->name('comments.store')->middleware('can:comments.store');

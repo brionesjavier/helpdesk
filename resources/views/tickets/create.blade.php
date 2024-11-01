@@ -4,7 +4,7 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     @can('tickets.store')
-                    <form method="POST" action="{{route('tickets.store')}}">
+                    <form method="POST" action="{{route('tickets.store')}}" onsubmit="return confirm('¿Estás seguro de que deseas crear el ticket?');">
                         @csrf
                         @method('post')
                         <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Titulo del requerimiento</label>
