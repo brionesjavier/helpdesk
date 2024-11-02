@@ -59,11 +59,8 @@
                     </form>
                 </div>
             </div>
-
-
-
-            <!-- Resumen General -->
-            <div class="bg-white shadow-sm sm:rounded-lg p-6 mb-6">
+             <!-- Resumen General -->
+             <div class="bg-white shadow-sm sm:rounded-lg p-6 mb-6">
                 <h1 class="text-2xl font-bold mb-4">Resumen General</h1>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
@@ -84,8 +81,88 @@
                         <h2 class="text-xl font-semibold">Tiempo Promedio de Solución</h2>
                         <p>{{ $formattedAvgResolutionTime }} </p>
                     </div>
+                    <div>
+                        <h2 class="text-xl font-semibold">SLA de Asignación</h2>
+                        <p>{{ number_format($slaTickets['porcentajeAsignacion'], 2) }}% </p>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-semibold">SLA de Solución</h2>
+                        <p>{{ number_format($slaTickets['porcentajeSolucion'], 2) }}% </p>
+                    </div>
                 </div>
             </div>
+
+              <!-- Reporte SLA -->
+  <div class="bg-white shadow-sm sm:rounded-lg p-6 mb-6">
+    <h2 class="text-xl font-semibold mb-4">Reporte de SLA</h2>
+    <table class="min-w-full bg-white border border-gray-200">
+        <thead>
+            <tr>
+                <th class="py-2 px-4 border-b text-left">Total de Tickets</th>
+                <th class="py-2 px-4 border-b text-left">Asignaciones Cumplidas</th>
+                <th class="py-2 px-4 border-b text-left">Soluciones Cumplidas</th>
+                <th class="py-2 px-4 border-b text-left">SLA Asignaciones</th>
+                <th class="py-2 px-4 border-b text-left">SLA Solución </th>
+            </tr>
+        </thead>
+        <tbody>
+            @if ($slaAttentionByUser->isEmpty())
+                <tr>
+                    <td colspan="3" class="py-2 px-6 text-center">No hay datos disponibles para mostrar.</td>
+                </tr>
+            @else
+                
+                    <tr>
+                        <td class="py-2 px-4 border-b">{{ $slaTickets['totalTickets']}}</td>
+                        <td class="py-2 px-4 border-b">{{ $slaTickets['asignados']}}</td>
+                        <td class="py-2 px-4 border-b">{{ $slaTickets['solucionados']}}</td>
+                        <td class="py-2 px-4 border-b">{{ number_format($slaTickets['porcentajeAsignacion'], 2) }}%</td>
+                        <td class="py-2 px-4 border-b">{{ number_format($slaTickets['porcentajeAsignacion'], 2) }}%</td>
+                        
+                    </tr>
+            @endif
+        </tbody>
+    </table>
+</div>
+
+<!-- Reporte SLA por prioridad -->
+<div class="bg-white shadow-sm sm:rounded-lg p-6 mb-6">
+    <h2 class="text-xl font-semibold mb-4">Reporte de SLA por Prioridad</h2>
+    <table class="min-w-full bg-white border border-gray-200">
+        <thead>
+            <tr>
+                <th class="py-2 px-4 border-b text-left">Prioridad</th>
+                <th class="py-2 px-4 border-b text-left">Total de Tickets</th>
+                <th class="py-2 px-4 border-b text-left">Asignaciones Cumplidas</th>
+                <th class="py-2 px-4 border-b text-left">SLA Asignación</th>
+                <th class="py-2 px-4 border-b text-left">Soluciones Cumplidas</th>
+                
+                <th class="py-2 px-4 border-b text-left">SLA Solución</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+            @forelse ($slaPriority as $resultado)
+                <tr>
+                    <td class="py-2 px-4 border-b text-left">{{ $resultado->priority }}</td>
+                    <td class="py-2 px-4 border-b text-left">{{ $resultado->total_tickets }}</td>
+                    <td class="py-2 px-4 border-b text-left">{{ $resultado->asignacion_cumplida }}</td>
+                    <td class="py-2 px-4 border-b text-left">{{ number_format($resultado->porcentaje_asignacion, 2) }}%</td>
+                    <td class="py-2 px-4 border-b text-left">{{ $resultado->solucion_cumplida }}</td>
+                    
+                    <td class="py-2 px-4 border-b text-left">{{ number_format($resultado->porcentaje_solucion, 2) }}%</td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="6" class="py-2 px-6 text-center">No hay datos disponibles para mostrar.</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+</div>
+
+
+           
             <!-- Estados de los Tickets -->
             <div class="bg-white shadow-sm sm:rounded-lg p-6 mb-6">
                 <h2 class="text-xl font-semibold mb-4">Estado de los Tickets</h2>
@@ -126,6 +203,48 @@
                     </tbody>
                 </table>
             </div>
+
+           <!-- Prioridad de los Tickets -->
+<div class="bg-white shadow-sm sm:rounded-lg p-6 mb-6">
+    <h2 class="text-xl font-semibold mb-4">Prioridad de los Tickets</h2>
+    <table class="min-w-full bg-white border border-gray-200">
+        <thead>
+            <tr>
+                <th class="py-2 px-4 border-b text-left">Prioridad</th>
+                <th class="py-2 px-4 border-b text-left">Cantidad</th>
+                <th class="py-2 px-4 border-b text-left">Descripción</th>
+                <th class="py-2 px-4 border-b text-left">Plazo SLA </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="">
+                <td class="py-2 px-4 border-b">Baja (low)</td>
+                <td class="py-2 px-4 border-b">{{ $ticketsBajos }}</td> <!-- Asegúrate de que esta variable esté definida -->
+                <td class="py-2 px-4 border-b">Tickets con baja prioridad.</td>
+                <td class="py-2 px-4 border-b">48 horas</td>
+            </tr>
+            <tr class="">
+                <td class="py-2 px-4 border-b">Media (medium)</td>
+                <td class="py-2 px-4 border-b">{{ $ticketsMedios }}</td> <!-- Asegúrate de que esta variable esté definida -->
+                <td class="py-2 px-4 border-b">Tickets con prioridad media.</td>
+                <td class="py-2 px-4 border-b">24 horas</td>
+            </tr>
+            <tr class="">
+                <td class="py-2 px-4 border-b">Alta (high)</td>
+                <td class="py-2 px-4 border-b">{{ $ticketsAltos }}</td> <!-- Asegúrate de que esta variable esté definida -->
+                <td class="py-2 px-4 border-b">Tickets con alta prioridad.</td>
+                <td class="py-2 px-4 border-b">8 horas.</td>
+            </tr>
+            <tr class="">
+                <td class="py-2 px-4 border-b">Crítica (critical)</td>
+                <td class="py-2 px-4 border-b">{{ $ticketsCriticos }}</td> <!-- Asegúrate de que esta variable esté definida -->
+                <td class="py-2 px-4 border-b">Tickets con prioridad crítica.</td>
+                <td class="py-2 px-4 border-b">4 horas</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
 
 
             <!-- Tickets por Categoría -->
@@ -184,34 +303,7 @@
                 </table>
             </div>
 
-            <!-- Tickets por Prioridad -->
-            <div class="bg-white shadow-sm sm:rounded-lg p-6 mb-6">
-                <h2 class="text-xl font-semibold mb-4">Tickets por Prioridad</h2>
-                <table class="min-w-full bg-white border border-gray-200">
-                    <thead>
-                        <tr>
-                            <th class="py-2 px-4 border-b text-left">Prioridad</th>
-                            <th class="py-2 px-4 border-b text-left">Cantidad</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if ($ticketsByPriority->isEmpty())
-                            <tr>
-                                <td colspan="2" class="py-2 px-6 text-center">No hay datos disponibles para mostrar.
-                                </td>
-                            </tr>
-                        @else
-                            @foreach ($ticketsByPriority as $item)
-                                <tr>
-                                    <td class="py-2 px-4 border-b">{{ $item->priority }}</td>
-                                    <td class="py-2 px-4 border-b">{{ $item->total }}</td>
-                                </tr>
-                            @endforeach
-                        @endif
-                    </tbody>
-                </table>
-            </div>
-
+        
             <!-- Tickets Asignados por Usuario -->
             <div class="bg-white shadow-sm sm:rounded-lg p-6 mb-6">
                 <h2 class="text-xl font-semibold mb-4">Tickets Asignados por Usuario</h2>
@@ -343,7 +435,73 @@
     </div>
 
 
+  <!-- Reporte SLA -->
+  <div class="bg-white shadow-sm sm:rounded-lg p-6 mb-6">
+    <h2 class="text-xl font-semibold mb-4">Reporte de SLA</h2>
+    <table class="min-w-full bg-white border border-gray-200">
+        <thead>
+            <tr>
+                <th class="py-2 px-4 border-b text-left">Total de Tickets</th>
+                <th class="py-2 px-4 border-b text-left">Asignaciones Cumplidas</th>
+                <th class="py-2 px-4 border-b text-left">Soluciones Cumplidas</th>
+                <th class="py-2 px-4 border-b text-left">SLA Asignaciones</th>
+                <th class="py-2 px-4 border-b text-left">SLA Solución </th>
+            </tr>
+        </thead>
+        <tbody>
+            @if ($slaAttentionByUser->isEmpty())
+                <tr>
+                    <td colspan="3" class="py-2 px-6 text-center">No hay datos disponibles para mostrar.</td>
+                </tr>
+            @else
+                
+                    <tr>
+                        <td class="py-2 px-4 border-b">{{ $slaTickets['totalTickets']}}</td>
+                        <td class="py-2 px-4 border-b">{{ $slaTickets['asignados']}}</td>
+                        <td class="py-2 px-4 border-b">{{ $slaTickets['solucionados']}}</td>
+                        <td class="py-2 px-4 border-b">{{ number_format($slaTickets['porcentajeAsignacion'], 2) }}%</td>
+                        <td class="py-2 px-4 border-b">{{ number_format($slaTickets['porcentajeAsignacion'], 2) }}%</td>
+                    </tr>
+            @endif
+        </tbody>
+    </table>
+</div>
 
+<!-- Reporte SLA por prioridad -->
+<div class="bg-white shadow-sm sm:rounded-lg p-6 mb-6">
+    <h2 class="text-xl font-semibold mb-4">Reporte de SLA por Prioridad</h2>
+    <table class="min-w-full bg-white border border-gray-200">
+        <thead>
+            <tr>
+                <th class="py-2 px-4 border-b text-left">Prioridad</th>
+                <th class="py-2 px-4 border-b text-left">Total de Tickets</th>
+                <th class="py-2 px-4 border-b text-left">Asignaciones Cumplidas</th>
+                <th class="py-2 px-4 border-b text-left">SLA Asignación</th>
+                <th class="py-2 px-4 border-b text-left">Soluciones Cumplidas</th>
+                
+                <th class="py-2 px-4 border-b text-left">SLA Solución</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+            @forelse ($slaPriority as $resultado)
+                <tr>
+                    <td class="py-2 px-4 border-b text-left">{{ $resultado->priority }}</td>
+                    <td class="py-2 px-4 border-b text-left">{{ $resultado->total_tickets }}</td>
+                    <td class="py-2 px-4 border-b text-left">{{ $resultado->asignacion_cumplida }}</td>
+                    <td class="py-2 px-4 border-b text-left">{{ number_format($resultado->porcentaje_asignacion, 2) }}%</td>
+                    <td class="py-2 px-4 border-b text-left">{{ $resultado->solucion_cumplida }}</td>
+                    
+                    <td class="py-2 px-4 border-b text-left">{{ number_format($resultado->porcentaje_solucion, 2) }}%</td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="6" class="py-2 px-6 text-center">No hay datos disponibles para mostrar.</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+</div>
 
 
 

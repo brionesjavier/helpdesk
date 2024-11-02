@@ -203,7 +203,7 @@ class ReportController extends Controller
         $validated = $request->validate([
             'search' => 'nullable|string|max:255',
             'status' => 'nullable|integer|exists:ticket_states,id',
-            'priority' => 'nullable|string|in:low,medium,high',
+            'priority' => 'nullable|string|in:low,medium,high,critical',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
             'user' => 'nullable|integer|exists:users,id',
@@ -411,11 +411,23 @@ class ReportController extends Controller
             ->get();
 
         // Contar tickets por prioridad
-        $ticketsByPriority = Ticket::select('priority', DB::raw('count(id) as total'))
+        
+            $ticketsBajos = Ticket::where('priority','low')->whereBetween('tickets.created_at', [$startDate, $endDate])->count();
+            $ticketsMedios = Ticket::where('priority','medium')->whereBetween('tickets.created_at', [$startDate, $endDate])->count();
+            $ticketsAltos=Ticket::where('priority','high')->whereBetween('tickets.created_at', [$startDate, $endDate])->count();
+            $ticketsCriticos=Ticket::where('priority','critical')->whereBetween('tickets.created_at', [$startDate, $endDate])->count();
+
+            $ticketsByPriority = Ticket::select('priority', DB::raw('count(id) as total'), 
+            DB::raw('CASE 
+                WHEN priority = \'critical\' THEN 4 
+                WHEN priority = \'high\' THEN 8 
+                WHEN priority = \'medium\' THEN 24 
+                WHEN priority = \'low\' THEN 48 
+                ELSE 2 
+            END as sla_time'))
             ->whereBetween('created_at', [$startDate, $endDate])
             ->groupBy('priority')
             ->get();
-
 
         $ticketsByUser = User::select(
             'users.id',
@@ -449,19 +461,16 @@ class ReportController extends Controller
 
         $TimesSolvedByUser = $this->TimesSolvedByUser($startDate, $endDate);
 
-        $slaPriority = $this->slaPriority();
-        $slaTickets = $this->slaTickets();
+        $slaPriority = $this->slaPriority($startDate, $endDate);
+        $slaTickets = $this->slaTickets($startDate, $endDate);
         // Retornar la vista con los datos del resumen
         return view('reports.summary', compact(
-            'totalTickets',
-            'ticketsPendientes',
-            'ticketsSolucionados',
-            'ticketsEnProceso',
-            'ticketsObjetados',
-            'ticketsCancelados',
+            'totalTickets','ticketsPendientes','ticketsSolucionados','ticketsEnProceso','ticketsObjetados','ticketsCancelados',
+            'ticketsBajos','ticketsMedios','ticketsAltos','ticketsCriticos',
             'ticketsByCategory',
             'ticketsByElement',
             'ticketsByPriority',
+            
             'ticketsByUser',
             'supportTickets',
             'ticketsObjetadosCount',
@@ -516,80 +525,86 @@ class ReportController extends Controller
         return $TimesSolvedByUser;
     }
 
-    public function slaTickets(){
-        // Obtener el total de tickets
-        $totalTickets = Ticket::count();
+    public function slaTickets($startDate, $endDate)
+    {
+        // Obtener el total de tickets en el rango de fechas
+        $totalTickets = Ticket::whereBetween('created_at', [$startDate, $endDate])->count();
     
-        // Obtener el total de tickets asignados y solucionados
-        $asignados = Ticket::whereRaw('(EXTRACT(EPOCH FROM (attention_deadline - sla_assigned_start_time)) / 3600 <= 2
-            AND EXTRACT(EPOCH FROM (attention_deadline - sla_assigned_start_time)) >= 0)')
+        // Obtener el total de tickets asignados en el rango de fechas
+        $asignados = Ticket::whereBetween('created_at', [$startDate, $endDate])
+            ->whereRaw('(EXTRACT(EPOCH FROM (attention_deadline - sla_assigned_start_time)) / 3600 <= 2
+                AND EXTRACT(EPOCH FROM (attention_deadline - sla_assigned_start_time)) >= 0)')
             ->count();
     
-        $solucionados = Ticket::whereRaw('(EXTRACT(EPOCH FROM (sla_due_time - solved_at)) / 3600 <= 
-                CASE 
-                    WHEN priority = \'critical\' THEN 4
-                    WHEN priority = \'high\' THEN 8
-                    WHEN priority = \'medium\' THEN 24
-                    WHEN priority = \'low\' THEN 72
-                END
-                AND EXTRACT(EPOCH FROM (sla_due_time - solved_at)) >= 0)')
+        // Obtener el total de tickets solucionados en el rango de fechas
+        $solucionados = Ticket::whereBetween('created_at', [$startDate, $endDate])
+            ->whereRaw('(EXTRACT(EPOCH FROM (sla_due_time - solved_at)) / 3600 <= 
+                    CASE 
+                        WHEN priority = \'critical\' THEN 4
+                        WHEN priority = \'high\' THEN 8
+                        WHEN priority = \'medium\' THEN 24
+                        WHEN priority = \'low\' THEN 48
+                    END
+                    AND EXTRACT(EPOCH FROM (sla_due_time - solved_at)) >= 0)')
             ->count();
     
         // Calcular los porcentajes
         $porcentajeAsignacion = $totalTickets > 0 ? ($asignados / $totalTickets) * 100 : 0;
         $porcentajeSolucion = $totalTickets > 0 ? ($solucionados / $totalTickets) * 100 : 0;
     
-         // Retornar los resultados como un arreglo asociativo
-    return [
-        'totalTickets' => $totalTickets,
-        'asignados' => $asignados,
-        'solucionados' => $solucionados,
-        'porcentajeAsignacion' => $porcentajeAsignacion,
-        'porcentajeSolucion' => $porcentajeSolucion
-    ];
+        // Retornar los resultados como un arreglo asociativo
+        return [
+            'totalTickets' => $totalTickets,
+            'asignados' => $asignados,
+            'solucionados' => $solucionados,
+            'porcentajeAsignacion' => $porcentajeAsignacion,
+            'porcentajeSolucion' => $porcentajeSolucion,
+        ];
     }
     
-    public function slaPriority(){
     
-   
+    public function slaPriority($startDate, $endDate)
+    {
         $resultados = Ticket::select('priority')
-        ->selectRaw('COUNT(*) AS total_tickets')
-        ->selectRaw('SUM(
-            CASE 
-                WHEN (EXTRACT(EPOCH FROM (attention_deadline - sla_assigned_start_time)) / 3600 <= 2
-                      AND EXTRACT(EPOCH FROM (attention_deadline - sla_assigned_start_time)) >= 0)
-                THEN 1
-                ELSE 0
-            END
-        ) AS asignacion_cumplida')
-        ->selectRaw('SUM(
-            CASE 
-                WHEN (EXTRACT(EPOCH FROM (sla_due_time - solved_at)) / 3600 <= 
-                    CASE 
-                        WHEN priority = \'critical\' THEN 4
-                        WHEN priority = \'high\' THEN 8
-                        WHEN priority = \'medium\' THEN 24
-                        WHEN priority = \'low\' THEN 72
-                    END
-                    AND EXTRACT(EPOCH FROM (sla_due_time - solved_at)) >= 0)
-                THEN 1
-                ELSE 0
-            END
-        ) AS solucion_cumplida')
-        ->groupBy('priority')
-        ->get();
+            ->selectRaw('COUNT(*) AS total_tickets')
+            ->selectRaw('SUM(
+                CASE 
+                    WHEN (EXTRACT(EPOCH FROM (attention_deadline - sla_assigned_start_time)) / 3600 <= 2
+                          AND EXTRACT(EPOCH FROM (attention_deadline - sla_assigned_start_time)) >= 0)
+                    THEN 1
+                    ELSE 0
+                END
+            ) AS asignacion_cumplida')
+            ->selectRaw('SUM(
+                CASE 
+                    WHEN (EXTRACT(EPOCH FROM (sla_due_time - solved_at)) / 3600 <= 
+                        CASE 
+                            WHEN priority = \'critical\' THEN 4
+                            WHEN priority = \'high\' THEN 8
+                            WHEN priority = \'medium\' THEN 24
+                            WHEN priority = \'low\' THEN 48
+                        END
+                        AND EXTRACT(EPOCH FROM (sla_due_time - solved_at)) >= 0)
+                    THEN 1
+                    ELSE 0
+                END
+            ) AS solucion_cumplida')
+            ->whereBetween('created_at', [$startDate, $endDate]) // Filtro de fechas
+            ->groupBy('priority')
+            ->get();
     
-    // Calcular el porcentaje para cada resultado
-    foreach ($resultados as $resultado) {
-        $resultado->porcentaje_asignacion = $resultado->asignacion_cumplida > 0 
-            ? ($resultado->asignacion_cumplida / $resultado->total_tickets) * 100 
-            : 0;
+        // Calcular el porcentaje para cada resultado
+        foreach ($resultados as $resultado) {
+            $resultado->porcentaje_asignacion = $resultado->asignacion_cumplida > 0 
+                ? ($resultado->asignacion_cumplida / $resultado->total_tickets) * 100 
+                : 0;
     
-        $resultado->porcentaje_solucion = $resultado->solucion_cumplida > 0 
-            ? ($resultado->solucion_cumplida / $resultado->total_tickets) * 100 
-            : 0;
+            $resultado->porcentaje_solucion = $resultado->solucion_cumplida > 0 
+                ? ($resultado->solucion_cumplida / $resultado->total_tickets) * 100 
+                : 0;
+        }
+    
+        return $resultados; // Devuelve todos los resultados
     }
     
-        return $resultado;
-    }
 }

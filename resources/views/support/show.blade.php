@@ -82,6 +82,7 @@
                                         <option value="low" {{ $ticket->priority == 'low' ? 'selected' : '' }}>Low</option>
                                         <option value="medium" {{ $ticket->priority == 'medium' ? 'selected' : '' }}>Medium</option>
                                         <option value="high" {{ $ticket->priority == 'high' ? 'selected' : '' }}>High</option>
+                                        <option value="critical" {{ $ticket->priority == 'critical' ? 'selected' : '' }}>Critical</option>
                                     </select>
                                     <x-input-error :messages="$errors->get('priority')" class="mt-2" />
                                 </div>

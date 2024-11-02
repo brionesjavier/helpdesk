@@ -27,79 +27,9 @@ class TicketController extends Controller
     // mostrar Todos los tickets
 
 public function test(){
-    // Obtener el total de tickets
-    $totalTickets = Ticket::count();
-
-    // Obtener el total de tickets asignados y solucionados
-    $asignados = Ticket::whereRaw('(EXTRACT(EPOCH FROM (attention_deadline - sla_assigned_start_time)) / 3600 <= 2
-        AND EXTRACT(EPOCH FROM (attention_deadline - sla_assigned_start_time)) >= 0)')
-        ->count();
-
-    $solucionados = Ticket::whereRaw('(EXTRACT(EPOCH FROM (sla_due_time - solved_at)) / 3600 <= 
-            CASE 
-                WHEN priority = \'critical\' THEN 4
-                WHEN priority = \'high\' THEN 8
-                WHEN priority = \'medium\' THEN 24
-                WHEN priority = \'low\' THEN 72
-            END
-            AND EXTRACT(EPOCH FROM (sla_due_time - solved_at)) >= 0)')
-        ->count();
-
-    // Calcular los porcentajes
-    $porcentajeAsignacion = $totalTickets > 0 ? ($asignados / $totalTickets) * 100 : 0;
-    $porcentajeSolucion = $totalTickets > 0 ? ($solucionados / $totalTickets) * 100 : 0;
-
-    // Retornar la vista con los resultados
-    return view('test', compact('totalTickets', 'asignados', 'solucionados', 'porcentajeAsignacion', 'porcentajeSolucion'));
+    $saludo="Hello Word";
+    return view('test',compact('saludo'));
 }
-
-
-
-/* public function test(){
-    
-   
-    $resultados = Ticket::select('priority')
-    ->selectRaw('COUNT(*) AS total_tickets')
-    ->selectRaw('SUM(
-        CASE 
-            WHEN (EXTRACT(EPOCH FROM (attention_deadline - sla_assigned_start_time)) / 3600 <= 2
-                  AND EXTRACT(EPOCH FROM (attention_deadline - sla_assigned_start_time)) >= 0)
-            THEN 1
-            ELSE 0
-        END
-    ) AS asignacion_cumplida')
-    ->selectRaw('SUM(
-        CASE 
-            WHEN (EXTRACT(EPOCH FROM (sla_due_time - solved_at)) / 3600 <= 
-                CASE 
-                    WHEN priority = \'critical\' THEN 4
-                    WHEN priority = \'high\' THEN 8
-                    WHEN priority = \'medium\' THEN 24
-                    WHEN priority = \'low\' THEN 72
-                END
-                AND EXTRACT(EPOCH FROM (sla_due_time - solved_at)) >= 0)
-            THEN 1
-            ELSE 0
-        END
-    ) AS solucion_cumplida')
-    ->groupBy('priority')
-    ->get();
-
-// Calcular el porcentaje para cada resultado
-foreach ($resultados as $resultado) {
-    $resultado->porcentaje_asignacion = $resultado->asignacion_cumplida > 0 
-        ? ($resultado->asignacion_cumplida / $resultado->total_tickets) * 100 
-        : 0;
-
-    $resultado->porcentaje_solucion = $resultado->solucion_cumplida > 0 
-        ? ($resultado->solucion_cumplida / $resultado->total_tickets) * 100 
-        : 0;
-}
-
-    return view('test',compact('resultados'));
-}
- */
-
 
 
 

@@ -126,7 +126,8 @@ class TicketAssignmentController extends Controller
         $priorities = [
             'low' => 'Baja',
             'medium' => 'Media',
-            'high' => 'Alta'
+            'high' => 'Alta',
+            'critical'=>'Crítico'
         ];
 
         // Obtener los tickets asignados al usuario
