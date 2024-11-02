@@ -19,6 +19,7 @@ class UsersSeeder extends Seeder
             'first_name' => 'test',
             'last_name' => 'test',
             'email' => 'test@gmail.com',
+            'email_verified_at' => now(),
             'password' => Hash::make('password'), // Encriptar la contraseña
         ]);
 
@@ -27,6 +28,7 @@ class UsersSeeder extends Seeder
             'first_name' => 'user',
             'last_name' => 'test',
             'email' => 'user@gmail.com',
+            'email_verified_at' => now(),
             'password' => Hash::make('password'), // Encriptar la contraseña
         ]);
 
@@ -34,6 +36,7 @@ class UsersSeeder extends Seeder
             'first_name' => 'soporte',
             'last_name' => 'test',
             'email' => 'soporte@gmail.com',
+            'email_verified_at' => now(),
             'assignable'=>true,
             'password' => Hash::make('password'), // Encriptar la contraseña
         ]);
@@ -41,6 +44,7 @@ class UsersSeeder extends Seeder
         $administrador=User::create([
             'first_name' => 'admin',
             'last_name' => 'test',
+            'email_verified_at' => now(),
             'email' => 'admin@gmail.com',
             'password' => Hash::make('password'), // Encriptar la contraseña
         ]);

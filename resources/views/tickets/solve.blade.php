@@ -13,7 +13,7 @@
                     @can('tickets.solve.submit')
                    
                     <h1>Solucionar Ticket</h1>
-                    <form action="{{ route('tickets.solve.submit', $ticket) }}" method="POST">
+                    <form action="{{ route('tickets.solve.submit', $ticket) }}" method="POST" onsubmit="return confirm('¿Estás seguro de que deseas solucionar el ticket?');">
                         @csrf
                         @method('post')
 

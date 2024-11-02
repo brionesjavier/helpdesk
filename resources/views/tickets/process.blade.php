@@ -13,7 +13,7 @@
                     @can('tickets.process.submit')
                         
                         @if ($ticket->state_id == 2 || $ticket->state_id == 5 || $ticket->state_id == 6)
-                            <form action="{{ route('tickets.process.submit', $ticket) }}" method="POST">
+                            <form action="{{ route('tickets.process.submit', $ticket) }}" method="POST" onsubmit="return confirm('¿Estás seguro de que deseas comenzar el ticket?');">
                                 @csrf
                                 @method('post')
                                 

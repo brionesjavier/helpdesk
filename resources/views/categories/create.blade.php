@@ -4,7 +4,7 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     @can('categories.store')
-                    <form method="POST" action="{{ route('categories.store') }}">
+                    <form method="POST" action="{{ route('categories.store') }}" onsubmit="return confirm('¿Estás seguro de que deseas crear la Categorías ?')">
                         @csrf
                         @method('post')
 

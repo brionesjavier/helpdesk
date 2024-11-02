@@ -9,7 +9,7 @@
 
         <div class="flex items-center justify-between">
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                Panel de Tickets de Soporte 
+                Listado Completo de Tickets 
             </h2>
         </div>
     </x-slot>

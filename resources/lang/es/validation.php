@@ -187,6 +187,7 @@ return [
         'duration'                 => 'duración',
         'email'                    => 'correo electrónico',
         'excerpt'                  => 'extracto',
+        'element_id'          => 'elemento',
         'filter'                   => 'filtro',
         'finished_at'              => 'terminado el',
         'first name'               => ' Nombre',
@@ -277,5 +278,6 @@ return [
         'winner'                   => 'ganador',
         'work'                     => 'trabajo',
         'year'                     => 'año',
+        'content'                  => 'descripción',
     ],
 ];

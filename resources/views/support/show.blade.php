@@ -62,7 +62,7 @@
     
 
                             <h3 class="text-lg font-semibold mb-2">Asignar/Reasignar Ticket</h3>
-                            <form action="{{ route('support.store', $ticket) }}" method="POST">
+                            <form action="{{ route('support.store', $ticket) }}" method="POST" onsubmit="return confirm('¿Estás seguro de que deseas asignar el ticket?');">
                                 @csrf
                                 <div class="mb-4">
                                     <label for="user_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Asignar a:</label>

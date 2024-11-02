@@ -17,7 +17,7 @@
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     @can('tickets.solve.submit')
                     <h1>Derivar Ticket</h1>
-                    <form action="{{ route('tickets.derive.submit', $ticket) }}" method="POST">
+                    <form action="{{ route('tickets.derive.submit', $ticket) }}" method="POST" onsubmit="return confirm('¿Estás seguro de que deseas derivar el ticket?');">
                         @csrf
                         @method('post')
                         

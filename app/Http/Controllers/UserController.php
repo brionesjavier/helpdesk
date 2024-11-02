@@ -82,10 +82,14 @@ class UserController extends Controller
             'last_name' => 'required|string',
             'email' => 'required|email|unique:users,email,' . $user->id,
             'phone' => 'required|regex:/^\d{9}$/',
-            'birthdate'=>'required|date|before_or_equal:'.date('Y-m-d'),
-            'address'=>'string',
-            'city'=>'string',
+            'birthdate' => ['required','date','before:' . now()->subYears(18)->toDateString(),],
+            'address' => 'string',
+            'city' => 'string',
             'assignable' => 'required|boolean',
+        ], [
+            'birthdate.required' => 'La fecha de cumpleaños es obligatoria.',
+            'birthdate.date' => 'La fecha de cumpleaños debe ser una fecha válida.',
+            'birthdate.before' => 'Debes ser mayor de 18 años para registrarte.',
         ]);
 
         $user->update([

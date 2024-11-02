@@ -76,28 +76,31 @@ Route::delete('states/{state}', [StateController::class,'destroy'])->name('state
 
 // Rutas de Tickets
 Route::get('tickets',[TicketController::class, 'index'])->name('tickets.index')->middleware('can:tickets.index');
-Route::get('tickets/create',[TicketController::class, 'create'])->name('tickets.create')->middleware('can:tickets.create');
-Route::post('tickets/create',[TicketController::class, 'store'])->name('tickets.store')->middleware('can:tickets.store');
 Route::get('tickets/{ticket}',[TicketController::class, 'show'])->name('tickets.show')->middleware('can:tickets.show');
-
-Route::get('tickets/{ticket}/edit', [TicketController::class, 'edit'])->name('tickets.edit')->middleware('can:tickets.edit');
-Route::put('tickets/{ticket}', [TicketController::class, 'update'])->name('tickets.update')->middleware('can:tickets.update');
-Route::delete('tickets/{ticket}', [TicketController::class, 'destroy'])->name('tickets.destroy')->middleware('can:tickets.destroy');
-
-Route::get('my-tickets/{ticket}',[TicketController::class, 'myshow'])->name('tickets.myshow')->where('ticket', '[0-9]+')->middleware('can:tickets.show');
-
-// Rutas de Comentarios
-Route::post('/tickets/{ticket}/comments', [CommentController::class, 'store'])->name('comments.store')->middleware('can:comments.store');
-Route::get('/tickets/{ticket}/comments', [CommentController::class, 'index'])->name('comments.index')->middleware('can:comments.index');
-
-// Rutas de Historiales
-Route::get('/tickets/{ticket}/history', [HistoryController::class, 'index'])->name('history.index')->middleware('can:history.index');
-Route::get('my-histories', [HistoryController::class, 'myHistories'])->name('histories.my')->middleware('can:histories.my');
 
 // Rutas de Mis Tickets
 Route::get('/my-tickets', [TicketController::class, 'myTickets'])->name('tickets.my')->middleware('can:tickets.my');
+Route::get('my-tickets/create',[TicketController::class, 'create'])->name('tickets.create')->middleware('can:tickets.create');
+Route::post('my-tickets/create',[TicketController::class, 'store'])->name('tickets.store')->middleware('can:tickets.store');
+Route::get('my-tickets/{ticket}',[TicketController::class, 'myshow'])->name('tickets.myshow')->where('ticket', '[0-9]+')->middleware('can:tickets.myshow');
+Route::get('my-tickets/{ticket}/edit', [TicketController::class, 'edit'])->name('tickets.edit')->middleware('can:tickets.edit');
+Route::put('my-tickets/{ticket}', [TicketController::class, 'update'])->name('tickets.update')->middleware('can:tickets.update');
+Route::delete('my-tickets/{ticket}', [TicketController::class, 'destroy'])->name('tickets.destroy')->middleware('can:tickets.destroy');
 
-// Rutas de Solución de Tickets
+
+
+// Rutas de Comentarios
+Route::post('/my-tickets/{ticket}/comments', [CommentController::class, 'store'])->name('comments.store')->middleware('can:comments.store');
+Route::get('/my-tickets/{ticket}/comments', [CommentController::class, 'index'])->name('comments.index')->middleware('can:comments.index');
+
+// Rutas de Historiales
+Route::get('/my-tickets/{ticket}/history', [HistoryController::class, 'index'])->name('history.index')->middleware('can:history.index');
+Route::get('my-histories', [HistoryController::class, 'myHistories'])->name('histories.my')->middleware('can:histories.my');
+
+
+
+
+// Rutas de proceso de Tickets
 Route::get('/tickets/{ticket}/process', [TicketController::class, 'showProcessForm'])->name('tickets.process')->middleware('can:tickets.process');
 Route::post('/tickets/{ticket}/process', [TicketController::class, 'process'])->name('tickets.process.submit')->middleware('can:tickets.process.submit');
 
@@ -110,15 +113,15 @@ Route::get('/tickets/{ticket}/derive', [TicketController::class, 'showDeriveForm
 Route::post('/tickets/{ticket}/derive', [TicketController::class, 'derive'])->name('tickets.derive.submit')->middleware('can:tickets.derive.submit');
 
 // Rutas de Cierre de Tickets
-Route::post('/tickets/{ticket}/close', [TicketController::class, 'close'])->name('tickets.close')->middleware('can:tickets.close');
+Route::post('/my-tickets/{ticket}/close', [TicketController::class, 'close'])->name('tickets.close')->middleware('can:tickets.close');
 
 // Rutas de Reapertura de Tickets
-Route::get('/tickets/{ticket}/reopen', [TicketController::class, 'showReopenForm'])->name('tickets.reopen')->middleware('can:tickets.reopen');
-Route::post('/tickets/{ticket}/reopen', [TicketController::class, 'reopen'])->name('tickets.reopen.submit')->middleware('can:tickets.reopen.submit');
+Route::get('/my-tickets/{ticket}/reopen', [TicketController::class, 'showReopenForm'])->name('tickets.reopen')->middleware('can:tickets.reopen');
+Route::post('/my-tickets/{ticket}/reopen', [TicketController::class, 'reopen'])->name('tickets.reopen.submit')->middleware('can:tickets.reopen.submit');
 
 // Rutas de Cancelación de Tickets
-Route::get('/tickets/{ticket}/cancel', [TicketController::class, 'showCancelForm'])->name('tickets.cancel')->middleware('can:tickets.cancel');
-Route::post('/tickets/{ticket}/cancel', [TicketController::class, 'cancel'])->name('tickets.cancel.submit')->middleware('can:tickets.cancel.submit');
+Route::get('/my-tickets/{ticket}/cancel', [TicketController::class, 'showCancelForm'])->name('tickets.cancel')->middleware('can:tickets.cancel');
+Route::post('/my-tickets/{ticket}/cancel', [TicketController::class, 'cancel'])->name('tickets.cancel.submit')->middleware('can:tickets.cancel.submit');
 
 // Rutas de Asignación de Tickets
 Route::get('/support', [TicketAssignmentController::class, 'index'])->name('support.index')->middleware('can:support.index');//ticket sin asignar soporte
@@ -127,7 +130,7 @@ Route::get('/support/{ticket}', [TicketAssignmentController::class, 'show'])->na
 Route::post('/support/{ticket}', [TicketAssignmentController::class, 'store'])->name('support.store')->middleware('can:support.store');
 
 // Rutas de Tickets Asignados a soporte
-Route::get('/tickets-assigned', [TicketAssignmentController::class, 'assigned'])->name('support.assigned')->middleware('can:support.assigned');
+Route::get('/support-assigned', [TicketAssignmentController::class, 'assigned'])->name('support.assigned')->middleware('can:support.assigned');
 
 //reporte
 

@@ -15,6 +15,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Mail\TicketStatusChanged;
 use App\Mail\TicketAlert;
+use DateInterval;
+use DateTime;
+use Exception;
 use Illuminate\Support\Facades\Mail;
 
 
@@ -23,17 +26,80 @@ class TicketController extends Controller
     use AuthorizesRequests;
     // mostrar Todos los tickets
 
-    public function test()
-    {
-        $ticket = Ticket::find(2);
+public function test(){
+    // Obtener el total de tickets
+    $totalTickets = Ticket::count();
 
-        // Filtra usuarios asignados activos desde la tabla pivote
-        $userAssign = $ticket->assignedUsers()->wherePivot('is_active', true)->first();
+    // Obtener el total de tickets asignados y solucionados
+    $asignados = Ticket::whereRaw('(EXTRACT(EPOCH FROM (attention_deadline - sla_assigned_start_time)) / 3600 <= 2
+        AND EXTRACT(EPOCH FROM (attention_deadline - sla_assigned_start_time)) >= 0)')
+        ->count();
 
-        // Verifica si hay un usuario asignado activo y obtiene el email
-        $email = $userAssign ? $userAssign->email : 'No hay usuario asignado activo';
-        return view('test', compact('userAssign', 'ticket', 'email'));
-    }
+    $solucionados = Ticket::whereRaw('(EXTRACT(EPOCH FROM (sla_due_time - solved_at)) / 3600 <= 
+            CASE 
+                WHEN priority = \'critical\' THEN 4
+                WHEN priority = \'high\' THEN 8
+                WHEN priority = \'medium\' THEN 24
+                WHEN priority = \'low\' THEN 72
+            END
+            AND EXTRACT(EPOCH FROM (sla_due_time - solved_at)) >= 0)')
+        ->count();
+
+    // Calcular los porcentajes
+    $porcentajeAsignacion = $totalTickets > 0 ? ($asignados / $totalTickets) * 100 : 0;
+    $porcentajeSolucion = $totalTickets > 0 ? ($solucionados / $totalTickets) * 100 : 0;
+
+    // Retornar la vista con los resultados
+    return view('test', compact('totalTickets', 'asignados', 'solucionados', 'porcentajeAsignacion', 'porcentajeSolucion'));
+}
+
+
+
+/* public function test(){
+    
+   
+    $resultados = Ticket::select('priority')
+    ->selectRaw('COUNT(*) AS total_tickets')
+    ->selectRaw('SUM(
+        CASE 
+            WHEN (EXTRACT(EPOCH FROM (attention_deadline - sla_assigned_start_time)) / 3600 <= 2
+                  AND EXTRACT(EPOCH FROM (attention_deadline - sla_assigned_start_time)) >= 0)
+            THEN 1
+            ELSE 0
+        END
+    ) AS asignacion_cumplida')
+    ->selectRaw('SUM(
+        CASE 
+            WHEN (EXTRACT(EPOCH FROM (sla_due_time - solved_at)) / 3600 <= 
+                CASE 
+                    WHEN priority = \'critical\' THEN 4
+                    WHEN priority = \'high\' THEN 8
+                    WHEN priority = \'medium\' THEN 24
+                    WHEN priority = \'low\' THEN 72
+                END
+                AND EXTRACT(EPOCH FROM (sla_due_time - solved_at)) >= 0)
+            THEN 1
+            ELSE 0
+        END
+    ) AS solucion_cumplida')
+    ->groupBy('priority')
+    ->get();
+
+// Calcular el porcentaje para cada resultado
+foreach ($resultados as $resultado) {
+    $resultado->porcentaje_asignacion = $resultado->asignacion_cumplida > 0 
+        ? ($resultado->asignacion_cumplida / $resultado->total_tickets) * 100 
+        : 0;
+
+    $resultado->porcentaje_solucion = $resultado->solucion_cumplida > 0 
+        ? ($resultado->solucion_cumplida / $resultado->total_tickets) * 100 
+        : 0;
+}
+
+    return view('test',compact('resultados'));
+}
+ */
+
 
 
 
@@ -83,6 +149,21 @@ class TicketController extends Controller
 
     public function myTickets(Request $request): View
     {
+        $validated = $request->validate([
+            'search' => 'nullable|string|max:255',
+            'state' => 'nullable|integer|exists:ticket_states,id',
+            'sort_by' => 'nullable|string|in:created_at,priority,id,updated_at',
+            'sort_direction' => 'nullable|string|in:asc,desc',
+        ]);
+
+        // Recuperar los parámetros de búsqueda desde los datos validados
+        $search = $validated['search'] ?? null; // Asigna null si no está definido
+        $stateId = $validated['state'] ?? 'all'; // Asigna null si no está definido
+        // Ordenar según el criterio seleccionado
+        $sortField = $validated['sort_by'] ?? 'updated_at';
+        $sortDirection = $validated['sort_direction'] ?? 'DESC';
+
+
         $userId = Auth::id();
 
         // Inicializa la consulta
@@ -91,7 +172,7 @@ class TicketController extends Controller
 
         // Filtro por búsqueda en título o folio
         if ($request->filled('search')) {
-            $search = $request->input('search');
+            $search = $validated['search'];
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
                     ->orWhere('id', 'like', "%{$search}%");
@@ -100,12 +181,11 @@ class TicketController extends Controller
 
         // Filtro por estado
         if ($request->filled('state') && $request->state != 'all') {
-            $query->where('state_id', $request->state);
+            $query->where('state_id', $stateId);
         }
 
         // Ordenar según el criterio seleccionado
-        $sortField = $request->input('sort_by', 'created_at');
-        $sortDirection = $request->input('sort_direction', 'desc');
+        
 
         // Validar los valores de ordenamiento
         if (!in_array($sortField, ['created_at', 'id', 'title', 'updated_at'])) {
@@ -133,7 +213,7 @@ class TicketController extends Controller
     //TODO:ver ticket por id todo los usuario
     public function show(Request $request, Ticket $ticket)
     {
-        
+
         $assignments = $ticket->assignedUsers()->orderBy('ticket_assigns.created_at', 'desc')->first();
         $comments = Comment::where('ticket_id', $ticket->id)->orderBy('created_at', 'desc')->get();
         return view('tickets.show', compact('comments', 'ticket', 'assignments'));
@@ -259,10 +339,10 @@ class TicketController extends Controller
             $lastView = $request->session()->get('last_view', route('tickets.index'));
         } catch (\Exception $e) {
             //TODO: manejar excepción
-            return redirect($lastView)->with('message', 'Ticket eliminado con éxito, pero hubo un problema al enviar la notificación por correo.');
+            return redirect($lastView)->with('message', 'Ticket quitado con éxito, pero hubo un problema al enviar la notificación por correo.');
         }
         // Redirigir a la última vista
-        return redirect($lastView)->with('message', 'Ticket eliminado con exito');
+        return redirect($lastView)->with('message', 'Ticket quitado con exito');
     }
 
     /** para vista de comenzar proceso */

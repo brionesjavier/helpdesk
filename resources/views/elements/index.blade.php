@@ -6,6 +6,19 @@
                 <span class="text-indigo-600 text-lg font-semibold">{{ session('message') }}</span>
             </div>
         @endif
+        @if ($errors->any())
+
+        <div class="alert alert-danger">
+
+            <ul>
+
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+
+    @endif
         <div class="relative mb-4">
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 Elementos

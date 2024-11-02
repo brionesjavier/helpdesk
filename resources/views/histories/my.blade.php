@@ -6,6 +6,7 @@
                 <span class="text-indigo-600 dark:text-indigo-400 text-xl font-semibold">{{ session('message') }}</span>
             </div>
         @endif
+
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
             My Histories
         </h2>
@@ -35,7 +36,7 @@
                                     <x-input-label for="state" :value="__('Estado')" />
                                     <select id="state" name="state"
                                         class="block mt-1 w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-indigo-300 dark:focus:border-indigo-500 focus:ring focus:ring-indigo-200 dark:focus:ring-indigo-700 focus:ring-opacity-50">
-                                        <option value="all" {{ request('state') == 'all' ? 'selected' : '' }}>Todos los
+                                        <option value="" {{ request('state') == 'all' ? 'selected' : '' }}>Todos los
                                             estados</option>
                                         @foreach ($states as $state)
                                             <option value="{{ $state->id }}"
@@ -135,7 +136,7 @@
                                     <td class="px-6 py-3 text-sm border-b border-gray-300 dark:border-gray-700">
                                         {{ $ticket->id }}</td>
                                     <td class="px-6 py-3 text-sm border-b border-gray-300 dark:border-gray-700">
-                                        <a href="{{ route('tickets.show', $ticket) }}"
+                                        <a href="{{ route('tickets.myshow', $ticket) }}"
                                             class="text-blue-600 dark:text-blue-400 hover:underline">
                                             {{ $ticket->title }}
                                         </a>
@@ -147,8 +148,8 @@
                                     <td class="px-6 py-3 text-sm border-b border-gray-300 dark:border-gray-700">
                                         {{ $ticket->updated_at->format('Y-m-d H:i') }}</td>
                                     <td class="px-6 py-3 text-sm flex space-x-2 my-4">
-                                        @can('tickets.show')
-                                            <a href="{{ route('tickets.show', $ticket) }}"
+                                        @can('tickets.myshow')
+                                            <a href="{{ route('tickets.myshow', $ticket) }}"
                                                 class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded transition-colors duration-300">Ver</a>
                                         @endcan
                                         @can('history.index')

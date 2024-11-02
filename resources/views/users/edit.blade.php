@@ -23,7 +23,7 @@
                     <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-md shadow-md">
                         <h1 class="text-2xl font-semibold mb-4">Detalles del Usuario</h1>
                         <div class="space-y-4">
-                            <form method="POST" action="{{ route('users.update', $user) }}">
+                            <form method="POST" action="{{ route('users.update', $user) }}"onsubmit="return confirm('¿Estás seguro de que deseas editar el usuario?');">
                                 @csrf
                                 @method('PUT')
 

@@ -9,31 +9,35 @@ use Illuminate\Http\Request;
 
 class ElementController extends Controller
 {
-   /*  public function index(){
-        $elements = Element::where('is_active',true)->get();
-        return view('elements.index',['elements'=>$elements]);
-    } */
+ 
 
     public function index(Request $request)
     {
+        // Validar los datos del formulario
+         $request->validate([
+            'search' => 'nullable|string|max:255',
+            'category_id' => 'nullable|integer|exists:categories,id',
+        ]);
+    
+        // Extraer los valores validados o establecer valores predeterminados
         $search = $request->input('search');
         $categoryId = $request->input('category_id');
-
+    
         $elements = Element::query()
-            ->when($search, function($query, $search) {
-                return $query->where('name', 'like', "%{$search}%")
-                             ->orWhereHas('category', function($query) use ($search) {
-                                 $query->where('name', 'like', "%{$search}%");
+            ->when($search, function ($query, $search) {
+                $search = strtolower($search); // Convertir el término de búsqueda a minúsculas
+                return $query->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"])
+                             ->orWhereHas('category', function ($query) use ($search) {
+                                 $query->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"]);
                              });
             })
-            ->when($categoryId, function($query, $categoryId) {
+            ->when($categoryId, function ($query, $categoryId) {
                 return $query->where('category_id', $categoryId);
             })
-            ->paginate();
-            //->get();
-
-        $categories = Category::where('is_active',1)->get(); // Para el filtro de categorías
-
+            ->paginate(12);
+    
+        $categories = Category::where('is_active', 1)->get(); // Para el filtro de categorías
+    
         return view('elements.index', [
             'elements' => $elements,
             'categories' => $categories,

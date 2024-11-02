@@ -81,7 +81,6 @@
                                     {{ __('Comentar') }}
                                 </a>
                             @endcan
-                    
                         @endif
 
                         {{-- Botón de derivar --}}

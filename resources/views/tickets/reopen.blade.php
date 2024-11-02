@@ -12,7 +12,7 @@
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     @can('tickets.reopen.submit')
                     <h1>objetar Ticket</h1>
-                    <form action="{{ route('tickets.reopen.submit', $ticket) }}" method="POST">
+                    <form action="{{ route('tickets.reopen.submit', $ticket) }}" method="POST" onsubmit="return confirm('¿Estás seguro de que obejtar el ticket?');">
                         @csrf
                         @method('post')
                         <label for="content" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Descripcion</label>

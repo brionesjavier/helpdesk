@@ -9,7 +9,7 @@
 
         <div class="flex items-center justify-between mb-4">
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                Roles
+                Listado de Roles
             </h2>
             @can('roles.create')
                 <a href="{{ route('roles.create') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-300 ease-in-out">
@@ -55,7 +55,7 @@
                                                 </a>
                                             @endcan
                                             @can('roles.destroy')
-                                                <form action="{{ route('roles.destroy', $role->id) }}" method="POST" class="inline-block ml-2">
+                                                <form action="{{ route('roles.destroy', $role->id) }}" method="POST" class="inline-block ml-2" onsubmit="return confirm('¿Estás seguro de que deseas eliminar el role?')">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-300 ease-in-out">

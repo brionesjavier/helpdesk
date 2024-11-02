@@ -26,7 +26,7 @@
                         </a>
                     @endcan
                     @can('categories.destroy')
-                        <form action="{{ route('categories.destroy', $category) }}" method="POST" class="inline-flex ml-4">
+                        <form action="{{ route('categories.destroy', $category) }}" method="POST" class="inline-flex ml-4" onsubmit="return confirm('¿Estás seguro de que deseas eliminar la Categorías ?')">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:text-red-300 dark:bg-red-600 dark:hover:bg-red-700">

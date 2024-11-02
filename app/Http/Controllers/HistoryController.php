@@ -46,19 +46,29 @@ class HistoryController extends Controller
             ->where('ticket_id', $ticketId)
             ->get();
     
-        return view('histories.index', compact('histories'));
+        return view('histories.index', compact(['histories','ticketId']));
     }
 
     public function myHistories(Request $request)
     {
+
         // Guardar la URL actual en la sesión
         $request->session()->put('last_view', url()->current());
 
-        // Recuperar los parámetros de búsqueda
-        $search = $request->input('search');
-        $stateId = $request->input('state');
-        $sortBy = $request->input('sort_by', 'updated_at');
-        $sortDirection = $request->input('sort_direction', 'DESC');
+          // Validar los datos del formulario
+    $validated = $request->validate([
+        'search' => 'nullable|string|max:255',
+        'state' => 'nullable|integer|exists:ticket_states,id',
+        'sort_by' => 'nullable|string|in:created_at,priority,id,updated_at',
+        'sort_direction' => 'nullable|string|in:asc,desc',
+    ]);
+
+    // Recuperar los parámetros de búsqueda desde los datos validados
+    $search = $validated['search'] ?? null; // Asigna null si no está definido
+    $stateId = $validated['state'] ?? 'all'; // Asigna null si no está definido
+    $sortBy = $validated['sort_by'] ?? 'updated_at'; // 'updated_at' como valor por defecto
+    $sortDirection = $validated['sort_direction'] ?? 'DESC'; // 'DESC' como valor por defecto
+
 
         // Construir la consulta base
         $query = Ticket::where('created_by', Auth::id());

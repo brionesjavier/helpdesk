@@ -16,7 +16,7 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     @can('categories.update')
-                        <form method="POST" action="{{ route('categories.update', $category) }}">
+                        <form method="POST" action="{{ route('categories.update', $category) }}" onsubmit="return confirm('¿Estás seguro de que deseas actualizar la Categorías ?')">
                             @csrf
                             @method('PUT')
 

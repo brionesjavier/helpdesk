@@ -7,13 +7,13 @@
             </div>
         @endif
 
-        @can('tickets.create')
+        
             <div class="flex items-center justify-between mb-4">
                 <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                     Listado de Tickets Sin Asignar
                 </h2>
             </div>
-        @endcan
+        
     </x-slot>
 
     <div class="py-12">

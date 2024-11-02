@@ -9,7 +9,7 @@
 
         <div class="flex items-center justify-between">
             <h2 class="font-semibold text-2xl text-gray-800 dark:text-gray-200 leading-tight">
-                Users
+                {{ __('Usuarios') }}
             </h2>
         </div>
     </x-slot>
@@ -28,7 +28,7 @@
                             <!-- Campo de búsqueda -->
                             <div class="flex-1 min-w-[150px]">
                                 <x-input-label for="search" :value="__('Buscar')" />
-                                <x-text-input id="search" class="block mt-1 w-full" type="text" name="search" value="{{ request('search') }}" placeholder="Nombre, Apellido, Email, Teléfono, ID"/>
+                                <x-text-input id="search" class="block mt-1 w-full" type="text" name="search" value="{{ request('search') }}" placeholder="Nombre, Apellido, Email, ID"/>
                             </div>
 
                             <!-- Rol -->

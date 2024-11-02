@@ -35,7 +35,7 @@
 
                     {{-- Formulario de Roles --}}
                     @can('users.updateRoles')
-                    <form action="{{ route('users.updateRoles', $user->id) }}" method="POST">
+                    <form action="{{ route('users.updateRoles', $user->id) }}" method="POST" onsubmit="return confirm('¿Estás seguro de que deseas modificar el role al usuario?');">
                         @csrf
                         @method('POST')
 

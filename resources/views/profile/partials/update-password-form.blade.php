@@ -7,6 +7,11 @@
         <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
             {{ __('Ensure your account is using a long, random password to stay secure.') }}
         </p>
+        @if (session('status') == 'password-updated')
+        <div class="mb-4 font-medium text-sm text-green-600 dark:text-green-400">
+            {{ __('Your password has been successfully updated.') }}
+        </div>
+    @endif
     </header>
 
     <form method="post" action="{{ route('password.update') }}" class="mt-6 space-y-6">
