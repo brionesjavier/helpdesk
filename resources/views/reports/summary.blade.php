@@ -117,7 +117,7 @@
                         <td class="py-2 px-4 border-b">{{ $slaTickets['asignados']}}</td>
                         <td class="py-2 px-4 border-b">{{ $slaTickets['solucionados']}}</td>
                         <td class="py-2 px-4 border-b">{{ number_format($slaTickets['porcentajeAsignacion'], 2) }}%</td>
-                        <td class="py-2 px-4 border-b">{{ number_format($slaTickets['porcentajeAsignacion'], 2) }}%</td>
+                        <td class="py-2 px-4 border-b">{{ number_format($slaTickets['porcentajeSolucion'], 2) }}%</td>
                         
                     </tr>
             @endif
@@ -217,25 +217,25 @@
             </tr>
         </thead>
         <tbody>
-            <tr class="">
+            <tr class="bg-green-100">
                 <td class="py-2 px-4 border-b">Baja (low)</td>
                 <td class="py-2 px-4 border-b">{{ $ticketsBajos }}</td> <!-- Asegúrate de que esta variable esté definida -->
                 <td class="py-2 px-4 border-b">Tickets con baja prioridad.</td>
                 <td class="py-2 px-4 border-b">48 horas</td>
             </tr>
-            <tr class="">
+            <tr class="bg-orange-100">
                 <td class="py-2 px-4 border-b">Media (medium)</td>
                 <td class="py-2 px-4 border-b">{{ $ticketsMedios }}</td> <!-- Asegúrate de que esta variable esté definida -->
                 <td class="py-2 px-4 border-b">Tickets con prioridad media.</td>
                 <td class="py-2 px-4 border-b">24 horas</td>
             </tr>
-            <tr class="">
+            <tr class="bg-yellow-100">
                 <td class="py-2 px-4 border-b">Alta (high)</td>
                 <td class="py-2 px-4 border-b">{{ $ticketsAltos }}</td> <!-- Asegúrate de que esta variable esté definida -->
                 <td class="py-2 px-4 border-b">Tickets con alta prioridad.</td>
                 <td class="py-2 px-4 border-b">8 horas.</td>
             </tr>
-            <tr class="">
+            <tr class="bg-red-100">
                 <td class="py-2 px-4 border-b">Crítica (critical)</td>
                 <td class="py-2 px-4 border-b">{{ $ticketsCriticos }}</td> <!-- Asegúrate de que esta variable esté definida -->
                 <td class="py-2 px-4 border-b">Tickets con prioridad crítica.</td>
@@ -435,79 +435,9 @@
     </div>
 
 
-  <!-- Reporte SLA -->
-  <div class="bg-white shadow-sm sm:rounded-lg p-6 mb-6">
-    <h2 class="text-xl font-semibold mb-4">Reporte de SLA</h2>
-    <table class="min-w-full bg-white border border-gray-200">
-        <thead>
-            <tr>
-                <th class="py-2 px-4 border-b text-left">Total de Tickets</th>
-                <th class="py-2 px-4 border-b text-left">Asignaciones Cumplidas</th>
-                <th class="py-2 px-4 border-b text-left">Soluciones Cumplidas</th>
-                <th class="py-2 px-4 border-b text-left">SLA Asignaciones</th>
-                <th class="py-2 px-4 border-b text-left">SLA Solución </th>
-            </tr>
-        </thead>
-        <tbody>
-            @if ($slaAttentionByUser->isEmpty())
-                <tr>
-                    <td colspan="3" class="py-2 px-6 text-center">No hay datos disponibles para mostrar.</td>
-                </tr>
-            @else
-                
-                    <tr>
-                        <td class="py-2 px-4 border-b">{{ $slaTickets['totalTickets']}}</td>
-                        <td class="py-2 px-4 border-b">{{ $slaTickets['asignados']}}</td>
-                        <td class="py-2 px-4 border-b">{{ $slaTickets['solucionados']}}</td>
-                        <td class="py-2 px-4 border-b">{{ number_format($slaTickets['porcentajeAsignacion'], 2) }}%</td>
-                        <td class="py-2 px-4 border-b">{{ number_format($slaTickets['porcentajeAsignacion'], 2) }}%</td>
-                    </tr>
-            @endif
-        </tbody>
-    </table>
-</div>
-
-<!-- Reporte SLA por prioridad -->
-<div class="bg-white shadow-sm sm:rounded-lg p-6 mb-6">
-    <h2 class="text-xl font-semibold mb-4">Reporte de SLA por Prioridad</h2>
-    <table class="min-w-full bg-white border border-gray-200">
-        <thead>
-            <tr>
-                <th class="py-2 px-4 border-b text-left">Prioridad</th>
-                <th class="py-2 px-4 border-b text-left">Total de Tickets</th>
-                <th class="py-2 px-4 border-b text-left">Asignaciones Cumplidas</th>
-                <th class="py-2 px-4 border-b text-left">SLA Asignación</th>
-                <th class="py-2 px-4 border-b text-left">Soluciones Cumplidas</th>
-                
-                <th class="py-2 px-4 border-b text-left">SLA Solución</th>
-            </tr>
-        </thead>
-        <tbody>
-            
-            @forelse ($slaPriority as $resultado)
-                <tr>
-                    <td class="py-2 px-4 border-b text-left">{{ $resultado->priority }}</td>
-                    <td class="py-2 px-4 border-b text-left">{{ $resultado->total_tickets }}</td>
-                    <td class="py-2 px-4 border-b text-left">{{ $resultado->asignacion_cumplida }}</td>
-                    <td class="py-2 px-4 border-b text-left">{{ number_format($resultado->porcentaje_asignacion, 2) }}%</td>
-                    <td class="py-2 px-4 border-b text-left">{{ $resultado->solucion_cumplida }}</td>
-                    
-                    <td class="py-2 px-4 border-b text-left">{{ number_format($resultado->porcentaje_solucion, 2) }}%</td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="6" class="py-2 px-6 text-center">No hay datos disponibles para mostrar.</td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
-</div>
-
-
-
     <!-- SLA de Atención por Usuario incluy-->
     <div class="bg-white shadow-sm sm:rounded-lg p-6 mb-6">
-        <h2 class="text-xl font-semibold mb-4">SLA de Asignación Promedio por Usuario</h2>
+        <h2 class="text-xl font-semibold mb-4">Tiempo Promedio de Asignación por Usuario</h2>
         <table class="min-w-full bg-white border border-gray-200">
             <thead>
                 <tr>
@@ -542,7 +472,7 @@
 
     <!-- SLA de Solución por Usuario -->
   {{--   <div class="bg-white shadow-sm sm:rounded-lg p-6 mb-6">
-        <h2 class="text-xl font-semibold mb-4">Promedio de SLA por Usuario para Resolución (Incluye Todo el Proceso,
+        <h2 class="text-xl font-semibold mb-4">tiempo Promedio del procesp para Resolución (Incluye Todo el Proceso,
             Excluyendo la Primera Asignación)</h2>
         <table class="min-w-full bg-white border border-gray-200">
             <thead>
@@ -579,7 +509,7 @@
 
     <!-- SLA de Solución por Usuario -->
     <div class="bg-white shadow-sm sm:rounded-lg p-6 mb-6">
-        <h2 class="text-xl font-semibold mb-4">SLA de Solución Promedio por Usuario</h2>
+        <h2 class="text-xl font-semibold mb-4">Tiempo Promedio  de Solución por Usuario</h2>
         <table class="min-w-full bg-white border border-gray-200">
             <thead>
                 <tr>

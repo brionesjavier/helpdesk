@@ -19,7 +19,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'roles.update' => 'Actualizar rol.',
             'roles.destroy' => 'Eliminar rol.',
             'users.index' => 'Ver lista de usuarios.',
-            'users.search'=>'Ver formulario de busqueda para lista de usuarios .',
+            'users.search' => 'Ver formulario de busqueda para lista de usuarios .',
             'users.show' => 'Ver detalles de usuario.',
             'users.edit' => 'Editar usuario existente.',
             'users.update' => 'Actualizar usuario.',
@@ -32,7 +32,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'categories.update' => 'Actualizar categoría.',
             'categories.show' => 'Ver detalles de categoría.',
             'categories.destroy' => 'Eliminar categoría.',
-            'getElements'=>'obtiene los sub elemento de categoria Api',
+            'getElements' => 'obtiene los sub elemento de categoria Api',
             'elements.index' => 'Ver lista de elementos.',
             'elements.create' => 'Crear nuevo elemento.',
             'elements.store' => 'Guardar nuevo elemento.',
@@ -57,8 +57,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'history.index' => 'Ver historial de tickets.',
             'histories.my' => 'Ver mi historial.',
             'histories.my.search' => 'Ver formulario de busqueda en historial',
-            'tickets.process'=>'Comenzar Proceso',
-            'tickets.process.submit'=>'Formulario para comenzar el proceso',
+            'tickets.process' => 'Comenzar Proceso',
+            'tickets.process.submit' => 'Formulario para comenzar el proceso',
             'tickets.solve' => 'Formulario para solucionar ticket.',
             'tickets.solve.submit' => 'Resolver ticket.',
             'tickets.derive' => 'Formulario para derivar ticket.',
@@ -74,10 +74,11 @@ class RolesAndPermissionsSeeder extends Seeder
             'support.show' => 'formulario para asignar a soporte',
             'support.index' => 'ver tickets para asignar a soporte',
             'support.search' => 'formulario de busqueda para  soporte',
-            'support.center'=> 'bandeja de tickets sin asignar',
-            'reports.tickets'=>'reporte de datos de tickets',
-            'reports.summary'=>'reporte de datos de tickets con resumen de tickets por estado',
-            'reports.sla'=>'reporte de los sla '
+            'support.center' => 'bandeja de tickets sin asignar',
+            'support.showcenter' => 'Formulario para asignar soporte (solo primera asignación).',
+            'reports.tickets' => 'reporte de datos de tickets',
+            'reports.summary' => 'reporte de datos de tickets con resumen de tickets por estado',
+            'reports.sla' => 'reporte de los sla '
 
         ];
 
@@ -92,43 +93,114 @@ class RolesAndPermissionsSeeder extends Seeder
         // Definir los roles y asignarles permisos
         $rolesPermissions = [
             'administrador' => [
-                'roles.index', 'roles.create', 'roles.store', 'roles.edit', 'roles.update', 'roles.destroy',
-                'users.index', 'users.show', 'users.update','users.manageRoles', 'users.updateRoles',
-                'categories.index', 'categories.create', 'categories.store', 'categories.edit', 'categories.update', 'categories.show', 'categories.destroy',
-                'elements.index', 'elements.create', 'elements.store', 'elements.show', 'elements.edit', 'elements.update', 'elements.destroy',
-                'states.index', 
-                'tickets.index', 'tickets.create', 'tickets.store', 'tickets.show', 'tickets.edit', 'tickets.update', 'tickets.destroy',
-                'comments.store', 'comments.index', 'history.index',
-                'support.assigned','support.store', 'support.show', 'support.index',
-                'tickets.my', 'histories.my', 'tickets.solve', 'tickets.solve.submit',
-                'tickets.derive', 'tickets.derive.submit', 'tickets.close', 'tickets.close.submit',
-                'tickets.reopen', 'tickets.reopen.submit', 'users.edit',
-                'tickets.cancel', 'tickets.cancel.submit',
+           'roles.index',
+'roles.create',
+'roles.store',
+'roles.edit',
+'roles.update',
+'roles.destroy',
+'users.index',
+'users.search',
+'users.show',
+'users.edit',
+'users.update',
+'users.manageRoles',
+'users.updateRoles',
+'categories.index',
+'categories.create',
+'categories.store',
+'categories.edit',
+'categories.update',
+'categories.show',
+'categories.destroy',
+'getElements',
+'elements.index',
+'elements.create',
+'elements.store',
+'elements.show',
+'elements.edit',
+'elements.update',
+'elements.destroy',
+'states.index',
+'tickets.index',
+'tickets.search',
+'tickets.create',
+'tickets.store',
+'tickets.show',
+'tickets.myshow',
+'tickets.my',
+'tickets.my.search',
+'tickets.edit',
+'tickets.update',
+'tickets.destroy',
+'comments.store',
+'comments.index',
+'history.index',
+'histories.my',
+'histories.my.search',
+'tickets.process',
+'tickets.process.submit',
+'tickets.solve',
+'tickets.solve.submit',
+'tickets.derive',
+'tickets.derive.submit',
+'tickets.close',
+'tickets.close.submit',
+'tickets.reopen',
+'tickets.reopen.submit',
+'tickets.cancel',
+'tickets.cancel.submit',
+'support.assigned',
+'support.store',
+'support.show',
+'support.index',
+'support.search',
+'support.center',
+'support.showcenter',
+'reports.tickets',
+'reports.summary',
+'reports.sla',
+
             ],
             'usuario' => [
-                'tickets.my', 'tickets.my.search','tickets.create', 'tickets.store',
-                'tickets.myshow','tickets.destroy','tickets.close', 'tickets.close.submit',
+                'tickets.my','tickets.my.search','tickets.create','tickets.store',
+                'tickets.myshow','tickets.destroy','tickets.close','tickets.close.submit',
                 'tickets.cancel','tickets.cancel.submit','tickets.reopen','tickets.reopen.submit',
-                'histories.my','histories.my.search', 'history.index','getElements',
-                'comments.store', 'comments.index', 
+                'histories.my','histories.my.search','history.index','getElements',
+                'comments.store','comments.index',
             ],
             'agente soporte' => [
-                'support.assigned','support.store', 'support.show','support.center',
-                'tickets.index','tickets.search','tickets.show', 'comments.index', 'comments.store',
-                'tickets.process','tickets.process.submit','tickets.solve', 'tickets.solve.submit',
-                'tickets.reopen', 'tickets.reopen.submit', 'tickets.derive', 'tickets.derive.submit',
-                'tickets.close', 'tickets.close.submit','tickets.cancel', 'tickets.cancel.submit',
+                'support.assigned','support.store','support.showcenter','support.center',
+                'tickets.index','tickets.search','tickets.show','comments.index','comments.store',
+                'tickets.process','tickets.process.submit','tickets.solve','tickets.solve.submit',
+                'tickets.reopen','tickets.reopen.submit','tickets.derive','tickets.derive.submit',
+                'tickets.close','tickets.close.submit','tickets.cancel','tickets.cancel.submit',
                 'getElements',
-                 
-                
-                 
-                
+
+
+
+
             ],
             'administrador soporte' => [
-                'tickets.index', 'tickets.solve', 'tickets.solve.submit', 'tickets.derive', 'tickets.derive.submit',
-                'tickets.close', 'tickets.close.submit', 'tickets.reopen', 'tickets.reopen.submit',
-                 'tickets.cancel', 'tickets.cancel.submit','support.center','support.search',
-                'history.index', 'comments.index', 'comments.store',
+                'tickets.index','tickets.show','tickets.search',
+                'support.store', 'support.show','support.index','support.search',
+                'history.index','comments.index','comments.store',
+                'reports.tickets','reports.summary','reports.sla',
+                'categories.index','categories.show','categories.create','categories.store',
+                'categories.edit','categories.update','categories.destroy',
+                'elements.index','elements.show','elements.create','elements.store',
+                'elements.edit','elements.update','elements.destroy',
+                'getElements','states.index',
+
+
+
+
+
+
+
+
+
+                
             ],
         ];
 

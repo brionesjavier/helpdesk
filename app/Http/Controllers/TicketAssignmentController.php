@@ -127,7 +127,7 @@ class TicketAssignmentController extends Controller
             'low' => 'Baja',
             'medium' => 'Media',
             'high' => 'Alta',
-            'critical'=>'Crítico'
+            'critical' => 'Crítico'
         ];
 
         // Obtener los tickets asignados al usuario
@@ -152,18 +152,39 @@ class TicketAssignmentController extends Controller
         return view('support.show', compact('ticket', 'assignments', 'users'));
     }
 
+    public function showCenter($ticketId)
+    {
+        // Cargar el ticket junto con los usuarios asignados
+        $ticket = Ticket::with('assignedUsers')->findOrFail($ticketId);
+    
+        // Verificar si el ticket ya está asignado a cualquier usuario
+      /*   if ($ticket->assignedUsers()->exists()) {
+            // Si ya está asignado, retornar error 410 (Gone)
+            abort(404, 'Este ticket no está disponible.');
+        } */
+    
+        // Obtener la última asignación si existiera, en este caso no debería haber ninguna
+        $assignments = $ticket->assignedUsers()->orderBy('ticket_assigns.created_at', 'desc')->first();
+        
+        // Obtener los usuarios asignables
+        $users = User::where('assignable', true)->get();
+    
+        // Retornar la vista con los datos necesarios
+        return view('support.showcenter', compact('ticket', 'assignments', 'users'));
+    }
+
 
     public function store(AssignTicketRequest $request, Ticket $ticket)
     {
         $validated = $request->validate([
-                        'user_id' => 'nullable|integer|exists:users,id',
-                        'details' => 'required|max:255',
-                        'priority' => 'nullable|string|in:low,medium,high,critical'
-    ]);
+            'user_id' => 'nullable|integer|exists:users,id',
+            'details' => 'required|max:255',
+            'priority' => 'nullable|string|in:low,medium,high,critical'
+        ]);
 
-        $userId = $validated['user_id'] ;
-        $details = $validated['details'] ;
-        $priority = $validated['priority'] ;
+        $userId = $validated['user_id'];
+        $details = $validated['details'];
+        $priority = $validated['priority'];
 
         $currentAssignee = $ticket->assignedUsers()->where('is_active', true)->first();
 
@@ -201,7 +222,7 @@ class TicketAssignmentController extends Controller
         $ticket->update($ticketData);
         $user = User::find($userId);
 
-     
+
         HistoryController::logAction($ticket, true, Auth::id(), "El ticket fue asignado al usuario  $user->first_name $user->last_name (ID: $user->id) por el usuario " . Auth::user()->first_name . " " . Auth::user()->last_name . " (ID: " . Auth::id() . ").");
 
         // Cargar relaciones
