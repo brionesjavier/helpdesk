@@ -65,10 +65,12 @@
                         {{-- Botón de comenzar proceso --}}
                         @if ($ticket->state->id == 2 || $ticket->state->id == 5 || $ticket->state->id == 6)
                             @can('manage',$ticket)
+                            @can('tickets.process')
                                 <a href="{{ route('tickets.process', $ticket) }}" 
                                    class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                                     {{ __('Comenzar Proceso') }}
                                 </a>
+                                @endcan
                             @endcan
                         @endif
 
@@ -123,7 +125,7 @@
                         @can('CreateByUser',$ticket)
                                 <a href="{{ route('tickets.reopen', $ticket) }}" 
                                    class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
-                                    {{ __('Reabrir') }}
+                                    {{ __('Objetar') }}
                                 </a>
                             @endcan
                             @endcan

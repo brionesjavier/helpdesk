@@ -15,6 +15,7 @@ use App\Mail\TicketNotification;
 class CommentController extends Controller
 {
     use AuthorizesRequests;  
+
     public function store(Request $request, Ticket $ticket)
     {
         $this->authorize('manageOrCreateByUser', $ticket);
@@ -56,13 +57,22 @@ class CommentController extends Controller
         
         } catch (\Exception $e) {
             // Manejar el error al enviar el correo
-            return redirect()->route('tickets.show', $ticket)->with('message', 'Error al enviar la notificación por correo.');
+            if (auth()->user()->can('tickets.show')) {
+                return redirect()->route('tickets.show', $ticket)->with('message', 'Error al enviar la notificación por correo.');
+            }else{
+                return redirect()->route('tickets.myshow', $ticket)->with('message', 'Error al enviar la notificación por correo.');
+            }
         }
-    
-        // Redirigir con un mensaje de éxito
-        return redirect()->route('tickets.show', $ticket)->with('message', 'Comentario añadido con éxito.');
+        
+        if (auth()->user()->can('tickets.show')) {
+            return redirect()->route('tickets.show', $ticket)->with('message', 'Comentario añadido con éxito.');
+        }else{
+           // Redirigir con un mensaje de éxito
+        return redirect()->route('tickets.myshow', $ticket)->with('message', 'Comentario añadido con éxito.'); 
+        }
+       
     }
-    //'El ticket fue cancelado, pero hubo un problema al enviar la notificación por correo.'
+    
 
     public function index($ticketId)
     {

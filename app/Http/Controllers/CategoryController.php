@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -16,7 +17,7 @@ class CategoryController extends Controller
     {
 
         //$categories = Category::get();
-        $categories = Category::where('is_active',1)->paginate(10);
+        $categories = Category::where('is_active', 1)->paginate(10);
 
         return view('categories.index', compact('categories'));
         //
@@ -37,19 +38,16 @@ class CategoryController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'name' => 'required|string|max:30',
+            'name' => 'required|string|max:50',
             'description' => 'required|string|max:300'
         ]);
 
-        //Category::create($request->all());
         Category::create([
             'name' => $request->name,
             'description' => $request->description
         ]);
 
         return redirect()->route('categories.index')->with('message', 'Categoría creada exitosamente.');
-
-    
     }
 
     /**
@@ -71,7 +69,7 @@ class CategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
- /*    public function update(Request $request, Category $category)
+    /*    public function update(Request $request, Category $category)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:30',
@@ -88,11 +86,11 @@ class CategoryController extends Controller
             'name' => 'required|string|max:30',
             'description' => 'required|string|max:300',
         ]);
-    
+
         if (!$category->update($validated)) {
             return redirect()->back()->withErrors(['message' => 'No se pudo actualizar la categoría']);
         }
-    
+
         return redirect()->route('categories.index')->with('message', 'Categoría actualizada exitosamente');
     }
 
@@ -104,8 +102,7 @@ class CategoryController extends Controller
         $category->update(['is_active' => 0]);
         /* $category->delete(); */
 
-        return redirect()->route('categories.index') ->with('message', ' Categoria eliminada correctamente!');
-
+        return redirect()->route('categories.index')->with('message', ' Categoria eliminada correctamente!');
     }
 
 
@@ -114,10 +111,8 @@ class CategoryController extends Controller
     public function getElements($categoryId)
     {
         $elements = Element::where('category_id', $categoryId)
-        ->where('is_active',1)
-        ->get();
+            ->where('is_active', 1)
+            ->get();
         return response()->json($elements);
     }
 }
-
-

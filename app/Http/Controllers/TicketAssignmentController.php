@@ -155,9 +155,15 @@ class TicketAssignmentController extends Controller
 
     public function store(AssignTicketRequest $request, Ticket $ticket)
     {
-        $userId = $request->validated()['user_id'];
-        $details = $request->validated()['details'];
-        $priority = $request->validated()['priority'];
+        $validated = $request->validate([
+                        'user_id' => 'nullable|integer|exists:users,id',
+                        'details' => 'required|max:255',
+                        'priority' => 'nullable|string|in:low,medium,high,critical'
+    ]);
+
+        $userId = $validated['user_id'] ;
+        $details = $validated['details'] ;
+        $priority = $validated['priority'] ;
 
         $currentAssignee = $ticket->assignedUsers()->where('is_active', true)->first();
 
@@ -229,7 +235,7 @@ class TicketAssignmentController extends Controller
             case 'medium':
                 return $now->addDays(1);
             case 'low':
-                return $now->addDays(3);
+                return $now->addDays(2);
             default:
                 return null; // O manejar el caso de prioridad no definida
         }

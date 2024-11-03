@@ -6,7 +6,7 @@ use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
-class RolesTableSeeder extends Seeder
+/* class RolesTableSeeder extends Seeder
 {
     public function run()
     {
@@ -158,4 +158,4 @@ class RolesTableSeeder extends Seeder
             $role->syncPermissions($rolePerms);
         }
     }
-}
+} */

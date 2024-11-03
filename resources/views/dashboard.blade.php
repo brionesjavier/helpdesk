@@ -177,7 +177,7 @@
         </div>
         @endcan
 {{-- dashboard del dia --}}
-@can('tickets.index')
+@can('support.index')
     
 
         <div class="py-12">

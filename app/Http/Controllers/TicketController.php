@@ -35,6 +35,8 @@ public function test(){
 
     public function index(Request $request)
     {
+         // Guardar la URL actual en la sesión
+         $request->session()->put('last_view', url()->current());
         // Obtener los parámetros de la solicitud
         $search = $request->input('search');
         $state = $request->input('state');
@@ -79,6 +81,9 @@ public function test(){
 
     public function myTickets(Request $request): View
     {
+        // Guardar la URL actual en la sesión
+        $request->session()->put('last_view', url()->current());
+
         $validated = $request->validate([
             'search' => 'nullable|string|max:255',
             'state' => 'nullable|integer|exists:ticket_states,id',
@@ -254,22 +259,25 @@ public function test(){
 
         $ticket->load('state', 'user', 'assignedUsers', 'element');
 
+        // Obtener la URL de la última vista desde la sesión
+        $lastView = $request->session()->get('last_view', route('tickets.index'));
+        
         // Enviar el correo con notificación
         try {
             $currentAssignee = $ticket->assignedUsers()->where('is_active', true)->first();
             if ($currentAssignee) {
                 $user = User::find($currentAssignee->user_id);
-                Mail::to($user->email)->send(new TicketAlert($ticket));
+                if ($user) {
+                    Mail::to($user->email)->send(new TicketAlert($ticket));
+                }
             }
 
             // Enviar correo notificando el cambio de estado
             Mail::to($ticket->user->email)->send(new TicketStatusChanged($ticket));
 
-            // Obtener la URL de la última vista desde la sesión
-            $lastView = $request->session()->get('last_view', route('tickets.index'));
         } catch (\Exception $e) {
             //TODO: manejar excepción
-            return redirect($lastView)->with('message', 'Ticket quitado con éxito, pero hubo un problema al enviar la notificación por correo.');
+            return redirect($lastView)->with('message', 'Ticket quitado con éxito, pero hubo un problema al enviar la notificación por correo.'.$e);
         }
         // Redirigir a la última vista
         return redirect($lastView)->with('message', 'Ticket quitado con exito');

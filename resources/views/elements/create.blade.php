@@ -6,7 +6,7 @@
                     @can('elements.store')
                         
                     
-                    <form method="POST" action="{{ route('elements.store') }}">
+                    <form method="POST" action="{{ route('elements.store') }}"onsubmit="return confirm('¿Estás seguro de que deseas crear el Elemento de esa Categorías ?')">
                         @csrf
                         @method('post')
 

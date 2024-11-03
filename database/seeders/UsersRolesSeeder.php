@@ -26,6 +26,7 @@ class UsersRolesSeeder extends Seeder
             'first_name' => 'Root ',
             'last_name' => 'Admin',
             'password' => Hash::make('password'), // Cambia por tu contraseña deseada
+            'email_verified_at' => now(),
         ]);
 
         // Asignar roles al usuario

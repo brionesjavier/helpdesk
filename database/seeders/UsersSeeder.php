@@ -15,10 +15,10 @@ class UsersSeeder extends Seeder
      */
     public function run(): void
     {
-        $test=User::create([
+        $supervisor=User::create([
             'first_name' => 'test',
             'last_name' => 'test',
-            'email' => 'test@gmail.com',
+            'email' => 'supervisor@gmail.com',
             'email_verified_at' => now(),
             'password' => Hash::make('password'), // Encriptar la contraseña
         ]);
@@ -50,15 +50,17 @@ class UsersSeeder extends Seeder
         ]);
         
         // Verificar que los roles ya existen
-        $adminRole = Role::where('name', 'admin')->first();
-        $userRole = Role::where('name', 'user')->first();
-        $soporteRole = Role::where('name', 'support')->first();
+        $adminRole = Role::where('name', 'administrador')->first();
+        $userRole = Role::where('name', 'usuario')->first();
+        $soporteRole = Role::where('name', 'agente soporte')->first();
+        $supervisorRole = Role::where('name', 'administrador soporte')->first();
 
         //asignando roles a usuario
         $usuario->assignRole($userRole);
         $soporte->assignRole($soporteRole);
         $soporte->assignRole($userRole);
         $administrador->assignRole($adminRole);
+        $supervisor->assignRole($supervisorRole);
 
 
     }

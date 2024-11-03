@@ -47,14 +47,14 @@ class RolesAndPermissionsSeeder extends Seeder
             'tickets.store' => 'Guardar nuevo ticket.',
             'tickets.show' => 'Ver detalles de ticket.',
             'tickets.myshow' => 'Ver detalles de ticket realizado.',
+            'tickets.my' => 'Ver formulario de busqueda en historial mis tickets.',
+            'tickets.my.search' => 'Ver mis tickets.',
             'tickets.edit' => 'Editar ticket existente.',
             'tickets.update' => 'Actualizar ticket.',
-            'tickets.destroy' => 'Eliminar ticket.',
+            'tickets.destroy' => 'quitar ticket de la lista.',
             'comments.store' => 'Agregar comentario a ticket.',
             'comments.index' => 'Ver comentarios de ticket.',
             'history.index' => 'Ver historial de tickets.',
-            'tickets.my' => 'Ver formulario de busqueda en historial mis tickets.',
-            'tickets.my.search' => 'Ver mis tickets.',
             'histories.my' => 'Ver mi historial.',
             'histories.my.search' => 'Ver formulario de busqueda en historial',
             'tickets.process'=>'Comenzar Proceso',
@@ -91,12 +91,12 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // Definir los roles y asignarles permisos
         $rolesPermissions = [
-            'admin' => [
+            'administrador' => [
                 'roles.index', 'roles.create', 'roles.store', 'roles.edit', 'roles.update', 'roles.destroy',
                 'users.index', 'users.show', 'users.update','users.manageRoles', 'users.updateRoles',
                 'categories.index', 'categories.create', 'categories.store', 'categories.edit', 'categories.update', 'categories.show', 'categories.destroy',
                 'elements.index', 'elements.create', 'elements.store', 'elements.show', 'elements.edit', 'elements.update', 'elements.destroy',
-                'states.index', 'states.store', 'states.show', 'states.edit', 'states.update',
+                'states.index', 
                 'tickets.index', 'tickets.create', 'tickets.store', 'tickets.show', 'tickets.edit', 'tickets.update', 'tickets.destroy',
                 'comments.store', 'comments.index', 'history.index',
                 'support.assigned','support.store', 'support.show', 'support.index',
@@ -105,12 +105,26 @@ class RolesAndPermissionsSeeder extends Seeder
                 'tickets.reopen', 'tickets.reopen.submit', 'users.edit',
                 'tickets.cancel', 'tickets.cancel.submit',
             ],
-            'user' => [
-                'tickets.my', 'histories.my', 'tickets.create', 'tickets.store',
-                'tickets.show', 'comments.store', 'comments.index','getElements',
-                'tickets.cancel', 'tickets.cancel.submit',
+            'usuario' => [
+                'tickets.my', 'tickets.my.search','tickets.create', 'tickets.store',
+                'tickets.myshow','tickets.destroy','tickets.close', 'tickets.close.submit',
+                'tickets.cancel','tickets.cancel.submit','tickets.reopen','tickets.reopen.submit',
+                'histories.my','histories.my.search', 'history.index','getElements',
+                'comments.store', 'comments.index', 
             ],
-            'support' => [
+            'agente soporte' => [
+                'support.assigned','support.store', 'support.show','support.center',
+                'tickets.index','tickets.search','tickets.show', 'comments.index', 'comments.store',
+                'tickets.process','tickets.process.submit','tickets.solve', 'tickets.solve.submit',
+                'tickets.reopen', 'tickets.reopen.submit', 'tickets.derive', 'tickets.derive.submit',
+                'tickets.close', 'tickets.close.submit','tickets.cancel', 'tickets.cancel.submit',
+                'getElements',
+                 
+                
+                 
+                
+            ],
+            'administrador soporte' => [
                 'tickets.index', 'tickets.solve', 'tickets.solve.submit', 'tickets.derive', 'tickets.derive.submit',
                 'tickets.close', 'tickets.close.submit', 'tickets.reopen', 'tickets.reopen.submit',
                  'tickets.cancel', 'tickets.cancel.submit','support.center','support.search',

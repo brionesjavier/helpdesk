@@ -59,7 +59,7 @@ class ElementController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:30',
+            'name' => 'required|string|max:50',
             'description' => 'required|string|max:300',
             'category_id' => 'required|integer'
         ]);
@@ -102,7 +102,7 @@ class ElementController extends Controller
         }
 
         $validate = $request->validate([
-            'name' => 'required|string|max:30',
+            'name' => 'required|string|max:50',
             'description' => 'required|string|max:300',
             'category_id' => 'required|integer'
         ]);
