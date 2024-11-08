@@ -51,7 +51,7 @@
                         {{-- Botón de cerrar ticket --}}
                         @if ($ticket->state->id == 4)
                             @can('tickets.close')
-                                <form action="{{ route('tickets.close', $ticket) }}" method="POST">
+                                <form action="{{ route('tickets.close', $ticket) }}" method="POST" onsubmit="return confirm('¿Estás seguro de que deseas cerrar el ticket?')">
                                     @csrf
                                     @method('post')
                                     <button type="submit" 

@@ -1,4 +1,15 @@
 <x-app-layout>
+    <x-slot name="header">
+        {{-- Mensaje de evento --}}
+        @if(session()->has('message'))
+            <div class="text-center bg-gray-100 dark:bg-gray-700 rounded-md p-2 mb-4">
+                <span class="text-indigo-600 dark:text-indigo-300 text-xl font-semibold">{{ session('message') }}</span>
+            </div>
+        @endif
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            Crear Elemento
+        </h2>
+    </x-slot>
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">

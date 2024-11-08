@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Mail\TicketStatusChanged;
 use App\Mail\TicketAlert;
+use App\Mail\TicketNotification;
 use DateInterval;
 use DateTime;
 use Exception;
@@ -402,10 +403,23 @@ public function test(){
         ]);
 
         HistoryController::logAction($ticket, true, Auth::id(), "El ticket fue objetado por el usuario " . Auth::user()->first_name . " " . Auth::user()->last_name . " (ID: " . Auth::id() . ").");
+        
+        // Obtener el usuario autenticado
+        $user = Auth::user();
+        
         // Cargar relaciones
         $ticket->load('state', 'user', 'assignedUsers', 'element');
         $lastView = $request->session()->get('last_view', route('tickets.index'));
         try {
+
+            // Obtener el usuario asignado activo
+            $userAssign = $ticket->assignedUsers()->where('is_active', true)->first();
+        
+            // Verificar que el ticket fue creado por el usuario y que hay un usuario asignado
+            if ($userAssign) {
+                // Enviar correo al usuario asignado
+                Mail::to($userAssign->email)->send(new TicketNotification($ticket, $request->input('content'), $user));
+            }
             Mail::to($ticket->user->email)->send(new TicketStatusChanged($ticket));
         } catch (\Exception $e) {
             return redirect($lastView)->with('message', ' El ticket fue objetado. Sin embargo, hubo un problema al enviar la notificación por correo.');

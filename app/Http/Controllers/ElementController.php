@@ -72,7 +72,7 @@ class ElementController extends Controller
 
         ]);
 
-        return redirect()->route('elements.index')->with('message', 'Categoría creada exitosamente.');
+        return redirect()->route('elements.index')->with('message', 'Elemento creado exitosamente.');
     }
     public function show(Element $element)
     {

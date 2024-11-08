@@ -6,6 +6,11 @@
                 <span class="text-indigo-600 dark:text-indigo-400 text-xl font-semibold">{{ session('message') }}</span>
             </div>
         @endif
+       
+            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+                {{ 'Estados de ticket' }}
+            </h2>
+      
 
         @can('states.create')
             <div class="overflow-hidden shadow-sm sm:rounded-lg mb-4">
